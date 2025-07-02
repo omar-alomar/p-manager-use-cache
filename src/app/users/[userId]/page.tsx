@@ -1,9 +1,9 @@
 import { getUserProjects } from "@/db/projects"
-import { getUserTodos } from "@/db/todos"
+import { getUserTasks } from "@/db/tasks"
 import { getUser } from "@/db/users"
 import { ProjectCard, SkeletonProjectCard } from "@/components/ProjectCard"
 import { Skeleton, SkeletonList } from "@/components/Skeleton"
-import { TodoItem } from "@/components/TodoItem"
+import { TaskItem } from "@/components/TaskItem"
 import { Suspense } from "react"
 import { notFound } from "next/navigation"
 
@@ -52,7 +52,7 @@ export default async function UserPage({
           <UserProjects userId={userId} />
         </Suspense>
       </div>
-      <h3 className="mt-4 mb-2">Todos</h3>
+      <h3 className="mt-4 mb-2">Tasks</h3>
       <ul>
         <Suspense
           fallback={
@@ -63,7 +63,7 @@ export default async function UserPage({
             </SkeletonList>
           }
         >
-          <UserTodos userId={userId} />
+          <UserTasks userId={userId} />
         </Suspense>
       </ul>
     </>
@@ -100,8 +100,8 @@ async function UserProjects({ userId }: { userId: string }) {
   return projects.map(project => <ProjectCard key={project.id} {...project} />)
 }
 
-async function UserTodos({ userId }: { userId: string }) {
-  const todos = await getUserTodos(userId)
+async function UserTasks({ userId }: { userId: string }) {
+  const tasks = await getUserTasks(userId)
 
-  return todos.map(todo => <TodoItem key={todo.id} {...todo} />)
+  return tasks.map(task => <TaskItem key={task.id} {...task} />)
 }

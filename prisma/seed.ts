@@ -24,16 +24,16 @@ async function createUsers() {
   )
 }
 
-async function createTodos() {
-  await prisma.todo.deleteMany()
+async function createTasks() {
+  await prisma.task.deleteMany()
   return Promise.all(
-    seedData.todos.map(async todo => {
-      return prisma.todo.create({
+    seedData.tasks.map(async task => {
+      return prisma.task.create({
         data: {
-          id: todo.id,
-          title: todo.title,
-          completed: todo.completed,
-          userId: todo.userId,
+          id: task.id,
+          title: task.title,
+          completed: task.completed,
+          userId: task.userId,
         },
       })
     })
@@ -74,7 +74,7 @@ async function createComments() {
 
 async function main() {
   await createUsers()
-  await createTodos()
+  await createTasks()
   await createProjects()
   await createComments()
 }

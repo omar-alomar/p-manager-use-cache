@@ -24,7 +24,7 @@ export default function RootLayout({
               <Link href="/users">Users</Link>
             </li>
             <li>
-              <Link href="/todos">Todos</Link>
+              <Link href="/tasks">Tasks</Link>
             </li>
           </ul>
         </nav>
