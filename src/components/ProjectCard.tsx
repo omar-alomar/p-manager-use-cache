@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { Skeleton, SkeletonButton } from "./Skeleton"
 
-export function PostCard({
+export function ProjectCard({
   id,
   title,
   body,
@@ -17,7 +17,7 @@ export function PostCard({
         <div className="card-preview-text">{body}</div>
       </div>
       <div className="card-footer">
-        <Link className="btn" href={`/posts/${id}`}>
+        <Link className="btn" href={`/projects/${id}`}>
           View
         </Link>
       </div>
@@ -25,7 +25,7 @@ export function PostCard({
   )
 }
 
-export function SkeletonPostCard() {
+export function SkeletonProjectCard() {
   return (
     <div className="card">
       <div className="card-header">

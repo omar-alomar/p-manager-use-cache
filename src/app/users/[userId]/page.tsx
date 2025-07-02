@@ -1,7 +1,7 @@
-import { getUserPosts } from "@/db/posts"
+import { getUserProjects } from "@/db/projects"
 import { getUserTodos } from "@/db/todos"
 import { getUser } from "@/db/users"
-import { PostCard, SkeletonPostCard } from "@/components/PostCard"
+import { ProjectCard, SkeletonProjectCard } from "@/components/ProjectCard"
 import { Skeleton, SkeletonList } from "@/components/Skeleton"
 import { TodoItem } from "@/components/TodoItem"
 import { Suspense } from "react"
@@ -40,16 +40,16 @@ export default async function UserPage({
         <UserDetails userId={userId} />
       </Suspense>
 
-      <h3 className="mt-4 mb-2">Posts</h3>
+      <h3 className="mt-4 mb-2">Projects</h3>
       <div className="card-grid">
         <Suspense
           fallback={
             <SkeletonList amount={3}>
-              <SkeletonPostCard />
+              <SkeletonProjectCard />
             </SkeletonList>
           }
         >
-          <UserPosts userId={userId} />
+          <UserProjects userId={userId} />
         </Suspense>
       </div>
       <h3 className="mt-4 mb-2">Todos</h3>
@@ -94,10 +94,10 @@ async function UserDetails({ userId }: { userId: string }) {
   )
 }
 
-async function UserPosts({ userId }: { userId: string }) {
-  const posts = await getUserPosts(userId)
+async function UserProjects({ userId }: { userId: string }) {
+  const projects = await getUserProjects(userId)
 
-  return posts.map(post => <PostCard key={post.id} {...post} />)
+  return projects.map(project => <ProjectCard key={project.id} {...project} />)
 }
 
 async function UserTodos({ userId }: { userId: string }) {

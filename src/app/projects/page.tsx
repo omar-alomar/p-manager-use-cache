@@ -1,7 +1,7 @@
-import { getPosts } from "@/db/posts"
+import { getProjects } from "@/db/projects"
 import { getUsers } from "@/db/users"
 import { FormGroup } from "@/components/FormGroup"
-import { PostCard, SkeletonPostCard } from "@/components/PostCard"
+import { ProjectCard, SkeletonProjectCard } from "@/components/ProjectCard"
 import { SkeletonList } from "@/components/Skeleton"
 import { Suspense } from "react"
 import Form from "next/form"
@@ -9,7 +9,7 @@ import Link from "next/link"
 
 type SearchParams = Promise<{ query?: string; userId?: string }>
 
-export default async function PostsPage({
+export default async function ProjectsPage({
   searchParams,
 }: {
   searchParams: SearchParams
@@ -17,9 +17,9 @@ export default async function PostsPage({
   return (
     <>
       <div className="page-title">
-        <h1>Posts</h1>
+        <h1>Projects</h1>
         <div className="title-btns">
-          <Link className="btn btn-outline" href="posts/new">
+          <Link className="btn btn-outline" href="projects/new">
             New
           </Link>
         </div>
@@ -57,11 +57,11 @@ export default async function PostsPage({
         <Suspense
           fallback={
             <SkeletonList amount={6}>
-              <SkeletonPostCard />
+              <SkeletonProjectCard />
             </SkeletonList>
           }
         >
-          <PostGrid searchParams={searchParams} />
+          <ProjectGrid searchParams={searchParams} />
         </Suspense>
       </div>
     </>
@@ -86,7 +86,7 @@ async function SearchSelect({ searchParams }: { searchParams: SearchParams }) {
   )
 }
 
-async function PostGrid({ searchParams }: { searchParams: SearchParams }) {
+async function ProjectGrid({ searchParams }: { searchParams: SearchParams }) {
   const { query = "", userId = "" } = await searchParams
 
   return (
@@ -94,25 +94,25 @@ async function PostGrid({ searchParams }: { searchParams: SearchParams }) {
       key={`${userId}-${query}`}
       fallback={
         <SkeletonList amount={6}>
-          <SkeletonPostCard />
+          <SkeletonProjectCard />
         </SkeletonList>
       }
     >
-      <PostGridInner userId={userId} query={query} />
+      <ProjectGridInner userId={userId} query={query} />
     </Suspense>
   )
 }
 
-async function PostGridInner({
+async function ProjectGridInner({
   userId,
   query,
 }: {
   userId: string
   query: string
 }) {
-  const posts = await getPosts({ query, userId })
+  const projects = await getProjects({ query, userId })
 
-  return posts.map(post => <PostCard key={post.id} {...post} />)
+  return projects.map(project => <ProjectCard key={project.id} {...project} />)
 }
 
 async function UserSelect() {

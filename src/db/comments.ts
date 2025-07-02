@@ -1,10 +1,10 @@
 import prisma from "./db"
 
-export async function getPostComments(postId: string | number) {
+export async function getProjectComments(projectId: string | number) {
   "use cache"
 
   await wait(2000)
-  return prisma.comment.findMany({ where: { postId: Number(postId) } })
+  return prisma.comment.findMany({ where: { projectId: Number(projectId) } })
 }
 
 function wait(duration: number) {

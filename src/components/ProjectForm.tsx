@@ -4,14 +4,14 @@ import { FormGroup } from "./FormGroup"
 import { Suspense, useActionState } from "react"
 import Link from "next/link"
 import { SkeletonInput } from "./Skeleton"
-import { createPostAction, editPostAction } from "@/actions/posts"
+import { createProjectAction, editProjectAction } from "@/actions/projects"
 
-export function PostForm({
+export function ProjectForm({
   users,
-  post,
+  project,
 }: {
   users: { id: number; name: string }[]
-  post?: {
+  project?: {
     id: number
     title: string
     userId: number
@@ -19,7 +19,7 @@ export function PostForm({
   }
 }) {
   const action =
-    post == null ? createPostAction : editPostAction.bind(null, post.id)
+    project == null ? createProjectAction : editProjectAction.bind(null, project.id)
   const [errors, formAction, pending] = useActionState(action, {})
 
   return (
@@ -32,7 +32,7 @@ export function PostForm({
             type="text"
             name="title"
             id="title"
-            defaultValue={post?.title}
+            defaultValue={project?.title}
           />
         </FormGroup>
         <FormGroup errorMessage={errors.userId}>
@@ -41,7 +41,7 @@ export function PostForm({
             required
             name="userId"
             id="userId"
-            defaultValue={post?.userId}
+            defaultValue={project?.userId}
           >
             <Suspense fallback={<option value="">Loading...</option>}>
               {users.map(user => (
@@ -56,13 +56,13 @@ export function PostForm({
       <div className="form-row">
         <FormGroup errorMessage={errors.body}>
           <label htmlFor="body">Body</label>
-          <textarea required name="body" id="body" defaultValue={post?.body} />
+          <textarea required name="body" id="body" defaultValue={project?.body} />
         </FormGroup>
       </div>
       <div className="form-row form-btn-row">
         <Link
           className="btn btn-outline"
-          href={post == null ? "/posts" : `/posts/${post.id}`}
+          href={project == null ? "/projects" : `/projects/${project.id}`}
         >
           Cancel
         </Link>
@@ -74,7 +74,7 @@ export function PostForm({
   )
 }
 
-export function SkeletonPostForm() {
+export function SkeletonProjectForm() {
   return (
     <form className="form">
       <div className="form-row">
@@ -94,7 +94,7 @@ export function SkeletonPostForm() {
         </FormGroup>
       </div>
       <div className="form-row form-btn-row">
-        <Link className="btn btn-outline" href="/posts">
+        <Link className="btn btn-outline" href="/projects">
           Cancel
         </Link>
         <button disabled className="btn">

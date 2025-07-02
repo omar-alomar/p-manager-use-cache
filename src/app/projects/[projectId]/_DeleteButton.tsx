@@ -1,9 +1,9 @@
 "use client"
 
-import { deletePostAction } from "@/actions/posts"
+import { deleteProjectAction } from "@/actions/projects"
 import { useTransition } from "react"
 
-export function DeleteButton({ postId }: { postId: string }) {
+export function DeleteButton({ projectId }: { projectId: string }) {
   const [isPending, startTransition] = useTransition()
   return (
     <button
@@ -11,7 +11,7 @@ export function DeleteButton({ postId }: { postId: string }) {
       className="btn btn-outline btn-danger"
       onClick={() =>
         startTransition(async () => {
-          await deletePostAction(postId)
+          await deleteProjectAction(projectId)
         })
       }
     >
