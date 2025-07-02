@@ -1,18 +1,18 @@
 import prisma from "./db"
 
-export async function getTodos() {
+export async function getTasks() {
   "use cache"
 
   await wait(2000)
 
-  return prisma.todo.findMany()
+  return prisma.task.findMany()
 }
 
-export async function getUserTodos(userId: string | number) {
+export async function getUserTasks(userId: string | number) {
   "use cache"
 
   await wait(2000)
-  return prisma.todo.findMany({ where: { userId: Number(userId) } })
+  return prisma.task.findMany({ where: { userId: Number(userId) } })
 }
 
 function wait(duration: number) {

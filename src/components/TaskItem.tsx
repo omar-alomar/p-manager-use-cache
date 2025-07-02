@@ -1,4 +1,4 @@
-export function TodoItem({
+export function TaskItem({
   completed,
   title,
 }: {

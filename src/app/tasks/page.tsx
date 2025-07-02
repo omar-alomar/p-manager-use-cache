@@ -1,12 +1,12 @@
-import { getTodos } from "@/db/todos"
+import { getTasks } from "@/db/tasks"
 import { Skeleton, SkeletonList } from "@/components/Skeleton"
-import { TodoItem } from "@/components/TodoItem"
+import { TaskItem } from "@/components/TaskItem"
 import { Suspense } from "react"
 
-export default function TodosPage() {
+export default function TasksPage() {
   return (
     <>
-      <h1 className="page-title">Todos</h1>
+      <h1 className="page-title">Tasks</h1>
       <ul>
         <Suspense
           fallback={
@@ -17,15 +17,15 @@ export default function TodosPage() {
             </SkeletonList>
           }
         >
-          <TodosList />
+          <TasksList />
         </Suspense>
       </ul>
     </>
   )
 }
 
-async function TodosList() {
-  const todos = await getTodos()
+async function TasksList() {
+  const tasks = await getTasks()
 
-  return todos.map(todo => <TodoItem key={todo.id} {...todo} />)
+  return tasks.map(task => <TaskItem key={task.id} {...task} />)
 }
