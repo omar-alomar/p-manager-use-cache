@@ -1,5 +1,5 @@
-import { getPostComments } from "@/db/comments"
-import { getPost } from "@/db/posts"
+import { getProjectComments } from "@/db/comments"
+import { getProject } from "@/db/projects"
 import { getUser } from "@/db/users"
 import { Skeleton, SkeletonList } from "@/components/Skeleton"
 import Link from "next/link"
@@ -7,12 +7,12 @@ import { Suspense } from "react"
 import { notFound } from "next/navigation"
 import { DeleteButton } from "./_DeleteButton"
 
-export default async function PostPage({
+export default async function ProjectPage({
   params,
 }: {
-  params: Promise<{ postId: string }>
+  params: Promise<{ projectId: string }>
 }) {
-  const { postId } = await params
+  const { projectId } = await params
 
   return (
     <>
@@ -24,11 +24,11 @@ export default async function PostPage({
               <div className="title-btns">
                 <Link
                   className="btn btn-outline"
-                  href={`/posts/${postId}/edit`}
+                  href={`/projects/${projectId}/edit`}
                 >
                   Edit
                 </Link>
-                <DeleteButton postId={postId} />
+                <DeleteButton projectId={projectId} />
               </div>
             </div>
             <span className="page-subtitle">
@@ -42,7 +42,7 @@ export default async function PostPage({
           </>
         }
       >
-        <PostDetails postId={postId} />
+        <ProjectDetails projectId={projectId} />
       </Suspense>
 
       <h3 className="mt-4 mb-2">Comments</h3>
@@ -62,36 +62,36 @@ export default async function PostPage({
             </SkeletonList>
           }
         >
-          <Comments postId={postId} />
+          <Comments projectId={projectId} />
         </Suspense>
       </div>
     </>
   )
 }
 
-async function PostDetails({ postId }: { postId: string }) {
-  const post = await getPost(postId)
+async function ProjectDetails({ projectId }: { projectId: string }) {
+  const project = await getProject(projectId)
 
-  if (post == null) return notFound()
+  if (project == null) return notFound()
 
   return (
     <>
       <div className="page-title">
-        <h1>{post.title}</h1>
+        <h1>{project.title}</h1>
         <div className="title-btns">
-          <Link className="btn btn-outline" href={`/posts/${postId}/edit`}>
+          <Link className="btn btn-outline" href={`/projects/${projectId}/edit`}>
             Edit
           </Link>
-          <DeleteButton postId={postId} />
+          <DeleteButton projectId={projectId} />
         </div>
       </div>
       <span className="page-subtitle">
         By:{" "}
         <Suspense fallback={<Skeleton short inline />}>
-          <UserDetails userId={post.userId} />
+          <UserDetails userId={project.userId} />
         </Suspense>
       </span>
-      <div>{post.body}</div>
+      <div>{project.body}</div>
     </>
   )
 }
@@ -104,8 +104,8 @@ async function UserDetails({ userId }: { userId: number }) {
   return <Link href={`/users/${user.id}`}>{user.name}</Link>
 }
 
-async function Comments({ postId }: { postId: string }) {
-  const comments = await getPostComments(postId)
+async function Comments({ projectId }: { projectId: string }) {
+  const comments = await getProjectComments(projectId)
 
   return comments.map(comment => (
     <div key={comment.id} className="card">

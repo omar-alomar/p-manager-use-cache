@@ -1,38 +1,38 @@
 "use server"
 
-import { createPost, deletePost, updatePost } from "@/db/posts"
+import { createProject, deleteProject, updateProject } from "@/db/projects"
 import { redirect } from "next/navigation"
 
-export async function createPostAction(prevState: unknown, formData: FormData) {
-  const [data, errors] = validatePost(formData)
+export async function createProjectAction(prevState: unknown, formData: FormData) {
+  const [data, errors] = validateProject(formData)
 
   if (!data) return errors
 
-  const post = await createPost(data)
+  const project = await createProject(data)
 
-  redirect(`/posts/${post.id}`)
+  redirect(`/projects/${project.id}`)
 }
 
-export async function editPostAction(
-  postId: number,
+export async function editProjectAction(
+  projectId: number,
   prevState: unknown,
   formData: FormData
 ) {
-  const [data, errors] = validatePost(formData)
+  const [data, errors] = validateProject(formData)
 
   if (!data) return errors
 
-  const post = await updatePost(postId, data)
+  const project = await updateProject(projectId, data)
 
-  redirect(`/posts/${post.id}`)
+  redirect(`/projects/${project.id}`)
 }
 
-export async function deletePostAction(postId: number | string) {
-  await deletePost(postId)
-  redirect("/posts")
+export async function deleteProjectAction(projectId: number | string) {
+  await deleteProject(projectId)
+  redirect("/projects")
 }
 
-function validatePost(formData: FormData) {
+function validateProject(formData: FormData) {
   const errors: { title?: string; body?: string; userId?: string } = {}
   const title = formData.get("title") as string
   const body = formData.get("body") as string

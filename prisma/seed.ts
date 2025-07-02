@@ -40,16 +40,16 @@ async function createTodos() {
   )
 }
 
-async function createPosts() {
-  await prisma.post.deleteMany()
+async function createProjects() {
+  await prisma.project.deleteMany()
   return Promise.all(
-    seedData.posts.map(async post => {
-      return prisma.post.create({
+    seedData.projects.map(async project => {
+      return prisma.project.create({
         data: {
-          id: post.id,
-          title: post.title,
-          body: post.body,
-          userId: post.userId,
+          id: project.id,
+          title: project.title,
+          body: project.body,
+          userId: project.userId,
         },
       })
     })
@@ -65,7 +65,7 @@ async function createComments() {
           id: comment.id,
           email: comment.email,
           body: comment.body,
-          postId: comment.postId,
+          projectId: comment.projectId,
         },
       })
     })
@@ -75,7 +75,7 @@ async function createComments() {
 async function main() {
   await createUsers()
   await createTodos()
-  await createPosts()
+  await createProjects()
   await createComments()
 }
 

@@ -18,7 +18,7 @@ export default function RootLayout({
           <div className="nav-text-large">My App</div>
           <ul className="nav-list">
             <li>
-              <Link href="/posts">Posts</Link>
+              <Link href="/projects">Projects</Link>
             </li>
             <li>
               <Link href="/users">Users</Link>
