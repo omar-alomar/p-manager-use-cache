@@ -36,7 +36,7 @@ export function ProjectForm({
           />
         </FormGroup>
         <FormGroup errorMessage={errors.userId}>
-          <label htmlFor="userId">Author</label>
+          <label htmlFor="userId">Project Manager</label>
           <select
             required
             name="userId"
@@ -83,7 +83,7 @@ export function SkeletonProjectForm() {
           <SkeletonInput />
         </FormGroup>
         <FormGroup>
-          <label htmlFor="userId">Author</label>
+          <label htmlFor="userId">Project Manager</label>
           <SkeletonInput />
         </FormGroup>
       </div>
