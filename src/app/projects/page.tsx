@@ -38,7 +38,7 @@ export default async function ProjectsPage({
             </Suspense>
           </FormGroup>
           <FormGroup>
-            <label htmlFor="userId">Author</label>
+            <label htmlFor="userId">Project Manager</label>
             <Suspense
               fallback={
                 <select name="userId" id="userId" disabled>

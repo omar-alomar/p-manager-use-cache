@@ -3,7 +3,7 @@ import { Skeleton, SkeletonButton, SkeletonList } from "@/components/Skeleton"
 export default function LoadingUsersPage() {
   return (
     <>
-      <h1 className="page-title">Users</h1>
+      <h1 className="page-title">Team</h1>
       <div className="card-grid">
         <SkeletonList amount={6}>
           <div className="card">

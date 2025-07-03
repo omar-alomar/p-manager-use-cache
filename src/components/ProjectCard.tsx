@@ -14,7 +14,7 @@ export function ProjectCard({
     <div className="card">
       <div className="card-header">{title}</div>
       <div className="card-body">
-        <div className="card-preview-text">{body}</div>
+        <div className="card-preview-text whitespace-pre-wrap">{body}</div>
       </div>
       <div className="card-footer">
         <Link className="btn" href={`/projects/${id}`}>

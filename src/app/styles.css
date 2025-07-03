@@ -351,3 +351,7 @@ body {
     opacity: 1;
   }
 }
+
+.whitespace-pre-wrap {
+  white-space: pre-wrap;
+}

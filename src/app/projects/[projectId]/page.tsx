@@ -91,7 +91,7 @@ async function ProjectDetails({ projectId }: { projectId: string }) {
           <UserDetails userId={project.userId} />
         </Suspense>
       </span>
-      <div>{project.body}</div>
+      <div className="whitespace-pre-wrap">{project.body}</div>
     </>
   )
 }

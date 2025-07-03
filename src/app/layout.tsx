@@ -21,7 +21,7 @@ export default function RootLayout({
               <Link href="/projects">Projects</Link>
             </li>
             <li>
-              <Link href="/users">Users</Link>
+              <Link href="/users">Team</Link>
             </li>
             <li>
               <Link href="/tasks">Tasks</Link>
