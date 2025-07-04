@@ -23,12 +23,6 @@ model User {
   id          Int    @id @default(autoincrement())
   name        String
   email       String
-  website     String
-  companyName String
-  city        String
-  street      String
-  zipcode     String
-  suite       String
 
   tasks Task[]
   projects Project[]
@@ -37,8 +31,10 @@ model User {
 model Project {
   id     Int    @id @default(autoincrement())
   title  String
+  client String @default("")
   body   String
   userId Int
+  apfo   String @default("")
 
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments Comment[]

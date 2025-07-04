@@ -5,14 +5,19 @@ export function ProjectCard({
   id,
   title,
   body,
+  apfo,
+  client
 }: {
   id: number
   title: string
   body: string
+  apfo: string
+  client: string
 }) {
   return (
     <div className="card">
       <div className="card-header">{title}</div>
+      <div>{apfo}</div>
       <div className="card-body">
         <div className="card-preview-text whitespace-pre-wrap">{body}</div>
       </div>
