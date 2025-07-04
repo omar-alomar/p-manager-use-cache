@@ -25,15 +25,6 @@ export default async function UserPage({
             <div className="page-subtitle">
               <Skeleton short inline />
             </div>
-            <div>
-              <b>Company:</b> <Skeleton short inline />
-            </div>
-            <div>
-              <b>Website:</b> <Skeleton short inline />
-            </div>
-            <div>
-              <b>Address:</b> <Skeleton short inline />
-            </div>
           </>
         }
       >
@@ -79,17 +70,6 @@ async function UserDetails({ userId }: { userId: string }) {
     <>
       <h1 className="page-title">{user.name}</h1>
       <div className="page-subtitle">{user.email}</div>
-      <div>
-        <b>Company:</b> {user.companyName}
-      </div>
-      <div>
-        <b>Website:</b> {user.website}
-      </div>
-      <div>
-        <b>Address:</b>{" "}
-        {`${user.street} ${user.suite}
-    ${user.city} ${user.zipcode}`}
-      </div>
     </>
   )
 }
