@@ -62,17 +62,6 @@ body {
   flex-direction: column;
 }
 
-.card-header {
-  font-size: 2rem;
-  padding: var(--padding);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-  text-transform: capitalize;
-  border-bottom: 1px solid black;
-  flex-shrink: 0;
-}
-
 .card-body {
   padding: var(--padding);
   flex-grow: 1;
@@ -84,15 +73,6 @@ body {
   -webkit-box-orient: vertical;
   line-clamp: 5;
   overflow: hidden;
-}
-
-.card-footer {
-  border-top: 1px solid black;
-  display: flex;
-  padding: var(--padding);
-  justify-content: flex-end;
-  gap: 0.5rem;
-  flex-shrink: 0;
 }
 
 .btn {
@@ -354,4 +334,101 @@ body {
 
 .whitespace-pre-wrap {
   white-space: pre-wrap;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.card-subtitle {
+  font-size: 1rem;
+  color: #666;
+  margin-top: 0.25rem;
+}
+
+.card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.card-info-item {
+  display: flex;
+  align-items: center;
+}
+
+.card-info-label {
+  font-weight: bold;
+  min-width: 120px;
+}
+
+.card-info-value {
+  color: #555;
+}
+
+.card-preview-text {
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end; /* Align items vertically */
+  padding: var(--padding);
+  border-bottom: 1px solid #ccc; /* Consistent border color */
+}
+
+.card-footer {
+  border-top: 1px solid #ccc; /* Match the header border */
+  display: flex;
+  padding: var(--padding);
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.header-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  text-align: right;
+}
+
+.card-apfo {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.card-manager {
+  margin-bottom: 1rem;        /* keep a little breathing room */
+  font-size: 0.9rem;          /* a bit smaller than body text */
+  color: #444;                /* softer than pure black */
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.card-manager-label {
+  font-weight: 600;           /* slightly bold, but not huge */
+}
+
+.card-manager-name {
+  font-weight: 400;           /* normal weight for the name */
+}
+
+.card-manager-inline {
+  font-size: 1rem;
+  color: #666;
+  display: flex;
+  align-items: center; /* Aligns with the client text */
 }
