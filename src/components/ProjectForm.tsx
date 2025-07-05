@@ -12,10 +12,12 @@ export function ProjectForm({
 }: {
   users: { id: number; name: string }[]
   project?: {
-    id: number
-    title: string
-    userId: number
-    body: string
+  id: number
+  title: string
+  client: string
+  body: string
+  apfo: string
+  userId: number
   }
 }) {
   const action =
@@ -53,6 +55,37 @@ export function ProjectForm({
           </select>
         </FormGroup>
       </div>
+
+      <div className="form-row">
+        <FormGroup errorMessage={errors.title}>
+          <label htmlFor="title">APFO</label>
+          <input
+            required
+            type="text"
+            name="title"
+            id="title"
+            defaultValue={project?.title}
+          />
+        </FormGroup>
+        <FormGroup errorMessage={errors.userId}>
+          <label htmlFor="userId">Client</label>
+          <select
+            required
+            name="userId"
+            id="userId"
+            defaultValue={project?.userId}
+          >
+            <Suspense fallback={<option value="">Loading...</option>}>
+              {users.map(user => (
+                <option key={user.id} value={user.id}>
+                  {user.name}
+                </option>
+              ))}
+            </Suspense>
+          </select>
+        </FormGroup>
+      </div>
+
       <div className="form-row">
         <FormGroup errorMessage={errors.body}>
           <label htmlFor="body">Body</label>
