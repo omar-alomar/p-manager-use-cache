@@ -12,12 +12,6 @@ async function createUsers() {
           id: user.id,
           name: user.name,
           email: user.email,
-          website: user.website,
-          companyName: user.company.name,
-          city: user.address.city,
-          street: user.address.street,
-          suite: user.address.suite,
-          zipcode: user.address.zipcode,
         },
       })
     })
@@ -48,8 +42,10 @@ async function createProjects() {
         data: {
           id: project.id,
           title: project.title,
+          client: project.client,
           body: project.body,
           userId: project.userId,
+          apfo: project.apfo
         },
       })
     })
