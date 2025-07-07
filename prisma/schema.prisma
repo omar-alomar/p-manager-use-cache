@@ -15,8 +15,10 @@ model Task {
   title     String
   completed Boolean @default(false)
   userId    Int
+  projectId Int @default(0)
 
   User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model User {
@@ -38,6 +40,7 @@ model Project {
 
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments Comment[]
+  tasks Task[]
 }
 
 model Comment {

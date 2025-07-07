@@ -15,7 +15,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <nav className="top-nav">
-          <div className="nav-text-large">My App</div>
+          <div className="nav-text-large nav-list">
+            <Link href="/projects">My App</Link>
+          </div>
           <ul className="nav-list">
             <li>
               <Link href="/projects">Projects</Link>

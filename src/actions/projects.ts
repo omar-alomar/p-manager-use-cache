@@ -33,13 +33,20 @@ export async function deleteProjectAction(projectId: number | string) {
 }
 
 function validateProject(formData: FormData) {
-  const errors: { title?: string; body?: string; userId?: string } = {}
+  const errors: { title?: string; client?: string, body?: string; apfo?: string; userId?: string } = {}
   const title = formData.get("title") as string
+  const client = formData.get("client") as string
   const body = formData.get("body") as string
+  const apfo = formData.get("apfo") as string
   const userId = Number(formData.get("userId"))
   let isValid = true
 
   if (title === "") {
+    errors.title = "Required"
+    isValid = false
+  }
+
+  if (client === "") {
     errors.title = "Required"
     isValid = false
   }
@@ -49,10 +56,15 @@ function validateProject(formData: FormData) {
     isValid = false
   }
 
+  if (apfo === "") {
+    errors.body = "Required"
+    isValid = false
+  }
+
   if (isNaN(userId)) {
     errors.userId = "Required"
     isValid = false
   }
 
-  return [isValid ? { title, body, userId } : undefined, errors] as const
+  return [isValid ? { title, client, body, apfo, userId } : undefined, errors] as const
 }

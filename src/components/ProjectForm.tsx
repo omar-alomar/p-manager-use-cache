@@ -37,38 +37,31 @@ export function ProjectForm({
             defaultValue={project?.title}
           />
         </FormGroup>
-        <FormGroup errorMessage={errors.userId}>
-          <label htmlFor="userId">Project Manager</label>
-          <select
-            required
-            name="userId"
-            id="userId"
-            defaultValue={project?.userId}
-          >
-            <Suspense fallback={<option value="">Loading...</option>}>
-              {users.map(user => (
-                <option key={user.id} value={user.id}>
-                  {user.name}
-                </option>
-              ))}
-            </Suspense>
-          </select>
-        </FormGroup>
+        
       </div>
-
       <div className="form-row">
-        <FormGroup errorMessage={errors.title}>
-          <label htmlFor="title">APFO</label>
+        <FormGroup errorMessage={errors.apfo}>
+          <label htmlFor="apfo">APFO</label>
           <input
             required
             type="text"
-            name="title"
-            id="title"
-            defaultValue={project?.title}
+            name="apfo"
+            id="apfo"
+            defaultValue={project?.apfo}
+          />
+        </FormGroup>
+        <FormGroup errorMessage={errors.client}>
+          <label htmlFor="client">Client</label>
+          <input
+            required
+            type="text"
+            name="client"
+            id="client"
+            defaultValue={project?.client}
           />
         </FormGroup>
         <FormGroup errorMessage={errors.userId}>
-          <label htmlFor="userId">Client</label>
+          <label htmlFor="userId">Project Manager</label>
           <select
             required
             name="userId"
@@ -117,6 +110,16 @@ export function SkeletonProjectForm() {
         </FormGroup>
         <FormGroup>
           <label htmlFor="userId">Project Manager</label>
+          <SkeletonInput />
+        </FormGroup>
+      </div>
+      <div className="form-row">
+        <FormGroup>
+          <label htmlFor="title">APFO</label>
+          <SkeletonInput />
+        </FormGroup>
+        <FormGroup>
+          <label htmlFor="userId">Client</label>
           <SkeletonInput />
         </FormGroup>
       </div>
