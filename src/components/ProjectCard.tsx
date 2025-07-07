@@ -29,7 +29,7 @@ export function ProjectCard({
     </div>
 
     <div className="header-right">
-      <div className="card-apfo">{apfo}</div>
+      <div className="card-apfo">APFO: {apfo}</div>
       <ProjectManagerInline userId={userId} />
     </div>
 

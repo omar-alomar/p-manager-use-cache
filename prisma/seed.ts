@@ -28,6 +28,7 @@ async function createTasks() {
           title: task.title,
           completed: task.completed,
           userId: task.userId,
+          projectId: task.projectId
         },
       })
     })
@@ -70,8 +71,8 @@ async function createComments() {
 
 async function main() {
   await createUsers()
-  await createTasks()
   await createProjects()
+  await createTasks()
   await createComments()
 }
 

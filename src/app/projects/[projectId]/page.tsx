@@ -32,7 +32,7 @@ export default async function ProjectPage({
               </div>
             </div>
             <span className="page-subtitle">
-              By: <Skeleton short inline />
+              PM: <Skeleton short inline />
             </span>
             <div>
               <Skeleton />
@@ -86,11 +86,13 @@ async function ProjectDetails({ projectId }: { projectId: string }) {
         </div>
       </div>
       <span className="page-subtitle">
-        By:{" "}
+        PM:{" "}
         <Suspense fallback={<Skeleton short inline />}>
           <UserDetails userId={project.userId} />
         </Suspense>
       </span>
+      <div>Client: {project.client}</div>
+      <div>APFO: {project.apfo}</div>
       <div className="whitespace-pre-wrap">{project.body}</div>
     </>
   )

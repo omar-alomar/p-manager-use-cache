@@ -43,13 +43,13 @@
     }
   ],
   "tasks": [
-    { "id": 1, "title": "Set up database",         "completed": true,  "userId": 1 },
-    { "id": 2, "title": "Write API endpoints",     "completed": false, "userId": 2 },
-    { "id": 3, "title": "Design landing page",     "completed": false, "userId": 3 },
-    { "id": 4, "title": "Integrate authentication","completed": false, "userId": 4 },
-    { "id": 5, "title": "Write unit tests",        "completed": true,  "userId": 5 },
-    { "id": 6, "title": "Deploy to staging",       "completed": false, "userId": 6 },
-    { "id": 7, "title": "Review pull requests",    "completed": false, "userId": 7 }
+    { "id": 1, "title": "Set up database",           "completed": true,  "userId": 1, "projectId": 1 },
+    { "id": 2, "title": "Write API endpoints",       "completed": false, "userId": 2, "projectId": 2 },
+    { "id": 3, "title": "Design landing page",       "completed": false, "userId": 3, "projectId": 3 },
+    { "id": 4, "title": "Integrate authentication",  "completed": false, "userId": 4, "projectId": 4 },
+    { "id": 5, "title": "Write unit tests",          "completed": true,  "userId": 5, "projectId": 1 },
+    { "id": 6, "title": "Deploy to staging",         "completed": false, "userId": 6, "projectId": 2 },
+    { "id": 7, "title": "Review pull requests",      "completed": false, "userId": 7, "projectId": 3 }
   ],
   "comments": [
     { "id": 1, "email": "alice@example.com", "body": "Looks great, just tweak the margins.",      "projectId": 1 },

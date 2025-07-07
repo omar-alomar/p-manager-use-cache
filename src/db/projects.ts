@@ -45,18 +45,24 @@ export async function getUserProjects(userId: string | number) {
 
 export async function createProject({
   title,
+  client,
   body,
+  apfo,
   userId,
 }: {
   title: string
+  client: string
   body: string
+  apfo: string
   userId: number
 }) {
   await wait(2000)
   const project = await prisma.project.create({
     data: {
       title,
+      client,
       body,
+      apfo,
       userId,
     },
   })
@@ -72,11 +78,15 @@ export async function updateProject(
   projectId: string | number,
   {
     title,
+    client,
     body,
+    apfo,
     userId,
   }: {
     title: string
+    client: string
     body: string
+    apfo: string
     userId: number
   }
 ) {
@@ -85,7 +95,9 @@ export async function updateProject(
     where: { id: Number(projectId) },
     data: {
       title,
+      client,
       body,
+      apfo,
       userId,
     },
   })
