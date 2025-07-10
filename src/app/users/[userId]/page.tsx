@@ -83,5 +83,5 @@ async function UserProjects({ userId }: { userId: string }) {
 async function UserTasks({ userId }: { userId: string }) {
   const tasks = await getUserTasks(userId)
 
-  return tasks.map(task => <TaskItem key={task.id} {...task} />)
+  return tasks.map(task => <TaskItem key={task.id} {...task}/>)
 }
