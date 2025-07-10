@@ -1,12 +1,12 @@
 {
   "users": [
-    { "id": 1, "name": "Omar Alomar",    "email": "omar@alomar.com" },
-    { "id": 2, "name": "Samer Alomar",   "email": "samer@alomar.com" },
-    { "id": 3, "name": "Mashid Tringa",  "email": "mashid@tringa.com" },
-    { "id": 4, "name": "Maya Mildenberg","email": "maya@mildenberg.com" },
-    { "id": 5, "name": "Mark Sweadner",  "email": "mark@sweadner.com" },
-    { "id": 6, "name": "Jamie Sweadner", "email": "jamie@sweadner.com" },
-    { "id": 7, "name": "Dima Hmaidi",    "email": "dima@hmaidi.com" }
+    { "id": 1, "name": "Omar Alomar",    "email": "omar@mba-eng.com" },
+    { "id": 2, "name": "Samer Alomar",   "email": "samer@mba-eng.com" },
+    { "id": 3, "name": "Mashid Tringa",  "email": "mashid@mba-eng.com" },
+    { "id": 4, "name": "Maya Mildenberg","email": "maya@mba-eng.com" },
+    { "id": 5, "name": "Mark Sweadner",  "email": "mark@mba-eng.com" },
+    { "id": 6, "name": "Jamie Sweadner", "email": "jamie@mba-eng.com" },
+    { "id": 7, "name": "Dima Hmaidi",    "email": "dima@mba-eng.com" }
   ],
   "projects": [
     {
@@ -15,7 +15,7 @@
       "client": "Rose Real Estate",
       "body": "Full site design and grading plan for residential subdivision on Rose Lane.",
       "userId": 1,
-      "apfo": "APFO-001"
+      "apfo": "09/12/2025"
     },
     {
       "id": 2,
@@ -23,7 +23,7 @@
       "client": "Ron Martin / August El Communities",
       "body": "Roadway alignment, stormwater management, and erosion control for the Mullinix property.",
       "userId": 2,
-      "apfo": "APFO-002"
+      "apfo": "10/03/2025"
     },
     {
       "id": 3,
@@ -31,7 +31,7 @@
       "client": "Kirk Haplin",
       "body": "Placeholder project for testing seeds and schema functionality.",
       "userId": 3,
-      "apfo": "APFO-003"
+      "apfo": "12/12/2025"
     },
     {
       "id": 4,
@@ -39,7 +39,7 @@
       "client": "Burkard Builders",
       "body": "Placeholder project for testing seeds and schema functionality.",
       "userId": 3,
-      "apfo": "APFO-003"
+      "apfo": "01/02/20206"
     }
   ],
   "tasks": [

@@ -6,6 +6,8 @@ import Link from "next/link"
 import { Suspense } from "react"
 import { notFound } from "next/navigation"
 import { DeleteButton } from "./_DeleteButton"
+import { getProjectTasks } from "@/db/tasks"
+import { TaskItem } from "@/components/TaskItem"
 
 export default async function ProjectPage({
   params,
@@ -45,11 +47,32 @@ export default async function ProjectPage({
         <ProjectDetails projectId={projectId} />
       </Suspense>
 
+      <h3 className="mt-4 mb-2">Tasks</h3>
+      <div className="card-stack">
+        <Suspense
+          fallback={
+            <SkeletonList amount={3}>
+              <div className="card">
+                <div className="card-body">
+                  <div className="text-sm mb-1">
+                    <Skeleton short />
+                  </div>
+                  <Skeleton />
+                  <Skeleton />
+                </div>
+              </div>
+            </SkeletonList>
+          }
+        >
+          <Tasks projectId={projectId} />
+        </Suspense>
+      </div>
+
       <h3 className="mt-4 mb-2">Comments</h3>
       <div className="card-stack">
         <Suspense
           fallback={
-            <SkeletonList amount={5}>
+            <SkeletonList amount={3}>
               <div className="card">
                 <div className="card-body">
                   <div className="text-sm mb-1">
@@ -104,6 +127,12 @@ async function UserDetails({ userId }: { userId: number }) {
   if (user == null) return notFound()
 
   return <Link href={`/users/${user.id}`}>{user.name}</Link>
+}
+
+async function Tasks({ projectId }: { projectId: string }) {
+  const tasks = await getProjectTasks(projectId)
+
+  return tasks.map(task => <TaskItem key={task.id} {...task}/>)
 }
 
 async function Comments({ projectId }: { projectId: string }) {

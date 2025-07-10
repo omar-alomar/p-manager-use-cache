@@ -432,3 +432,35 @@ body {
   display: flex;
   align-items: center; /* Aligns with the client text */
 }
+
+/* hide default box */
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid #000;
+  border-radius: 0.25rem;
+  position: relative;
+  cursor: pointer;
+}
+
+/* draw your own checkmark when checked */
+input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  top: 0.1rem;
+  left: 0.25rem;
+  width: 0.25rem;
+  height: 0.5rem;
+  border: solid #000;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* global.css or your module CSS */
+.no-bullets {
+  list-style: none;      /* removes the bullet */
+  margin: 0;             /* optional: nuke default margins */
+  padding: 0;            /* optional: nuke default indents */
+}
