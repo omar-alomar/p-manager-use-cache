@@ -12,8 +12,6 @@ export default async function UsersPage() {
           <div key={user.id} className="card">
             <div className="card-header">{user.name}</div>
             <div className="card-body">
-              <div>{user.companyName}</div>
-              <div>{user.website}</div>
               <div>{user.email}</div>
             </div>
             <div className="card-footer">

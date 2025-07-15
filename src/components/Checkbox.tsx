@@ -1,7 +1,8 @@
 "use client"
 
-import { useOptimistic, useTransition } from "react"
+import { useState, useEffect } from "react"
 import { updateTaskCompletionAction } from "@/actions/tasks"
+import { useRouter } from "next/navigation"
 
 interface CheckboxProps {
   taskId: number
@@ -12,40 +13,56 @@ interface CheckboxProps {
 }
 
 export function Checkbox({ taskId, initialChecked, title, userId, projectId }: CheckboxProps) {
-  const [optimisticChecked, setOptimisticChecked] = useOptimistic(
-    initialChecked ?? false,
-    (state, newChecked: boolean) => newChecked
-  )
-  const [isPending, startTransition] = useTransition()
+  const [checked, setChecked] = useState(initialChecked)
+  const [isUpdating, setIsUpdating] = useState(false)
+  const router = useRouter()
 
-  function handleChange(checked: boolean) {
-    startTransition(async () => {
-      // Optimistically update the UI
-      setOptimisticChecked(checked)
+  // Update local state if prop changes
+  useEffect(() => {
+    console.log(`Checkbox ${taskId} prop changed: ${initialChecked}`)
+    setChecked(initialChecked)
+  }, [initialChecked, taskId])
+
+  async function handleChange(newChecked: boolean) {
+    console.log('Checkbox clicked:', { taskId, checked: newChecked, userId, projectId })
+    
+    // Update local state immediately
+    setChecked(newChecked)
+    
+    setIsUpdating(true)
+    try {
+      await updateTaskCompletionAction(taskId, {
+        title,
+        completed: newChecked,
+        userId,
+        projectId
+      })
+      console.log('Update successful, refreshing...')
       
-      try {
-        // Update the task in the database
-        await updateTaskCompletionAction(taskId, {
-          title,
-          completed: checked,
-          userId,
-          projectId
-        })
-      } catch (error) {
-        console.error('Failed to update task:', error)
-        // Revert the optimistic update on error
-        setOptimisticChecked(!checked)
-      }
-    })
+      // Force refresh with timestamp to break cache
+      router.refresh()
+      
+      // Force a hard refresh after a short delay
+      setTimeout(() => {
+        router.refresh()
+      }, 100)
+    } catch (error) {
+      console.error('Failed to update task:', error)
+      // Revert on error
+      setChecked(!newChecked)
+    } finally {
+      setIsUpdating(false)
+    }
   }
 
   return (
     <input
       type="checkbox"
-      checked={optimisticChecked ?? false}
+      checked={checked}
       onChange={(e) => handleChange(e.target.checked)}
-      disabled={isPending}
+      disabled={isUpdating}
       className="mr-2"
+      style={{ opacity: isUpdating ? 0.5 : 1 }}
     />
   )
 }

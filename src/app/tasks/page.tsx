@@ -1,9 +1,11 @@
 import { getTasks } from "@/db/tasks"
+import { getUsers } from "@/db/users"
 import { Skeleton, SkeletonList } from "@/components/Skeleton"
 import { TaskItem } from "@/components/TaskItem"
 import { Suspense } from "react"
 
-export default function TasksPage() {
+export default async function TasksPage() {
+  const users = await getUsers()
   return (
     <>
       <h1 className="page-title">Tasks</h1>
