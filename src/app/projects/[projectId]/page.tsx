@@ -131,8 +131,19 @@ async function UserDetails({ userId }: { userId: number }) {
 
 async function Tasks({ projectId }: { projectId: string }) {
   const tasks = await getProjectTasks(projectId)
-
-  return tasks.map(task => <TaskItem key={task.id} {...task}/>)
+  const project = await getProject(projectId)
+  
+  return tasks.map(task => (
+    <TaskItem 
+      key={task.id} 
+      id={task.id}
+      initialCompleted={task.completed}
+      title={task.title}
+      projectId={task.projectId}
+      projectTitle={project?.title || ""}
+      userId={task.userId}
+    />
+  ))
 }
 
 async function Comments({ projectId }: { projectId: string }) {

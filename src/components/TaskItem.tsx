@@ -1,32 +1,56 @@
-import { getProject } from "@/db/projects"
-import { Checkbox } from "./Checkbox"
+"use client"
 
-export async function TaskItem({
-  id,
-  completed,
-  title,
-  projectId,
-  userId
-}: {
+import { useState, useEffect } from "react"
+import { updateTaskCompletionAction } from "@/actions/tasks"
+
+interface TaskItemProps {
   id: number
-  completed: boolean
+  initialCompleted: boolean
   title: string
   projectId: number
+  projectTitle: string
   userId: number
-}) {
-  const project = await getProject(projectId)
+}
+
+export function TaskItem({ id, initialCompleted, title, projectId, projectTitle, userId }: TaskItemProps) {
+  const [completed, setCompleted] = useState(initialCompleted)
+  const [isUpdating, setIsUpdating] = useState(false)
+
+  useEffect(() => {
+    setCompleted(initialCompleted)
+  }, [initialCompleted])
+
+  async function handleChange(newCompleted: boolean) {
+    setCompleted(newCompleted)
+    setIsUpdating(true)
+    
+    try {
+      await updateTaskCompletionAction(id, {
+        title,
+        completed: newCompleted,
+        userId,
+        projectId
+      })
+    } catch (error) {
+      console.error('Failed to update task:', error)
+      setCompleted(!newCompleted)
+    } finally {
+      setIsUpdating(false)
+    }
+  }
 
   return (
     <li className="no-bullets">
-      <Checkbox 
-        taskId={id}
-        initialChecked={completed}
-        title={title}
-        userId={userId}
-        projectId={projectId}
-      />{" "}
+      <input
+        type="checkbox"
+        checked={completed}
+        onChange={(e) => handleChange(e.target.checked)}
+        disabled={isUpdating}
+        className="mr-2"
+        style={{ opacity: isUpdating ? 0.5 : 1 }}
+      />
       <span className={completed ? "strike-through" : ""}>
-        {title} ({project?.title})
+        {title} ({projectTitle})
       </span>
     </li>
   )

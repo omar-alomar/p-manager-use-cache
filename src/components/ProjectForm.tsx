@@ -40,16 +40,6 @@ export function ProjectForm({
         
       </div>
       <div className="form-row">
-        <FormGroup errorMessage={errors.apfo}>
-          <label htmlFor="apfo">APFO</label>
-          <input
-            required
-            type="text"
-            name="apfo"
-            id="apfo"
-            defaultValue={project?.apfo}
-          />
-        </FormGroup>
         <FormGroup errorMessage={errors.client}>
           <label htmlFor="client">Client</label>
           <input
@@ -83,6 +73,18 @@ export function ProjectForm({
         <FormGroup errorMessage={errors.body}>
           <label htmlFor="body">Body</label>
           <textarea required name="body" id="body" defaultValue={project?.body} />
+        </FormGroup>
+      </div>
+      <div className="form-row">
+      <FormGroup errorMessage={errors.apfo}>
+          <label htmlFor="apfo">APFO</label>
+          <input
+            required
+            type="text"
+            name="apfo"
+            id="apfo"
+            defaultValue={project?.apfo}
+          />
         </FormGroup>
       </div>
       <div className="form-row form-btn-row">
