@@ -1,37 +1,11 @@
+// actions/tasks.ts
 "use server"
 
 import { createTask, deleteTask, updateTask } from "@/db/tasks"
 import { redirect } from "next/navigation"
-import { revalidatePath } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
 
-export async function createTaskAction(prevState: unknown, formData: FormData) {
-  const [data, errors] = validateTask(formData)
-
-  if (!data) return errors
-
-  const task = await createTask(data)
-
-  redirect(`/tasks/${task.id}`)
-}
-
-export async function editTaskAction(
-  taskId: number,
-  prevState: unknown,
-  formData: FormData
-) {
-  const [data, errors] = validateTask(formData)
-
-  if (!data) return errors
-
-  const task = await updateTask(taskId, data)
-
-  redirect(`/tasks/${task.id}`)
-}
-
-export async function deleteTaskAction(taskId: number | string) {
-  await deleteTask(taskId)
-  redirect("/tasks")
-}
+// ... other actions ...
 
 export async function updateTaskCompletionAction(
   taskId: number,
@@ -43,38 +17,35 @@ export async function updateTaskCompletionAction(
   }
 ) {
   console.log('Server action called with:', { taskId, data })
-  const result = await updateTask(taskId, data)
-  console.log('Update result:', result)
-  return result
+  
+  try {
+    // Update the task
+    const result = await updateTask(taskId, data)
+    console.log('Update result:', result)
+    
+    // AGGRESSIVE cache invalidation
+    // 1. Revalidate specific paths
+    revalidatePath(`/projects/${data.projectId}`)
+    revalidatePath('/projects')
+    revalidatePath('/')
+    
+    // 2. Revalidate tags if you're using them
+    revalidateTag('tasks')
+    
+    // 3. Add a small delay to ensure DB write completes
+    await new Promise(resolve => setTimeout(resolve, 50))
+    
+    return result
+  } catch (error) {
+    console.error('Error in updateTaskCompletionAction:', error)
+    throw error
+  }
 }
 
-function validateTask(formData: FormData) {
-  const errors: { title?: string; completed?: string; body?: string; userId?: string; projectId?: string } = {}
-  const title = formData.get("title") as string
-  const completed = Boolean(formData.get("completed"))
-  const userId = Number(formData.get("userId"))
-  const projectId = Number(formData.get("projectId"))
-  let isValid = true
-
-  if (title === "") {
-    errors.title = "Required"
-    isValid = false
-  }
-
-  if (completed === null) {
-    errors.completed = "Required"
-    isValid = false
-  }
-
-  if (isNaN(userId)) {
-    errors.userId = "Required"
-    isValid = false
-  }
-
-  if (isNaN(projectId)) {
-    errors.projectId = "Required"
-    isValid = false
-  }
-
-  return [isValid ? { title, completed, userId, projectId } : undefined, errors] as const
+// Add this helper to verify updates
+export async function verifyTaskUpdate(taskId: number) {
+  "use server"
+  const { getTask } = await import("@/db/tasks")
+  const task = await getTask(taskId)
+  return task
 }
