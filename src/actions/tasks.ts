@@ -1,12 +1,91 @@
-// actions/tasks.ts
 "use server"
 
-import { createTask, deleteTask, updateTask } from "@/db/tasks"
+import { createTask, deleteTask, updateTask, getTask } from "@/db/tasks"
 import { redirect } from "next/navigation"
 import { revalidatePath, revalidateTag } from "next/cache"
 
-// ... other actions ...
+export async function createTaskAction(prevState: unknown, formData: FormData) {
+  const [data, errors] = validateTask(formData)
 
+  if (!data) return errors
+
+  const task = await createTask(data)
+  
+  // Revalidate paths
+  revalidatePath(`/projects/${data.projectId}`)
+  revalidatePath('/projects')
+  revalidatePath('/tasks')
+  revalidatePath('/')
+  revalidateTag('tasks')
+
+  redirect(`/tasks/${task.id}`)
+}
+
+export async function editTaskAction(
+  taskId: number,
+  prevState: unknown,
+  formData: FormData
+) {
+  const [data, errors] = validateTask(formData)
+
+  if (!data) return errors
+
+  const task = await updateTask(taskId, data)
+  
+  // Revalidate paths
+  revalidatePath(`/projects/${data.projectId}`)
+  revalidatePath('/projects')
+  revalidatePath('/tasks')
+  revalidatePath(`/tasks/${taskId}`)
+  revalidatePath('/')
+  revalidateTag('tasks')
+
+  redirect(`/tasks/${task.id}`)
+}
+
+export async function deleteTaskAction(taskId: number | string) {
+  const task = await getTask(taskId)
+  if (!task) throw new Error("Task not found")
+  
+  await deleteTask(taskId)
+  
+  // Revalidate paths
+  revalidatePath(`/projects/${task.projectId}`)
+  revalidatePath('/projects')
+  revalidatePath('/tasks')
+  revalidatePath('/')
+  revalidateTag('tasks')
+  
+  redirect("/tasks")
+}
+
+function validateTask(formData: FormData) {
+  const errors: { title?: string; completed?: string; userId?: string; projectId?: string } = {}
+  const title = formData.get("title") as string
+  const completed = formData.get("completed") === "on"
+  const userId = Number(formData.get("userId"))
+  const projectId = Number(formData.get("projectId"))
+  let isValid = true
+
+  if (title === "") {
+    errors.title = "Required"
+    isValid = false
+  }
+
+  if (isNaN(userId)) {
+    errors.userId = "Required"
+    isValid = false
+  }
+
+  if (isNaN(projectId)) {
+    errors.projectId = "Required"
+    isValid = false
+  }
+
+  return [isValid ? { title, completed, userId, projectId } : undefined, errors] as const
+}
+
+// Update task completion status (for checkbox toggle)
 export async function updateTaskCompletionAction(
   taskId: number,
   data: {
@@ -27,6 +106,8 @@ export async function updateTaskCompletionAction(
     // 1. Revalidate specific paths
     revalidatePath(`/projects/${data.projectId}`)
     revalidatePath('/projects')
+    revalidatePath('/tasks')
+    revalidatePath(`/tasks/${taskId}`)
     revalidatePath('/')
     
     // 2. Revalidate tags if you're using them
@@ -42,10 +123,8 @@ export async function updateTaskCompletionAction(
   }
 }
 
-// Add this helper to verify updates
+// Verify task update helper
 export async function verifyTaskUpdate(taskId: number) {
-  "use server"
-  const { getTask } = await import("@/db/tasks")
   const task = await getTask(taskId)
   return task
 }

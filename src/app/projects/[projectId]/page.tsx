@@ -142,6 +142,9 @@ async function Tasks({ projectId }: { projectId: string }) {
       projectId={task.projectId}
       projectTitle={project?.title || ""}
       userId={task.userId}
+      userName={task.User?.name} 
+      displayProject={false}
+      displayUser={true}
     />
   ))
 }

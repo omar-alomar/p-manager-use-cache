@@ -1,23 +1,54 @@
-// db/tasks.ts
 import prisma from "./db"
 
 export async function getTasks() {
+  "use cache"
+  
   await wait(2000)
-  return prisma.task.findMany()
+  return prisma.task.findMany({
+    include: {
+      Project: true,
+      User: true
+    }
+  })
 }
 
 export async function getUserTasks(userId: string | number) {
+  "use cache"
+  
   await wait(2000)
-  return prisma.task.findMany({ where: { userId: Number(userId) } })
+  return prisma.task.findMany({ 
+    where: { userId: Number(userId) },
+    include: {
+      Project: true,
+      User: true
+    }
+  })
 }
 
 export async function getProjectTasks(projectId: string | number) {
+  "use cache"
+  
   await wait(2000)
-  return prisma.task.findMany({ where: { projectId: Number(projectId) } })
+  return prisma.task.findMany({ 
+    where: { projectId: Number(projectId) },
+    include: {
+      Project: true,
+      User: true
+    }
+  })
 }
 
 export async function getTask(taskId: string | number) {
-  return prisma.task.findUnique({ where: { id: Number(taskId) } })
+  "use cache"
+  
+  await wait(2000)
+  return prisma.task.findUnique({ 
+    where: { id: Number(taskId) },
+    include: {
+      Project: true,
+      User: true
+    }
+  })
 }
 
 export async function createTask({
