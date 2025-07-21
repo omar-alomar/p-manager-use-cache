@@ -1,5 +1,6 @@
 import { getUserProjects } from "@/db/projects"
 import { getUserTasks } from "@/db/tasks"
+import { getProjectTasks } from "@/db/tasks"
 import { getUser } from "@/db/users"
 import { ProjectCard, SkeletonProjectCard } from "@/components/ProjectCard"
 import { Skeleton, SkeletonList } from "@/components/Skeleton"
@@ -54,7 +55,7 @@ export default async function UserPage({
             </SkeletonList>
           }
         >
-          <UserTasks userId={userId} />
+          <Tasks userId={userId} />
         </Suspense>
       </ul>
     </>
@@ -80,8 +81,24 @@ async function UserProjects({ userId }: { userId: string }) {
   return projects.map(project => <ProjectCard key={project.id} {...project} />)
 }
 
-async function UserTasks({ userId }: { userId: string }) {
-  const tasks = await getUserTasks(userId)
-
-  return tasks.map(task => <TaskItem key={task.id} {...task}/>)
+async function Tasks({ userId }: { userId: string }) {
+  const projects = await getUserProjects(userId)
+  
+  const allTasks = await Promise.all(
+    projects.map(project => getProjectTasks(project.id)) // You'd need this function
+  )
+  
+  const tasks = allTasks.flat() // Flatten the array of arrays
+  
+  return tasks.map(task => (
+    <TaskItem 
+      key={task.id} 
+      id={task.id}
+      initialCompleted={task.completed}
+      title={task.title}
+      projectId={task.projectId}
+      projectTitle={task.Project?.title || ""}
+      userId={task.userId}
+    />
+  ))
 }

@@ -20,6 +20,9 @@ export default function RootLayout({
           </div>
           <ul className="nav-list">
             <li>
+              <Link href="/projectsTable">Projects (Table View)</Link>
+            </li>
+            <li>
               <Link href="/projects">Projects</Link>
             </li>
             <li>

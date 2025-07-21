@@ -10,9 +10,22 @@ interface TaskItemProps {
   projectId: number
   projectTitle: string
   userId: number
+  userName?: string
+  displayProject?: boolean
+  displayUser?: boolean
 }
 
-export function TaskItem({ id, initialCompleted, title, projectId, projectTitle, userId }: TaskItemProps) {
+export function TaskItem({ 
+  id, 
+  initialCompleted, 
+  title, 
+  projectId, 
+  projectTitle, 
+  userId,
+  userName,
+  displayProject = true,
+  displayUser = false
+}: TaskItemProps) {
   const [completed, setCompleted] = useState(initialCompleted)
   const [isUpdating, setIsUpdating] = useState(false)
   const [updateCount, setUpdateCount] = useState(0)
@@ -62,18 +75,24 @@ export function TaskItem({ id, initialCompleted, title, projectId, projectTitle,
   }
 
   return (
-    <li className="no-bullets" key={`${id}-${updateCount}`}>
-      <input
-        type="checkbox"
-        checked={completed}
-        onChange={(e) => handleChange(e.target.checked)}
-        disabled={isUpdating}
-        className="mr-2"
-        style={{ opacity: isUpdating ? 0.5 : 1 }}
-      />
-      <span className={completed ? "strike-through" : ""}>
-        {title} ({projectTitle})
-      </span>
-    </li>
-  )
+      <li className="no-bullets task-item" key={`${id}-${updateCount}`}>
+        <input
+          type="checkbox"
+          checked={completed}
+          onChange={(e) => handleChange(e.target.checked)}
+          disabled={isUpdating}
+          className="task-checkbox"
+          style={{ opacity: isUpdating ? 0.5 : 1 }}
+        />
+        <span className={completed ? "strike-through" : ""}>
+          {title}
+          {displayProject && (
+            <span className="italic-text"> ({projectTitle})</span>
+          )}
+          {displayUser && userName && (
+            <span className="italic-text"> - {userName}</span>
+          )}
+        </span>
+      </li>
+      )
 }
