@@ -629,3 +629,133 @@ input[type="checkbox"]:checked::after {
     max-width: 250px;
   }
 }
+
+/* Add these styles to your global CSS file */
+
+.task-item {
+  transition: background-color 0.2s ease;
+}
+
+.task-item:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.task-checkbox {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.strike-through {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.italic-text {
+  font-style: italic;
+  color: #666;
+  font-size: 0.9em;
+}
+
+/* Task editing styles */
+.task-item input[type="text"] {
+  font-size: inherit;
+  font-family: inherit;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+}
+
+.task-item input[type="text"]:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Ensure the edit button is properly aligned */
+.group {
+  position: relative;
+}
+
+.group button {
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.group button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.group button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Delete button specific styling */
+.group button:hover.text-red-500 {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* Editable comments styles */
+.editable-comments {
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  min-height: 1.5em;
+  display: block;
+}
+
+.editable-comments:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.comments-placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+.comments-edit-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.comments-edit-textarea {
+  width: 100%;
+  min-height: 60px;
+  padding: 8px;
+  border: 1px solid #3b82f6;
+  border-radius: 4px;
+  font-size: inherit;
+  font-family: inherit;
+  resize: vertical;
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.comments-edit-textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.comments-edit-hint {
+  font-size: 11px;
+  color: #666;
+  margin-top: 4px;
+  text-align: right;
+}
+
+/* Ensure comments cell has proper width */
+td.comments {
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.comments-text {
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}

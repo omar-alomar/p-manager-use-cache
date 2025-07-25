@@ -2,6 +2,7 @@
 
 import { createProject, deleteProject, updateProject } from "@/db/projects"
 import { redirect } from "next/navigation"
+import { revalidatePath } from "next/cache"
 
 export async function createProjectAction(prevState: unknown, formData: FormData) {
   const [data, errors] = validateProject(formData)
@@ -30,6 +31,25 @@ export async function editProjectAction(
 export async function deleteProjectAction(projectId: number | string) {
   await deleteProject(projectId)
   redirect("/projects")
+}
+
+export async function updateProjectCommentsAction(
+  projectId: number,
+  data: {
+    title: string
+    client: string
+    body: string  // This is the comments field
+    apfo: string
+    userId: number
+  }
+) {
+  await updateProject(projectId, data)
+  
+  // Revalidate to update the UI
+  revalidatePath('/projects')
+  revalidatePath(`/projects/${projectId}`)
+  
+  return { success: true }
 }
 
 function validateProject(formData: FormData) {
