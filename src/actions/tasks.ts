@@ -59,6 +59,7 @@ export async function deleteTaskAction(taskId: number | string) {
   redirect("/tasks")
 }
 
+
 function validateTask(formData: FormData) {
   const errors: { title?: string; completed?: string; userId?: string; projectId?: string } = {}
   const title = formData.get("title") as string

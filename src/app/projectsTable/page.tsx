@@ -3,6 +3,7 @@ import { getUser } from "@/db/users"
 import { Skeleton } from "@/components/Skeleton"
 import Link from "next/link"
 import { Suspense } from "react"
+import { EditableComments } from "@/components/EditableComments"
 
 export default async function ProjectsTablePage() {
   return (
@@ -81,12 +82,18 @@ async function ProjectRow({ project }: { project: any }) {
         )}
       </td>
       <td className="comments">
-        <div className="comments-text">{project.body}</div>
+        <EditableComments
+          projectId={project.id}
+          initialComments={project.body}
+          title={project.title}
+          client={project.client}
+          apfo={project.apfo}
+          userId={project.userId}
+        />
       </td>
     </tr>
   )
 }
-
 async function ProjectManager({ userId }: { userId: number }) {
   const user = await getUser(userId)
   
