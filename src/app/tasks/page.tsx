@@ -18,7 +18,7 @@ export default function TasksPage() {
       <Suspense
         fallback={
           <SkeletonList amount={10}>
-            <li>
+            <li> 
               <Skeleton short />
             </li>
           </SkeletonList>

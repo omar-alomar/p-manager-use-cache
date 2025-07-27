@@ -31,6 +31,9 @@ export default function RootLayout({
             <li>
               <Link href="/tasks">Tasks</Link>
             </li>
+            <li>
+              <Link href="/login">Login</Link>
+            </li>
           </ul>
         </nav>
         <div className="container">{children}</div>

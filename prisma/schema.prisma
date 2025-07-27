@@ -20,15 +20,24 @@ model Task {
 
   User User @relation(fields: [userId], references: [id], onDelete: Cascade)
   Project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+} 
+
+enum Role {
+  user
+  admin
 }
 
 model User {
-  id          Int    @id @default(autoincrement())
-  name        String
-  email       String
-
-  tasks Task[]
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String
+  password  String?  // Nullable for OAuth users
+  salt      String?  // Nullable for OAuth users
+  role      String   @default("user")
+  createdAt DateTime @default(now())
+  
   projects Project[]
+  tasks    Task[]
 }
 
 model Project {

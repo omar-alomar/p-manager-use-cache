@@ -1,0 +1,98 @@
+"use server"
+
+import { z } from "zod"
+import { redirect } from "next/navigation"
+import { signInSchema, signUpSchema } from "./schemas"
+import prisma from "@/db/db"
+import {
+  comparePasswords,
+  generateSalt,
+  hashPassword,
+} from "../auth/passwordHasher"
+import { cookies } from "next/headers"
+import { createUserSession, removeUserFromSession } from "../core/session"
+import { getOAuthClient } from "../core/oauth/base"
+
+// Define OAuthProvider type if not already defined
+export type OAuthProvider = 'google' | 'github' | 'facebook' // Adjust as needed
+
+export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
+  const { success, data } = signInSchema.safeParse(unsafeData)
+
+  if (!success) return "Unable to log you in"
+
+  const user = await prisma.user.findUnique({
+    where: { email: data.email },
+    select: { 
+      password: true, 
+      salt: true, 
+      id: true, 
+      email: true, 
+      role: true 
+    }
+  })
+
+  if (user == null || user.password == null || user.salt == null) {
+    return "Unable to log you in"
+  }
+
+  const isCorrectPassword = await comparePasswords({
+    hashedPassword: user.password,
+    password: data.password,
+    salt: user.salt,
+  })
+
+  if (!isCorrectPassword) return "Unable to log you in"
+
+  await createUserSession(user, await cookies())
+
+  redirect("/")
+}
+
+export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
+  const { success, data } = signUpSchema.safeParse(unsafeData)
+
+  if (!success) return "Unable to create account"
+
+  const existingUser = await prisma.user.findUnique({
+    where: { email: data.email }
+  })
+
+  if (existingUser != null) return "Account already exists for this email"
+
+  try {
+    const salt = generateSalt()
+    const hashedPassword = await hashPassword(data.password, salt)
+
+    const user = await prisma.user.create({
+      data: {
+        name: data.name,
+        email: data.email,
+        password: hashedPassword,
+        salt,
+        role: 'user' // Set default role
+      },
+      select: { 
+        id: true, 
+        role: true 
+      }
+    })
+
+    if (user == null) return "Unable to create account"
+    await createUserSession(user, await cookies())
+  } catch {
+    return "Unable to create account"
+  }
+
+  redirect("/")
+}
+
+export async function logOut() {
+  await removeUserFromSession(await cookies())
+  redirect("/")
+}
+
+export async function oAuthSignIn(provider: OAuthProvider) {
+  const oAuthClient = getOAuthClient(provider)
+  redirect(oAuthClient.createAuthUrl(await cookies()))
+}
