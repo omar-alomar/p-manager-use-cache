@@ -1,13 +1,12 @@
-// Example: pages/login-example.tsx
-
 "use client"
 
 import { useState } from "react"
 import { AuthCard } from "@/components/auth/AuthCard"
 import { LoginForm } from "@/components/auth/LoginForm"
 import Link from "next/link"
+import { signIn } from "@/actions/auth"
 
-export default function LoginExample() {
+export default function LoginPage() {
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
@@ -16,22 +15,16 @@ export default function LoginExample() {
     setIsLoading(true)
     
     try {
-      // Your auth logic here
-      console.log("Login attempt:", { email, password })
+      const result = await signIn({ email, password })
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Example: Call your auth service
-      // const result = await authService.login(email, password)
-      // if (result.success) {
-      //   router.push('/dashboard')
-      // } else {
-      //   setError(result.error)
-      // }
+      if (result) {
+        // signIn returns an error message if something went wrong
+        setError(result)
+      }
+      // If result is undefined/null, the signin was successful and user was redirected
       
     } catch (err) {
-      setError("Invalid email or password")
+      setError("Failed to sign in")
     } finally {
       setIsLoading(false)
     }

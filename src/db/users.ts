@@ -1,11 +1,20 @@
 import prisma from "./db"
+import { revalidateTag } from "next/cache"
 
 export async function getUsers() {
   "use cache"
   
   await wait(2000)
   
-  return prisma.user.findMany()
+  return prisma.user.findMany({
+    include: {
+      projects: true,
+      tasks: true
+    },
+    orderBy: {
+      name: 'asc'
+    }
+  })
 }
 
 export async function getUser(userId: string | number) {
@@ -49,6 +58,17 @@ export async function getUsersWithTasks() {
   // })
   
   return usersWithTasks
+}
+
+export async function deleteUser(userId: string | number) {
+  await wait(2000)
+
+  const user = await prisma.user.delete({ where: { id: Number(userId) } })
+
+  revalidateTag("users:all")
+  revalidateTag(`users:id=${user.id}`)
+
+  return user
 }
 
 function wait(duration: number) {

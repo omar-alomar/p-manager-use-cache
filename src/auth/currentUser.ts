@@ -37,7 +37,7 @@ async function _getCurrentUser({
   const user = await getUserFromSession(await cookies())
 
   if (user == null) {
-    if (redirectIfNotFound) return redirect("/sign-in")
+    if (redirectIfNotFound) return redirect("/login")
     return null
   }
 

@@ -2,7 +2,7 @@
 
 import { z } from "zod"
 import { redirect } from "next/navigation"
-import { signInSchema, signUpSchema } from "./schemas"
+import { signInSchema, signUpSchema } from "../schemas/schemas"
 import prisma from "@/db/db"
 import {
   comparePasswords,
@@ -10,11 +10,7 @@ import {
   hashPassword,
 } from "../auth/passwordHasher"
 import { cookies } from "next/headers"
-import { createUserSession, removeUserFromSession } from "../core/session"
-import { getOAuthClient } from "../core/oauth/base"
-
-// Define OAuthProvider type if not already defined
-export type OAuthProvider = 'google' | 'github' | 'facebook' // Adjust as needed
+import { createUserSession, removeUserFromSession } from "../auth/session"
 
 export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
   const { success, data } = signInSchema.safeParse(unsafeData)
@@ -50,7 +46,7 @@ export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
 }
 
 export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
-  const { success, data } = signUpSchema.safeParse(unsafeData)
+  const { success, data } = signUpSchema.safeParse(unsafeData) // zod; type safety.
 
   if (!success) return "Unable to create account"
 
@@ -79,8 +75,10 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
     })
 
     if (user == null) return "Unable to create account"
+    
     await createUserSession(user, await cookies())
-  } catch {
+  } catch (error) {
+    console.error("Signup error:", error)
     return "Unable to create account"
   }
 
@@ -90,9 +88,4 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
 export async function logOut() {
   await removeUserFromSession(await cookies())
   redirect("/")
-}
-
-export async function oAuthSignIn(provider: OAuthProvider) {
-  const oAuthClient = getOAuthClient(provider)
-  redirect(oAuthClient.createAuthUrl(await cookies()))
 }

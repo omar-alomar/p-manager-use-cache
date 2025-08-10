@@ -44,9 +44,7 @@ export async function updateUserSessionData(
   const sessionId = cookies.get(COOKIE_SESSION_KEY)?.value
   if (sessionId == null) return null
 
-  await redisClient.set(`session:${sessionId}`, sessionSchema.parse(user), {
-    ex: SESSION_EXPIRATION_SECONDS,
-  })
+  await redisClient.setex(`session:${sessionId}`, SESSION_EXPIRATION_SECONDS, JSON.stringify(sessionSchema.parse(user)))
 }
 
 export async function createUserSession(
@@ -54,9 +52,17 @@ export async function createUserSession(
   cookies: Pick<Cookies, "set">
 ) {
   const sessionId = crypto.randomBytes(512).toString("hex").normalize()
-  await redisClient.set(`session:${sessionId}`, sessionSchema.parse(user), {
-    ex: SESSION_EXPIRATION_SECONDS,
-  })
+  
+  const sessionData = sessionSchema.parse(user)
+  
+  const jsonData = JSON.stringify(sessionData)
+  
+  try {
+    await redisClient.setex(`session:${sessionId}`, SESSION_EXPIRATION_SECONDS, jsonData)
+  } catch (error) {
+    console.error("Redis SET failed:", error)
+    throw error
+  }
 
   setCookie(sessionId, cookies)
 }
@@ -70,9 +76,7 @@ export async function updateUserSessionExpiration(
   const user = await getUserSessionById(sessionId)
   if (user == null) return
 
-  await redisClient.set(`session:${sessionId}`, user, {
-    ex: SESSION_EXPIRATION_SECONDS,
-  })
+  await redisClient.setex(`session:${sessionId}`, SESSION_EXPIRATION_SECONDS, JSON.stringify(user))
   setCookie(sessionId, cookies)
 }
 
@@ -97,8 +101,14 @@ function setCookie(sessionId: string, cookies: Pick<Cookies, "set">) {
 
 async function getUserSessionById(sessionId: string) {
   const rawUser = await redisClient.get(`session:${sessionId}`)
-
-  const { success, data: user } = sessionSchema.safeParse(rawUser)
-
-  return success ? user : null
+  
+  if (!rawUser) return null
+  
+  try {
+    const parsedUser = JSON.parse(rawUser)
+    const { success, data: user } = sessionSchema.safeParse(parsedUser)
+    return success ? user : null
+  } catch {
+    return null
+  }
 }

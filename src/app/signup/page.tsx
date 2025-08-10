@@ -4,8 +4,9 @@ import { useState } from "react"
 import { AuthCard } from "@/components/auth/AuthCard"
 import { SignupForm } from "@/components/auth/SignupForm"
 import Link from "next/link"
+import { signUp } from "@/actions/auth"
 
-export default function SignupExample() {
+export default function SignupPage() {
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
@@ -14,16 +15,13 @@ export default function SignupExample() {
     setIsLoading(true)
     
     try {
-      // Your signup logic here
-      console.log("Signup attempt:", data)
+      const result = await signUp(data)
       
-      // Example: Call your auth service
-      // const result = await authService.signup(data)
-      // if (result.success) {
-      //   router.push('/dashboard')
-      // } else {
-      //   setError(result.error)
-      // }
+      if (result) {
+        // signUp returns an error message if something went wrong
+        setError(result)
+      }
+      // If result is undefined/null, the signup was successful and user was redirected
       
     } catch (err) {
       setError("Failed to create account")

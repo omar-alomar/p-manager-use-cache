@@ -30,8 +30,8 @@ export function SignupForm({ onSubmit, error, isLoading = false }: SignupFormPro
       return
     }
     
-    if (password.length < 6) {
-      setValidationError("Password must be at least 6 characters")
+    if (password.length < 8) {
+      setValidationError("Password must be at least 8 characters")
       return
     }
     
@@ -79,7 +79,7 @@ export function SignupForm({ onSubmit, error, isLoading = false }: SignupFormPro
           placeholder="••••••••"
           required
           disabled={isLoading}
-          minLength={6}
+          minLength={8}
         />
       </div>
 
