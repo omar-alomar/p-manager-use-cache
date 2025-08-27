@@ -19,84 +19,116 @@ export default async function ProjectPage({
   const { projectId } = await params
 
   return (
-          <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb' }}>
-        {/* Hero Section */}
-        <Suspense
-          fallback={
-            <div style={{ backgroundColor: 'white', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)' }}>
-              <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '32px 16px' }}>
-                <div style={{ height: '24px', backgroundColor: '#e5e7eb', borderRadius: '4px', width: '33%', marginBottom: '12px' }}></div>
-                <div style={{ height: '14px', backgroundColor: '#e5e7eb', borderRadius: '4px', width: '50%' }}></div>
-              </div>
+    <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb' }}>
+      {/* Hero Section */}
+      <Suspense
+        fallback={
+          <div style={{ backgroundColor: 'white', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)' }}>
+            <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '32px 16px' }}>
+              <div style={{ height: '24px', backgroundColor: '#e5e7eb', borderRadius: '4px', width: '33%', marginBottom: '12px' }}></div>
+              <div style={{ height: '14px', backgroundColor: '#e5e7eb', borderRadius: '4px', width: '50%' }}></div>
             </div>
-          }
-        >
-          <ProjectHero projectId={projectId} />
-        </Suspense>
+          </div>
+        }
+      >
+        <ProjectHero projectId={projectId} />
+      </Suspense>
 
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '24px 16px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px' }}>
-            {/* Tasks Section */}
-            <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', border: '1px solid #e5e7eb' }}>
-              <div style={{ padding: '20px', borderBottom: '1px solid #e5e7eb' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ padding: '6px', backgroundColor: '#dcfce7', borderRadius: '6px' }}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                        <polyline points="22,4 12,14.01 9,11.01"/>
-                      </svg>
-                    </div>
-                    <div>
-                      <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', margin: 0 }}>Tasks</h2>
-                      <p style={{ fontSize: '13px', color: '#6b7280', margin: '3px 0 0 0' }}>Project task management</p>
-                    </div>
-                  </div>
-                  <AddTaskToProjectButton projectId={projectId} />
+      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '24px 16px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px' }}>
+          {/* Project Details Section */}
+          <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', border: '1px solid #e5e7eb' }}>
+            <div style={{ padding: '20px', borderBottom: '1px solid #e5e7eb' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ padding: '6px', backgroundColor: '#f3e8ff', borderRadius: '6px' }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                  </svg>
+                </div>
+                <div>
+                  <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', margin: 0 }}>Project Details</h2>
+                  <p style={{ fontSize: '13px', color: '#6b7280', margin: '3px 0 0 0' }}>Project information and metadata</p>
                 </div>
               </div>
-              
-              <div style={{ padding: '20px' }}>
-                <Suspense
-                  fallback={
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      {[1, 2, 3].map((i) => (
-                        <div key={i} style={{ height: '48px', backgroundColor: '#f3f4f6', borderRadius: '6px' }}></div>
-                      ))}
-                    </div>
-                  }
-                >
-                  <Tasks projectId={projectId} />
-                </Suspense>
-              </div>
             </div>
+            
+            <div style={{ padding: '20px' }}>
+              <Suspense
+                fallback={
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {[1, 2, 3, 4].map((i) => (
+                      <div key={i} style={{ height: '20px', backgroundColor: '#f3f4f6', borderRadius: '4px', width: i === 1 ? '60%' : i === 2 ? '40%' : i === 3 ? '50%' : '70%' }}></div>
+                    ))}
+                  </div>
+                }
+              >
+                <ProjectDetails projectId={projectId} />
+              </Suspense>
+            </div>
+          </div>
 
-            {/* Comments Section */}
-            <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', border: '1px solid #e5e7eb' }}>
-              <div style={{ padding: '20px', borderBottom: '1px solid #e5e7eb' }}>
+          {/* Tasks Section */}
+          <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', border: '1px solid #e5e7eb' }}>
+            <div style={{ padding: '20px', borderBottom: '1px solid #e5e7eb' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ padding: '6px', backgroundColor: '#dbeafe', borderRadius: '6px' }}>
+                  <div style={{ padding: '6px', backgroundColor: '#dcfce7', borderRadius: '6px' }}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                      <polyline points="22,4 12,14.01 9,11.01"/>
                     </svg>
                   </div>
                   <div>
-                    <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', margin: 0 }}>Comments & Notes</h2>
-                    <p style={{ fontSize: '13px', color: '#6b7280', margin: '3px 0 0 0' }}>Project documentation</p>
+                    <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', margin: 0 }}>Tasks</h2>
+                    <p style={{ fontSize: '13px', color: '#6b7280', margin: '3px 0 0 0' }}>Project task management</p>
                   </div>
                 </div>
-              </div>
-              
-              <div style={{ padding: '20px' }}>
-                <Suspense
-                  fallback={
-                    <div style={{ height: '72px', backgroundColor: '#f3f4f6', borderRadius: '6px' }}></div>
-                  }
-                >
-                  <Comments projectId={projectId} />
-                </Suspense>
+                <AddTaskToProjectButton projectId={projectId} />
               </div>
             </div>
+            
+            <div style={{ padding: '20px' }}>
+              <Suspense
+                fallback={
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} style={{ height: '48px', backgroundColor: '#f3f4f6', borderRadius: '6px' }}></div>
+                    ))}
+                  </div>
+                }
+              >
+                <Tasks projectId={projectId} />
+              </Suspense>
+            </div>
+          </div>
+
+          {/* Comments Section */}
+          <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', border: '1px solid #e5e7eb' }}>
+            <div style={{ padding: '20px', borderBottom: '1px solid #e5e7eb' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ padding: '6px', backgroundColor: '#dbeafe', borderRadius: '6px' }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                  </svg>
+                </div>
+                <div>
+                  <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', margin: 0 }}>Comments & Notes</h2>
+                  <p style={{ fontSize: '13px', color: '#6b7280', margin: '3px 0 0 0' }}>Project documentation</p>
+                </div>
+              </div>
+            </div>
+            
+            <div style={{ padding: '20px' }}>
+              <Suspense
+                fallback={
+                  <div style={{ height: '72px', backgroundColor: '#f3f4f6', borderRadius: '6px' }}></div>
+                }
+              >
+                <Comments projectId={projectId} />
+              </Suspense>
+            </div>
+          </div>
 
           {/* Project Details Section */}
           <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', border: '1px solid #e5e7eb' }}>
@@ -153,7 +185,7 @@ async function ProjectHero({ projectId }: { projectId: string }) {
     return (
       <div style={{ backgroundColor: 'white', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '32px 16px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px', alignItems: 'center' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '32px', alignItems: 'start' }}>
             {/* Project Info */}
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
@@ -199,48 +231,48 @@ async function ProjectHero({ projectId }: { projectId: string }) {
             </div>
 
             {/* Stats & Actions */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', minWidth: '280px' }}>
               {/* Stats Grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-                <div style={{ textAlign: 'center', padding: '12px', backgroundColor: '#f0fdf4', borderRadius: '6px', border: '1px solid #bbf7d0' }}>
-                  <div style={{ width: '36px', height: '36px', backgroundColor: '#bbf7d0', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 8px auto' }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#166534" strokeWidth="2">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                <div style={{ textAlign: 'center', padding: '10px', backgroundColor: '#f0fdf4', borderRadius: '6px', border: '1px solid #bbf7d0' }}>
+                  <div style={{ width: '32px', height: '32px', backgroundColor: '#bbf7d0', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 6px auto' }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#166534" strokeWidth="2">
                       <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                       <polyline points="22,4 12,14.01 9,11.01"/>
                     </svg>
                   </div>
-                  <div style={{ fontSize: '20px', fontWeight: '700', color: '#166534', marginBottom: '6px' }}>{completedTasks}</div>
-                  <div style={{ fontSize: '12px', color: '#166534', fontWeight: '500' }}>Completed</div>
+                  <div style={{ fontSize: '18px', fontWeight: '700', color: '#166534', marginBottom: '4px' }}>{completedTasks}</div>
+                  <div style={{ fontSize: '11px', color: '#166534', fontWeight: '500' }}>Completed</div>
                 </div>
                 
-                <div style={{ textAlign: 'center', padding: '12px', backgroundColor: '#fffbeb', borderRadius: '6px', border: '1px solid #fcd34d' }}>
-                  <div style={{ width: '36px', height: '36px', backgroundColor: '#fcd34d', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 8px auto' }}>
+                <div style={{ textAlign: 'center', padding: '10px', backgroundColor: '#fffbeb', borderRadius: '6px', border: '1px solid #fcd34d' }}>
+                  <div style={{ width: '32px', height: '32px', backgroundColor: '#fcd34d', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 6px auto' }}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#92400e" strokeWidth="2">
                       <circle cx="12" cy="12" r="10"/>
                       <polyline points="12,6 12,12 16,14"/>
                     </svg>
                   </div>
-                  <div style={{ fontSize: '20px', fontWeight: '700', color: '#92400e', marginBottom: '6px' }}>{activeTasks}</div>
-                  <div style={{ fontSize: '12px', color: '#92400e', fontWeight: '500' }}>Active</div>
+                  <div style={{ fontSize: '18px', fontWeight: '700', color: '#92400e', marginBottom: '4px' }}>{activeTasks}</div>
+                  <div style={{ fontSize: '11px', color: '#92400e', fontWeight: '500' }}>Active</div>
                 </div>
                 
-                <div style={{ textAlign: 'center', padding: '12px', backgroundColor: '#eff6ff', borderRadius: '6px', border: '1px solid #bfdbfe' }}>
-                  <div style={{ width: '36px', height: '36px', backgroundColor: '#bfdbfe', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 8px auto' }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1e40af" strokeWidth="2">
+                <div style={{ textAlign: 'center', padding: '10px', backgroundColor: '#eff6ff', borderRadius: '6px', border: '1px solid #bfdbfe' }}>
+                  <div style={{ width: '32px', height: '32px', backgroundColor: '#bfdbfe', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 6px auto' }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1e40af" strokeWidth="2">
                       <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
                       <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
                     </svg>
                   </div>
-                  <div style={{ fontSize: '20px', fontWeight: '700', color: '#1e40af', marginBottom: '6px' }}>{tasks.length}</div>
-                  <div style={{ fontSize: '12px', color: '#1e40af', fontWeight: '500' }}>Total</div>
+                  <div style={{ fontSize: '18px', fontWeight: '700', color: '#1e40af', marginBottom: '4px' }}>{tasks.length}</div>
+                  <div style={{ fontSize: '11px', color: '#1e40af', fontWeight: '500' }}>Total</div>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <Link 
                   href={`/projects/${projectId}/edit`}
-                  style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '10px 20px', backgroundColor: '#3b82f6', color: 'white', fontWeight: '500', borderRadius: '6px', textDecoration: 'none', transition: 'background-color 0.2s', fontSize: '14px' }}
+                  style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '8px 16px', backgroundColor: '#3b82f6', color: 'white', fontWeight: '500', borderRadius: '6px', textDecoration: 'none', transition: 'background-color 0.2s', fontSize: '13px' }}
                 >
                   Edit Project
                 </Link>
@@ -386,21 +418,20 @@ async function Tasks({ projectId }: { projectId: string }) {
     }
 
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <div className="tasks-list">
         {tasks.map(task => (
-          <div key={task.id} style={{ backgroundColor: '#f9fafb', borderRadius: '8px', padding: '16px', border: '1px solid #e5e7eb' }}>
-            <TaskItem 
-              id={task.id}
-              initialCompleted={task.completed}
-              title={task.title}
-              projectId={task.projectId}
-              projectTitle={project?.title || ""}
-              userId={task.userId}
-              userName={task.User?.name} 
-              displayProject={false}
-              displayUser={true}
-            />
-          </div>
+          <TaskItem 
+            key={task.id}
+            id={task.id}
+            initialCompleted={task.completed}
+            title={task.title}
+            projectId={task.projectId}
+            projectTitle={project?.title || ""}
+            userId={task.userId}
+            userName={task.User?.name} 
+            displayProject={false}
+            displayUser={true}
+          />
         ))}
       </div>
     )

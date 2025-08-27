@@ -1435,6 +1435,214 @@ input[type="checkbox"]:checked::after {
   }
 }
 
+/* ===== TASK ITEM COMPONENT STYLES ===== */
+.task-card {
+  background: var(--surface-0);
+  border: 1px solid var(--surface-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.task-card:hover {
+  border-color: var(--primary-200);
+  box-shadow: var(--shadow-sm);
+}
+
+.task-card.task-completed {
+  background: var(--success-50);
+  border-color: var(--success-200);
+}
+
+.task-card.task-updating {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.task-card-content {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.task-checkbox-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.task-checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary-500);
+  cursor: pointer;
+  margin: 0;
+}
+
+.task-updating-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.spinner-ring {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--surface-200);
+  border-top: 2px solid var(--primary-500);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.task-main-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  cursor: pointer;
+  min-height: 24px;
+}
+
+.task-title-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.task-title {
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  color: var(--neutral-700);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.task-title.completed {
+  text-decoration: line-through;
+  color: var(--success-600);
+}
+
+.task-project {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--neutral-500);
+  font-weight: 500;
+}
+
+.task-project svg {
+  width: 14px;
+  height: 14px;
+  color: var(--primary-500);
+  flex-shrink: 0;
+}
+
+.task-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.task-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--surface-100);
+  color: var(--neutral-600);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  flex-shrink: 0;
+}
+
+.task-action-btn:hover {
+  background: var(--surface-200);
+  color: var(--neutral-700);
+  transform: translateY(-1px);
+}
+
+.task-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.task-action-btn.edit-btn:hover {
+  background: var(--primary-100);
+  color: var(--primary-600);
+}
+
+.task-action-btn.delete-btn:hover {
+  background: var(--error-100);
+  color: var(--error-600);
+}
+
+.task-edit-input {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.edit-input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--primary-300);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-family: inherit;
+  background: var(--surface-0);
+  transition: all var(--transition-normal);
+}
+
+.edit-input:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.edit-hint {
+  font-size: var(--font-size-xs);
+  color: var(--neutral-500);
+  font-style: italic;
+}
+
+/* Responsive adjustments for task cards */
+@media (max-width: 768px) {
+  .task-card-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+  
+  .task-main-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+  
+  .task-actions {
+    align-self: flex-end;
+  }
+}
+
 /* Editable comments styles */
 .editable-comments {
   cursor: pointer;
@@ -4576,6 +4784,14 @@ td.comments {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+}
+
+.tasks-list .task-card {
+  margin-bottom: var(--space-2);
+}
+
+.tasks-list .task-card:last-child {
+  margin-bottom: 0;
 }
 
 /* Empty States */
