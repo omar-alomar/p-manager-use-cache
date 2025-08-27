@@ -8,7 +8,7 @@ export function DeleteButton({ projectId }: { projectId: string }) {
   return (
     <button
       disabled={isPending}
-      className="btn btn-outline btn-danger"
+      className="hero-action-btn danger"
       onClick={() =>
         startTransition(async () => {
           await deleteProjectAction(projectId)

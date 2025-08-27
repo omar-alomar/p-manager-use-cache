@@ -19,14 +19,19 @@ export default async function ProjectPage({
   const { projectId } = await params
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb' }}>
+    <div className="project-profile-container">
       {/* Hero Section */}
       <Suspense
         fallback={
-          <div style={{ backgroundColor: 'white', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)' }}>
-            <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '32px 16px' }}>
-              <div style={{ height: '24px', backgroundColor: '#e5e7eb', borderRadius: '4px', width: '33%', marginBottom: '12px' }}></div>
-              <div style={{ height: '14px', backgroundColor: '#e5e7eb', borderRadius: '4px', width: '50%' }}></div>
+          <div className="project-hero skeleton-hero">
+            <div className="hero-left-section">
+              <div className="hero-avatar">
+                <div className="avatar-circle skeleton-avatar"></div>
+              </div>
+              <div className="hero-basic-info">
+                <div className="skeleton-title"></div>
+                <div className="skeleton-subtitle"></div>
+              </div>
             </div>
           </div>
         }
@@ -34,138 +39,97 @@ export default async function ProjectPage({
         <ProjectHero projectId={projectId} />
       </Suspense>
 
-      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '24px 16px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px' }}>
-          {/* Project Details Section */}
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', border: '1px solid #e5e7eb' }}>
-            <div style={{ padding: '20px', borderBottom: '1px solid #e5e7eb' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ padding: '6px', backgroundColor: '#f3e8ff', borderRadius: '6px' }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-                  </svg>
-                </div>
-                <div>
-                  <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', margin: 0 }}>Project Details</h2>
-                  <p style={{ fontSize: '13px', color: '#6b7280', margin: '3px 0 0 0' }}>Project information and metadata</p>
-                </div>
-              </div>
+      <div className="project-content-grid">
+        {/* Project Details Section */}
+        <div className="content-section">
+          <div className="section-header">
+            <div className="section-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+              </svg>
             </div>
-            
-            <div style={{ padding: '20px' }}>
-              <Suspense
-                fallback={
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {[1, 2, 3, 4].map((i) => (
-                      <div key={i} style={{ height: '20px', backgroundColor: '#f3f4f6', borderRadius: '4px', width: i === 1 ? '60%' : i === 2 ? '40%' : i === 3 ? '50%' : '70%' }}></div>
-                    ))}
-                  </div>
-                }
-              >
-                <ProjectDetails projectId={projectId} />
-              </Suspense>
+            <div className="section-title-group">
+              <h2 className="section-title">Project Details</h2>
+              <p className="section-subtitle">Project information and metadata</p>
             </div>
           </div>
-
-          {/* Tasks Section */}
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', border: '1px solid #e5e7eb' }}>
-            <div style={{ padding: '20px', borderBottom: '1px solid #e5e7eb' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ padding: '6px', backgroundColor: '#dcfce7', borderRadius: '6px' }}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                      <polyline points="22,4 12,14.01 9,11.01"/>
-                    </svg>
-                  </div>
-                  <div>
-                    <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', margin: 0 }}>Tasks</h2>
-                    <p style={{ fontSize: '13px', color: '#6b7280', margin: '3px 0 0 0' }}>Project task management</p>
-                  </div>
+          
+          <div className="section-content">
+            <Suspense
+              fallback={
+                <div className="skeleton-content">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="skeleton-row">
+                      <div className="skeleton-label"></div>
+                      <div className="skeleton-value"></div>
+                    </div>
+                  ))}
                 </div>
-                <AddTaskToProjectButton projectId={projectId} />
-              </div>
+              }
+            >
+              <ProjectDetails projectId={projectId} />
+            </Suspense>
+          </div>
+        </div>
+
+        {/* Tasks Section */}
+        <div className="content-section">
+          <div className="section-header">
+            <div className="section-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22,4 12,14.01 9,11.01"/>
+              </svg>
             </div>
-            
-            <div style={{ padding: '20px' }}>
-              <Suspense
-                fallback={
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {[1, 2, 3].map((i) => (
-                      <div key={i} style={{ height: '48px', backgroundColor: '#f3f4f6', borderRadius: '6px' }}></div>
-                    ))}
-                  </div>
-                }
-              >
-                <Tasks projectId={projectId} />
-              </Suspense>
+            <div className="section-title-group">
+              <h2 className="section-title">Tasks</h2>
+              <p className="section-subtitle">Project task management</p>
+            </div>
+            <div className="section-actions">
+              <AddTaskToProjectButton projectId={projectId} />
             </div>
           </div>
+          
+          <div className="section-content">
+            <Suspense
+              fallback={
+                <div className="skeleton-content">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="skeleton-task"></div>
+                  ))}
+                </div>
+              }
+            >
+              <Tasks projectId={projectId} />
+            </Suspense>
+          </div>
+        </div>
 
-          {/* Comments Section */}
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', border: '1px solid #e5e7eb' }}>
-            <div style={{ padding: '20px', borderBottom: '1px solid #e5e7eb' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ padding: '6px', backgroundColor: '#dbeafe', borderRadius: '6px' }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                  </svg>
-                </div>
-                <div>
-                  <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', margin: 0 }}>Comments & Notes</h2>
-                  <p style={{ fontSize: '13px', color: '#6b7280', margin: '3px 0 0 0' }}>Project documentation</p>
-                </div>
-              </div>
+        {/* Comments Section */}
+        <div className="content-section">
+          <div className="section-header">
+            <div className="section-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
             </div>
-            
-            <div style={{ padding: '20px' }}>
-              <Suspense
-                fallback={
-                  <div style={{ height: '72px', backgroundColor: '#f3f4f6', borderRadius: '6px' }}></div>
-                }
-              >
-                <Comments projectId={projectId} />
-              </Suspense>
+            <div className="section-title-group">
+              <h2 className="section-title">Comments & Notes</h2>
+              <p className="section-subtitle">Project documentation</p>
             </div>
           </div>
-
-          {/* Project Details Section */}
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', border: '1px solid #e5e7eb' }}>
-            <div style={{ padding: '24px', borderBottom: '1px solid #e5e7eb' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ padding: '8px', backgroundColor: '#e0e7ff', borderRadius: '8px' }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                    <polyline points="14,2 14,8 20,8"/>
-                    <line x1="16" y1="13" x2="8" y2="13"/>
-                    <line x1="16" y1="17" x2="8" y2="17"/>
-                    <polyline points="10,9 9,9 8,9"/>
-                  </svg>
+          
+          <div className="section-content">
+            <Suspense
+              fallback={
+                <div className="skeleton-content">
+                  <div className="skeleton-comment"></div>
                 </div>
-                <div>
-                  <h2 style={{ fontSize: '20px', fontWeight: '600', color: '#111827', margin: 0 }}>Project Details</h2>
-                  <p style={{ fontSize: '14px', color: '#6b7280', margin: '4px 0 0 0' }}>Key information</p>
-                </div>
-              </div>
-            </div>
-            
-            <div style={{ padding: '24px' }}>
-              <Suspense
-                fallback={
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    {[1, 2, 3, 4].map((i) => (
-                      <div key={i}>
-                        <div style={{ height: '16px', backgroundColor: '#e5e7eb', borderRadius: '4px', width: '33%', marginBottom: '8px' }}></div>
-                        <div style={{ height: '24px', backgroundColor: '#f3f4f6', borderRadius: '4px' }}></div>
-                      </div>
-                    ))}
-                  </div>
-                }
-              >
-                <ProjectDetails projectId={projectId} />
-              </Suspense>
-            </div>
+              }
+            >
+              <Comments projectId={projectId} />
+            </Suspense>
           </div>
         </div>
       </div>
@@ -183,102 +147,102 @@ async function ProjectHero({ projectId }: { projectId: string }) {
     const activeTasks = tasks.filter(task => !task.completed).length
 
     return (
-      <div style={{ backgroundColor: 'white', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '32px 16px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '32px', alignItems: 'start' }}>
-            {/* Project Info */}
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                <div style={{ padding: '10px', backgroundColor: '#3b82f6', borderRadius: '6px' }}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+      <div className="project-hero">
+        {/* Left Section - Project Info */}
+        <div className="hero-left-section">
+          <div className="hero-avatar">
+            <div className="avatar-circle">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+              </svg>
+            </div>
+          </div>
+          
+          <div className="hero-basic-info">
+            <h1 className="hero-name">{project.title}</h1>
+            <div className="hero-tags">
+              {project.client && (
+                <span className="hero-tag client">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
                   </svg>
-                </div>
-                <div style={{ flex: 1 }}>
-                  <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#111827', margin: '0 0 8px 0' }}>{project.title}</h1>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                    {project.client && (
-                      <span style={{ display: 'inline-flex', alignItems: 'center', padding: '5px 10px', backgroundColor: '#dbeafe', color: '#1e40af', borderRadius: '9999px', fontSize: '13px', fontWeight: '500' }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '6px' }}>
-                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                          <circle cx="12" cy="7" r="4"/>
-                        </svg>
-                        {project.client}
-                      </span>
-                    )}
-                    {project.apfo && (
-                      <span style={{ display: 'inline-flex', alignItems: 'center', padding: '5px 10px', backgroundColor: '#dcfce7', color: '#166534', borderRadius: '9999px', fontSize: '13px', fontWeight: '500' }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '6px' }}>
-                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                          <polyline points="14,2 14,8 20,8"/>
-                          <line x1="16" y1="13" x2="8" y2="13"/>
-                          <line x1="16" y1="17" x2="8" y2="17"/>
-                          <polyline points="10,9 9,9 8,9"/>
-                        </svg>
-                        {project.apfo}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-              
-              {project.body && (
-                <p style={{ fontSize: '16px', color: '#4b5563', lineHeight: '1.6', maxWidth: '768px' }}>
-                  {project.body}
-                </p>
+                  {project.client}
+                </span>
+              )}
+              {project.apfo && (
+                <span className="hero-tag apfo">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14,2 14,8 20,8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <polyline points="10,9 9,9 8,9"/>
+                  </svg>
+                  {project.apfo}
+                </span>
               )}
             </div>
+            
+            {project.body && (
+              <p className="hero-description">{project.body}</p>
+            )}
+          </div>
+        </div>
 
-            {/* Stats & Actions */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', minWidth: '280px' }}>
-              {/* Stats Grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-                <div style={{ textAlign: 'center', padding: '10px', backgroundColor: '#f0fdf4', borderRadius: '6px', border: '1px solid #bbf7d0' }}>
-                  <div style={{ width: '32px', height: '32px', backgroundColor: '#bbf7d0', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 6px auto' }}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#166534" strokeWidth="2">
-                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                      <polyline points="22,4 12,14.01 9,11.01"/>
-                    </svg>
-                  </div>
-                  <div style={{ fontSize: '18px', fontWeight: '700', color: '#166534', marginBottom: '4px' }}>{completedTasks}</div>
-                  <div style={{ fontSize: '11px', color: '#166534', fontWeight: '500' }}>Completed</div>
-                </div>
-                
-                <div style={{ textAlign: 'center', padding: '10px', backgroundColor: '#fffbeb', borderRadius: '6px', border: '1px solid #fcd34d' }}>
-                  <div style={{ width: '32px', height: '32px', backgroundColor: '#fcd34d', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 6px auto' }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#92400e" strokeWidth="2">
-                      <circle cx="12" cy="12" r="10"/>
-                      <polyline points="12,6 12,12 16,14"/>
-                    </svg>
-                  </div>
-                  <div style={{ fontSize: '18px', fontWeight: '700', color: '#92400e', marginBottom: '4px' }}>{activeTasks}</div>
-                  <div style={{ fontSize: '11px', color: '#92400e', fontWeight: '500' }}>Active</div>
-                </div>
-                
-                <div style={{ textAlign: 'center', padding: '10px', backgroundColor: '#eff6ff', borderRadius: '6px', border: '1px solid #bfdbfe' }}>
-                  <div style={{ width: '32px', height: '32px', backgroundColor: '#bfdbfe', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 6px auto' }}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1e40af" strokeWidth="2">
-                      <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-                      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-                    </svg>
-                  </div>
-                  <div style={{ fontSize: '18px', fontWeight: '700', color: '#1e40af', marginBottom: '4px' }}>{tasks.length}</div>
-                  <div style={{ fontSize: '11px', color: '#1e40af', fontWeight: '500' }}>Total</div>
-                </div>
+        {/* Right Section - Stats & Actions */}
+        <div className="hero-right-section">
+          <div className="hero-stats">
+            <div className="stat-card success">
+              <div className="stat-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22,4 12,14.01 9,11.01"/>
+                </svg>
               </div>
-
-              {/* Action Buttons */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <Link 
-                  href={`/projects/${projectId}/edit`}
-                  style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '8px 16px', backgroundColor: '#3b82f6', color: 'white', fontWeight: '500', borderRadius: '6px', textDecoration: 'none', transition: 'background-color 0.2s', fontSize: '13px' }}
-                >
-                  Edit Project
-                </Link>
-                <DeleteButton projectId={projectId} />
+              <div className="stat-content">
+                <div className="stat-number">{completedTasks}</div>
+                <div className="stat-label">Completed</div>
               </div>
             </div>
+            
+            <div className="stat-card warning">
+              <div className="stat-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12,6 12,12 16,14"/>
+                </svg>
+              </div>
+              <div className="stat-content">
+                <div className="stat-number">{activeTasks}</div>
+                <div className="stat-label">Active</div>
+              </div>
+            </div>
+            
+            <div className="stat-card primary">
+              <div className="stat-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                </svg>
+              </div>
+              <div className="stat-content">
+                <div className="stat-number">{tasks.length}</div>
+                <div className="stat-label">Total</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="hero-actions">
+            <Link 
+              href={`/projects/${projectId}/edit`}
+              className="hero-action-btn primary"
+            >
+              Edit Project
+            </Link>
+            <DeleteButton projectId={projectId} />
           </div>
         </div>
       </div>
@@ -286,12 +250,10 @@ async function ProjectHero({ projectId }: { projectId: string }) {
   } catch (error) {
     console.error('Error in ProjectHero:', error)
     return (
-      <div style={{ backgroundColor: 'white', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '64px 16px' }}>
-          <div style={{ textAlign: 'center' }}>
-            <h1 style={{ fontSize: '24px', fontWeight: '600', color: '#111827', margin: '0 0 8px 0' }}>Error Loading Project</h1>
-            <p style={{ color: '#4b5563' }}>There was an error loading the project information.</p>
-          </div>
+      <div className="project-hero error">
+        <div className="hero-error-content">
+          <h1 className="hero-error-title">Error Loading Project</h1>
+          <p className="hero-error-message">There was an error loading the project information.</p>
         </div>
       </div>
     )
@@ -304,65 +266,63 @@ async function ProjectDetails({ projectId }: { projectId: string }) {
     if (project == null) return notFound()
 
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div>
-            <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>
-              Project Manager
-            </label>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ width: '32px', height: '32px', backgroundColor: '#3b82f6', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                  <circle cx="12" cy="7" r="4"/>
-                </svg>
-              </div>
-              <Suspense fallback={<span style={{ color: '#9ca3af' }}>Loading...</span>}>
-                <UserDetails userId={project.userId} />
-              </Suspense>
+      <div className="project-details-grid">
+        <div className="detail-item">
+          <label className="detail-label">
+            Project Manager
+          </label>
+          <div className="detail-value">
+            <div className="user-avatar">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
             </div>
+            <Suspense fallback={<span className="loading-text">Loading...</span>}>
+              <UserDetails userId={project.userId} />
+            </Suspense>
           </div>
+        </div>
 
-          {project.client && (
-            <div>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>
-                Client
-              </label>
-              <div style={{ color: '#111827', fontWeight: '500' }}>{project.client}</div>
-            </div>
-          )}
-
-          {project.apfo && (
-            <div>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>
-                APFO
-              </label>
-              <div style={{ color: '#111827', fontWeight: '500' }}>{project.apfo}</div>
-            </div>
-          )}
-
-          <div>
-            <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>
-              Created
+        {project.client && (
+          <div className="detail-item">
+            <label className="detail-label">
+              Client
             </label>
-            <div style={{ color: '#111827', fontWeight: '500' }}>
-              {new Date(project.createdAt).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
-            </div>
+            <div className="detail-value">{project.client}</div>
           </div>
+        )}
 
-          <div>
-            <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>
-              Description
+        {project.apfo && (
+          <div className="detail-item">
+            <label className="detail-label">
+              APFO
             </label>
-            <div style={{ color: '#111827', lineHeight: '1.6' }}>
-              {project.body || (
-                <span style={{ color: '#9ca3af', fontStyle: 'italic' }}>No description provided</span>
-              )}
-            </div>
+            <div className="detail-value">{project.apfo}</div>
+          </div>
+        )}
+
+        <div className="detail-item">
+          <label className="detail-label">
+            Created
+          </label>
+          <div className="detail-value">
+            {new Date(project.createdAt).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}
+          </div>
+        </div>
+
+        <div className="detail-item">
+          <label className="detail-label">
+            Description
+          </label>
+          <div className="detail-value">
+            {project.body || (
+              <span className="placeholder-text">No description provided</span>
+            )}
           </div>
         </div>
       </div>
@@ -370,8 +330,8 @@ async function ProjectDetails({ projectId }: { projectId: string }) {
   } catch (error) {
     console.error('Error in ProjectDetails:', error)
     return (
-      <div style={{ textAlign: 'center', padding: '16px 0' }}>
-        <p style={{ color: '#6b7280' }}>Error loading project details</p>
+      <div className="error-state">
+        <p className="error-message">Error loading project details</p>
       </div>
     )
   }
@@ -385,14 +345,14 @@ async function UserDetails({ userId }: { userId: number }) {
     return (
       <Link 
         href={`/users/${user.id}`} 
-        style={{ color: '#3b82f6', fontWeight: '500', textDecoration: 'none' }}
+        className="user-link"
       >
         {user.name}
       </Link>
     )
   } catch (error) {
     console.error('Error in UserDetails:', error)
-    return <span style={{ color: '#9ca3af' }}>Error loading user</span>
+    return <span className="error-text">Error loading user</span>
   }
 }
 
@@ -403,15 +363,15 @@ async function Tasks({ projectId }: { projectId: string }) {
     
     if (tasks.length === 0) {
       return (
-        <div style={{ textAlign: 'center', padding: '48px 0' }}>
-          <div style={{ width: '64px', height: '64px', backgroundColor: '#f3f4f6', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px auto' }}>
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2">
+        <div className="empty-state">
+          <div className="empty-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
               <polyline points="22,4 12,14.01 9,11.01"/>
             </svg>
           </div>
-          <h3 style={{ fontSize: '18px', fontWeight: '500', color: '#111827', margin: '0 0 8px 0' }}>No tasks yet</h3>
-          <p style={{ color: '#6b7280', margin: '0 0 24px 0' }}>Get started by creating your first task for this project.</p>
+          <h3 className="empty-title">No tasks yet</h3>
+          <p className="empty-description">Get started by creating your first task for this project.</p>
           <ProjectEmptyStateActions projectId={projectId} />
         </div>
       )
@@ -438,8 +398,8 @@ async function Tasks({ projectId }: { projectId: string }) {
   } catch (error) {
     console.error('Error in Tasks:', error)
     return (
-      <div style={{ textAlign: 'center', padding: '16px 0' }}>
-        <p style={{ color: '#6b7280' }}>Error loading tasks</p>
+      <div className="error-state">
+        <p className="error-message">Error loading tasks</p>
       </div>
     )
   }
@@ -453,9 +413,9 @@ async function Comments({ projectId }: { projectId: string }) {
     if (project == null) return notFound()
 
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        <div style={{ backgroundColor: '#eff6ff', borderRadius: '8px', padding: '24px', border: '1px solid #bfdbfe' }}>
-          <h4 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', margin: '0 0 12px 0' }}>Project Comments</h4>
+      <div className="comments-container">
+        <div className="project-comments">
+          <h4 className="comments-title">Project Comments</h4>
           <EditableComments
             projectId={project.id}
             initialComments={project.body}
@@ -469,22 +429,22 @@ async function Comments({ projectId }: { projectId: string }) {
         </div>
         
         {comments.length > 0 && (
-          <div>
-            <h4 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', margin: '0 0 16px 0' }}>External Comments</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className="external-comments">
+            <h4 className="comments-title">External Comments</h4>
+            <div className="comments-list">
               {comments.map(comment => (
-                <div key={comment.id} style={{ backgroundColor: '#f9fafb', borderRadius: '8px', padding: '16px', border: '1px solid #e5e7eb' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <div style={{ width: '32px', height: '32px', backgroundColor: '#dbeafe', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2">
+                <div key={comment.id} className="comment-item">
+                  <div className="comment-header">
+                    <div className="comment-author">
+                      <div className="author-avatar">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                           <circle cx="12" cy="7" r="4"/>
                         </svg>
                       </div>
-                      <span style={{ fontWeight: '500', color: '#111827' }}>{comment.email}</span>
+                      <span className="author-email">{comment.email}</span>
                     </div>
-                    <span style={{ fontSize: '14px', color: '#6b7280' }}>
+                    <span className="comment-date">
                       {new Date(comment.createdAt).toLocaleDateString('en-US', {
                         month: 'short',
                         day: 'numeric',
@@ -492,7 +452,7 @@ async function Comments({ projectId }: { projectId: string }) {
                       })}
                     </span>
                   </div>
-                  <div style={{ color: '#374151', lineHeight: '1.5' }}>{comment.body}</div>
+                  <div className="comment-body">{comment.body}</div>
                 </div>
               ))}
             </div>
@@ -503,8 +463,8 @@ async function Comments({ projectId }: { projectId: string }) {
   } catch (error) {
     console.error('Error in Comments:', error)
     return (
-      <div style={{ textAlign: 'center', padding: '16px 0' }}>
-        <p style={{ color: '#6b7280' }}>Error loading comments</p>
+      <div className="error-state">
+        <p className="error-message">Error loading comments</p>
       </div>
     )
   }
