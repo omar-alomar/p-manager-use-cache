@@ -3,6 +3,7 @@
 import { createProject, deleteProject, updateProject } from "@/db/projects"
 import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
+import { getProjects } from "@/db/projects"
 
 export async function createProjectAction(prevState: unknown, formData: FormData) {
   const [data, errors] = validateProject(formData)
@@ -40,6 +41,9 @@ export async function updateProjectCommentsAction(
     client: string
     body: string  // This is the comments field
     apfo: string
+    mbaNumber: string
+    coFileNumbers: string
+    dldReviewer: string
     userId: number
   }
 ) {
@@ -52,12 +56,85 @@ export async function updateProjectCommentsAction(
   return { success: true }
 }
 
+export async function updateProjectCoFilesAction(
+  projectId: number,
+  data: {
+    title: string
+    client: string
+    body: string
+    apfo: string
+    mbaNumber: string
+    coFileNumbers: string
+    dldReviewer: string
+    userId: number
+  }
+) {
+  await updateProject(projectId, data)
+  
+  // Revalidate to update the UI
+  revalidatePath('/projects')
+  revalidatePath(`/projects/${projectId}`)
+  
+  return { success: true }
+}
+
+export async function updateProjectDldReviewerAction(
+  projectId: number,
+  data: {
+    title: string
+    client: string
+    body: string
+    apfo: string
+    mbaNumber: string
+    coFileNumbers: string
+    dldReviewer: string
+    userId: number
+  }
+) {
+  await updateProject(projectId, data)
+  
+  // Revalidate to update the UI
+  revalidatePath('/projects')
+  revalidatePath(`/projects/${projectId}`)
+  
+  return { success: true }
+}
+
+export async function updateProjectMbaNumberAction(
+  projectId: number,
+  data: {
+    title: string
+    client: string
+    body: string
+    apfo: string
+    mbaNumber: string
+    coFileNumbers: string
+    dldReviewer: string
+    userId: number
+  }
+) {
+  await updateProject(projectId, data)
+  
+  // Revalidate to update the UI
+  revalidatePath('/projects')
+  revalidatePath(`/projects/${projectId}`)
+  
+  return { success: true }
+}
+
+export async function getProjectsAction() {
+  return getProjects()
+}
+
 function validateProject(formData: FormData) {
-  const errors: { title?: string; client?: string, body?: string; apfo?: string; userId?: string } = {}
+  const errors: { title?: string; client?: string, body?: string; apfo?: string; mbaNumber?: string; coFileNumbers?: string; dldReviewer?: string; userId?: string } = {}
   const title = formData.get("title") as string
   const client = formData.get("client") as string
   const body = formData.get("body") as string
   const apfo = formData.get("apfo") as string
+  const mbaNumber = formData.get("mbaNumber") as string
+  const coFileNumbers = formData.get("coFileNumbers") as string
+  const dldReviewer = formData.get("dldReviewer") as string
   const userId = Number(formData.get("userId"))
   let isValid = true
 
@@ -86,5 +163,5 @@ function validateProject(formData: FormData) {
     isValid = false
   }
 
-  return [isValid ? { title, client, body, apfo, userId } : undefined, errors] as const
+  return [isValid ? { title, client, body, apfo, mbaNumber, coFileNumbers, dldReviewer, userId } : undefined, errors] as const
 }

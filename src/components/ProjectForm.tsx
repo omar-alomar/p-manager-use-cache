@@ -17,6 +17,8 @@ export function ProjectForm({
   client: string
   body: string
   apfo: string
+  coFileNumbers: string
+  dldReviewer: string
   userId: number
   }
 }) {
@@ -37,9 +39,6 @@ export function ProjectForm({
             defaultValue={project?.title}
           />
         </FormGroup>
-        
-      </div>
-      <div className="form-row">
         <FormGroup errorMessage={errors.client}>
           <label htmlFor="client">Client</label>
           <input
@@ -50,6 +49,8 @@ export function ProjectForm({
             defaultValue={project?.client}
           />
         </FormGroup>
+      </div>
+      <div className="form-row">
         <FormGroup errorMessage={errors.userId}>
           <label htmlFor="userId">Project Manager</label>
           <select
@@ -67,16 +68,7 @@ export function ProjectForm({
             </Suspense>
           </select>
         </FormGroup>
-      </div>
-
-      <div className="form-row">
-        <FormGroup errorMessage={errors.body}>
-          <label htmlFor="body">Body</label>
-          <textarea required name="body" id="body" defaultValue={project?.body} />
-        </FormGroup>
-      </div>
-      <div className="form-row">
-      <FormGroup errorMessage={errors.apfo}>
+        <FormGroup errorMessage={errors.apfo}>
           <label htmlFor="apfo">APFO</label>
           <input
             required
@@ -87,6 +79,35 @@ export function ProjectForm({
           />
         </FormGroup>
       </div>
+
+      <div className="form-row">
+        <FormGroup errorMessage={errors.body}>
+          <label htmlFor="body">Description</label>
+          <textarea required name="body" id="body" defaultValue={project?.body} />
+        </FormGroup>
+      </div>
+      
+      <div className="form-row">
+        <FormGroup errorMessage={errors.coFileNumbers}>
+          <label htmlFor="coFileNumbers">Co File #'s</label>
+          <input
+            type="text"
+            name="coFileNumbers"
+            id="coFileNumbers"
+            defaultValue={project?.coFileNumbers}
+          />
+        </FormGroup>
+        <FormGroup errorMessage={errors.dldReviewer}>
+          <label htmlFor="dldReviewer">DLD Reviewer</label>
+          <input
+            type="text"
+            name="dldReviewer"
+            id="dldReviewer"
+            defaultValue={project?.dldReviewer}
+          />
+        </FormGroup>
+      </div>
+      
       <div className="form-row form-btn-row">
         <Link
           className="btn btn-outline"
@@ -111,23 +132,33 @@ export function SkeletonProjectForm() {
           <SkeletonInput />
         </FormGroup>
         <FormGroup>
+          <label htmlFor="client">Client</label>
+          <SkeletonInput />
+        </FormGroup>
+      </div>
+      <div className="form-row">
+        <FormGroup>
           <label htmlFor="userId">Project Manager</label>
           <SkeletonInput />
         </FormGroup>
-      </div>
-      <div className="form-row">
         <FormGroup>
-          <label htmlFor="title">APFO</label>
-          <SkeletonInput />
-        </FormGroup>
-        <FormGroup>
-          <label htmlFor="userId">Client</label>
+          <label htmlFor="apfo">APFO</label>
           <SkeletonInput />
         </FormGroup>
       </div>
       <div className="form-row">
         <FormGroup>
-          <label htmlFor="body">Body</label>
+          <label htmlFor="body">Description</label>
+          <SkeletonInput />
+        </FormGroup>
+      </div>
+      <div className="form-row">
+        <FormGroup>
+          <label htmlFor="coFileNumbers">Co File #'s</label>
+          <SkeletonInput />
+        </FormGroup>
+        <FormGroup>
+          <label htmlFor="dldReviewer">DLD Reviewer</label>
           <SkeletonInput />
         </FormGroup>
       </div>

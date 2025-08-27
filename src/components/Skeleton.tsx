@@ -1,19 +1,22 @@
-import { Fragment, ReactNode } from "react"
+import { Fragment, ReactNode, HTMLAttributes } from "react"
 
 export function Skeleton({
   short,
   inline,
+  className = "",
+  ...props
 }: {
   short?: boolean
   inline?: boolean
-}) {
+} & HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className="skeleton"
+      className={`skeleton ${className}`}
       style={{
         width: short ? "15em" : undefined,
         display: inline ? "inline-block" : undefined,
       }}
+      {...props}
     />
   )
 }

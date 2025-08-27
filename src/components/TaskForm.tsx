@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import { FormGroup } from "./FormGroup"
 import { Suspense, useActionState } from "react"
 import Link from "next/link"
@@ -23,10 +24,56 @@ export function TaskForm({
 }) {
   const action =
     task == null ? createTaskAction : editTaskAction.bind(null, task.id)
-  const [errors, formAction, pending] = useActionState(action, {})
+  const [state, formAction, pending] = useActionState(action, {})
+  
+  // Handle success state for task creation/editing
+  React.useEffect(() => {
+    if ('success' in state && state.success) {
+      if (!task) {
+        // For new tasks, show success message briefly, then redirect
+        const timer = setTimeout(() => {
+          window.location.href = '/tasks'
+        }, 1500)
+        return () => clearTimeout(timer)
+      } else {
+        // For edited tasks, show success message briefly, then redirect to task detail
+        const timer = setTimeout(() => {
+          window.location.href = `/tasks/${task.id}`
+        }, 1500)
+        return () => clearTimeout(timer)
+      }
+    }
+  }, [state, task])
+
+  const formTitle = task ? 'Edit Task' : 'Create New Task'
+  
+  // Extract errors from state
+  const errors = 'title' in state ? state : {}
 
   return (
-    <form action={formAction} className="form">
+    <form action={formAction} className={`form ${pending ? 'form-loading' : ''}`}>
+      <div className="form-header">
+        <h2 className="form-title">
+          {pending ? (
+            <>
+              <svg className="spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 12a9 9 0 11-6.219-8.56"/>
+              </svg>
+              {formTitle}...
+            </>
+          ) : (
+            formTitle
+          )}
+        </h2>
+        {'success' in state && state.success && (
+          <div className="form-success-message">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M20 6L9 17l-5-5"/>
+            </svg>
+            {state.message}
+          </div>
+        )}
+      </div>
       <div className="form-row">
         <FormGroup errorMessage={errors.title}>
           <label htmlFor="title">Title</label>
@@ -80,19 +127,22 @@ export function TaskForm({
         </FormGroup>
       </div>
 
-      <div className="form-row">
-        <FormGroup errorMessage={errors.completed}>
-          <label className="checkbox-label">
-            <input
-              type="checkbox"
-              name="completed"
-              id="completed"
-              defaultChecked={task?.completed}
-            />
-            <span>Completed</span>
-          </label>
-        </FormGroup>
-      </div>
+      {/* Only show completion status when editing an existing task */}
+      {task && (
+        <div className="form-row">
+          <FormGroup errorMessage={errors.completed}>
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                name="completed"
+                id="completed"
+                defaultChecked={task.completed}
+              />
+              <span>Completed</span>
+            </label>
+          </FormGroup>
+        </div>
+      )}
 
       <div className="form-row form-btn-row">
         <Link
@@ -101,8 +151,17 @@ export function TaskForm({
         >
           Cancel
         </Link>
-        <button disabled={pending} className="btn">
-          {pending ? "Saving" : "Save"}
+        <button disabled={pending} className={`btn ${pending ? 'btn-loading' : ''}`}>
+          {pending ? (
+            <>
+              <svg className="spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 12a9 9 0 11-6.219-8.56"/>
+              </svg>
+              Saving...
+            </>
+          ) : (
+            "Save"
+          )}
         </button>
       </div>
     </form>
@@ -126,14 +185,6 @@ export function SkeletonTaskForm() {
         <FormGroup>
           <label htmlFor="userId">Assigned To</label>
           <SkeletonInput />
-        </FormGroup>
-      </div>
-      <div className="form-row">
-        <FormGroup>
-          <label className="checkbox-label">
-            <input type="checkbox" disabled />
-            <span>Completed</span>
-          </label>
         </FormGroup>
       </div>
       <div className="form-row form-btn-row">

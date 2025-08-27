@@ -62,8 +62,6 @@ export async function createTask({
   userId: number
   projectId: number
 }) {
-  await wait(2000)
-  
   // Use a transaction to ensure consistency
   const task = await prisma.$transaction(async (tx) => {
     return tx.task.create({
@@ -93,8 +91,6 @@ export async function updateTask(
      projectId: number
   }) {
   console.log('updateTask called with:', { taskId, title, completed, userId, projectId })
-  
-  await wait(2000)
   
   // Use transaction for consistency
   const task = await prisma.$transaction(async (tx) => {
@@ -128,8 +124,6 @@ export async function updateTask(
 }
 
 export async function deleteTask(taskId: string | number) {
-  await wait(2000)
-
   const task = await prisma.$transaction(async (tx) => {
     return tx.task.delete({ where: { id: Number(taskId) } })
   })

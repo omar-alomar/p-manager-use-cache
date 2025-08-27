@@ -47,6 +47,9 @@ model Project {
   body   String
   userId Int
   apfo   String @default("")
+  mbaNumber String @default("")
+  coFileNumbers String @default("")
+  dldReviewer String @default("")
   createdAt DateTime @default(now())
 
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)

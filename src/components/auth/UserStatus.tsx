@@ -1,92 +1,44 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
-import { getCurrentUserStatus } from "@/actions/userStatus"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { logOut } from "@/actions/auth"
-import { usePathname } from "next/navigation"
-
-type User = {
-  id: number
-  email: string
-  role: string
-  name: string
-}
+import { useAuth } from "@/components/auth/AuthContext"
 
 export function UserStatus() {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
+  const { user, loading, logout: contextLogout } = useAuth()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
-  const pathname = usePathname()
-
-  // Smart auth checking function
-  const checkAuth = useCallback(async () => {
-    try {
-      const result = await getCurrentUserStatus()
-      if (result.success && result.user) {
-        setUser(result.user)
-      } else {
-        setUser(null)
-      }
-    } catch (error) {
-      console.error("Auth check failed:", error)
-      setUser(null)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  // Initial auth check
-  useEffect(() => {
-    checkAuth()
-  }, [checkAuth])
-
-  // Update auth status on route changes
-  useEffect(() => {
-    checkAuth()
-  }, [pathname, checkAuth])
-
-  // Update auth status when user returns to tab
-  useEffect(() => {
-    const handleFocus = () => {
-      // Only check if we're not loading and have a user (avoid unnecessary checks)
-      if (!loading && user) {
-        checkAuth()
-      }
-    }
-
-    window.addEventListener('focus', handleFocus)
-    return () => window.removeEventListener('focus', handleFocus)
-  }, [loading, user, checkAuth])
-
-  // Periodic health check (every 5 minutes) - only when user is logged in
-  useEffect(() => {
-    if (!user) return
-
-    const interval = setInterval(() => {
-      checkAuth()
-    }, 5 * 60 * 1000) // 5 minutes
-
-    return () => clearInterval(interval)
-  }, [user, checkAuth])
+  const router = useRouter()
 
   const handleLogout = async () => {
     setIsLoggingOut(true)
     try {
-      await logOut()
-      // Immediately update local state - no need to wait for redirect
-      setUser(null)
+      const result = await logOut()
+      if (result === null) {
+        // Logout was successful, update context and redirect
+        contextLogout()
+        router.push("/")
+      } else {
+        console.error("Logout failed:", result)
+      }
     } catch (error) {
       console.error("Logout failed:", error)
+    } finally {
       setIsLoggingOut(false)
     }
   }
 
-
-
   if (loading) {
     return (
       <div className="user-status">
-        <span className="auth-checking">Checking authentication...</span>
+        <div className="user-info">
+          <span className="user-name">Checking authentication...</span>
+          <span className="user-email">Please wait</span>
+          <span className="user-role">Loading...</span>
+        </div>
+        <button className="logout-button" disabled>
+          Loading...
+        </button>
       </div>
     )
   }
@@ -94,7 +46,11 @@ export function UserStatus() {
   if (!user) {
     return (
       <div className="user-status">
-        <span>Not logged in</span>
+        <div className="user-info">
+          <span className="user-name">Not logged in</span>
+          <span className="user-email">Guest user</span>
+          <span className="user-role">No access</span>
+        </div>
         <a href="/login" className="login-link">Log in</a>
       </div>
     )

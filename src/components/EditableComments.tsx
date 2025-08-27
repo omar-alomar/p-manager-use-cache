@@ -9,6 +9,8 @@ interface EditableCommentsProps {
   title: string
   client: string
   apfo: string
+  coFileNumbers: string
+  dldReviewer: string
   userId: number
 }
 
@@ -18,6 +20,8 @@ export function EditableComments({
   title,
   client,
   apfo,
+  coFileNumbers,
+  dldReviewer,
   userId 
 }: EditableCommentsProps) {
   const [comments, setComments] = useState(initialComments)
@@ -49,6 +53,8 @@ export function EditableComments({
         client,
         body: comments,
         apfo,
+        coFileNumbers,
+        dldReviewer,
         userId
       })
       
@@ -66,7 +72,7 @@ export function EditableComments({
     if (e.key === 'Escape') {
       setComments(initialComments)
       setIsEditing(false)
-    } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+    } else if (e.key === 'Enter') {
       handleSave()
     }
   }
@@ -93,7 +99,7 @@ export function EditableComments({
           style={{ opacity: isUpdating ? 0.5 : 1 }}
         />
         <div className="comments-edit-hint">
-          Press Ctrl+Enter to save, Esc to cancel
+          {isUpdating ? "Saving..." : "Press Enter to save, Esc to cancel"}
         </div>
       </div>
     )

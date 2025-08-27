@@ -23,21 +23,18 @@ export default async function UsersPage() {
         ) : (
           users.map(user => (
             <div key={user.id} className="team-card">
-              <div className="team-card-header">
-                <div className="user-avatar">
-                  {user.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                </div>
-                <div className="user-info">
-                  <h3 className="user-name">{user.name}</h3>
-                  <span className={`user-role role-${user.role || 'default'}`}>
-                    {user.role || 'user'}
-                  </span>
-                </div>
-                <div className="user-actions">
-                  <UserDeleteButton userId={user.id} userName={user.name} />
-                </div>
-              </div>
               <Link href={`users/${user.id.toString()}`} className="team-card-clickable">
+                <div className="team-card-header">
+                  <div className="user-avatar">
+                    {user.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                  </div>
+                  <div className="user-info">
+                    <h3 className="user-name">{user.name}</h3>
+                    <span className={`user-role role-${user.role || 'default'}`}>
+                      {user.role || 'user'}
+                    </span>
+                  </div>
+                </div>
                 <div className="team-card-body">
                   <div className="user-email">
                     <div className="email-icon">
@@ -83,6 +80,9 @@ export default async function UsersPage() {
                   </div>
                 </div>
               </Link>
+              <div className="user-actions">
+                <UserDeleteButton userId={user.id} userName={user.name} />
+              </div>
             </div>
           ))
         )}

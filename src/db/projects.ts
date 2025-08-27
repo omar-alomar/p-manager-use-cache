@@ -48,12 +48,18 @@ export async function createProject({
   client,
   body,
   apfo,
+  mbaNumber,
+  coFileNumbers,
+  dldReviewer,
   userId,
 }: {
   title: string
   client: string
   body: string
   apfo: string
+  mbaNumber: string
+  coFileNumbers: string
+  dldReviewer: string
   userId: number
 }) {
   await wait(2000)
@@ -63,6 +69,9 @@ export async function createProject({
       client,
       body,
       apfo,
+      mbaNumber,
+      coFileNumbers,
+      dldReviewer,
       userId,
     },
   })
@@ -74,6 +83,46 @@ export async function createProject({
   return project
 }
 
+function validateProject(formData: FormData) {
+  const errors: { title?: string; client?: string, body?: string; apfo?: string; mbaNumber?: string; coFileNumbers?: string; dldReviewer?: string; userId?: string } = {}
+  const title = formData.get("title") as string
+  const client = formData.get("client") as string
+  const body = formData.get("body") as string
+  const apfo = formData.get("apfo") as string
+  const mbaNumber = formData.get("mbaNumber") as string
+  const coFileNumbers = formData.get("coFileNumbers") as string
+  const dldReviewer = formData.get("dldReviewer") as string
+  const userId = Number(formData.get("userId"))
+  let isValid = true
+
+  if (title === "") {
+    errors.title = "Required"
+    isValid = false
+  }
+
+  if (client === "") {
+    errors.client = "Required"
+    isValid = false
+  }
+
+  if (body === "") {
+    errors.body = "Required"
+    isValid = false
+  }
+
+  if (apfo === "") {
+    errors.apfo = "Required"
+    isValid = false
+  }
+
+  if (isNaN(userId)) {
+    errors.userId = "Required"
+    isValid = false
+  }
+
+  return [isValid ? { title, client, body, apfo, mbaNumber, coFileNumbers, dldReviewer, userId } : undefined, errors] as const
+}
+
 export async function updateProject(
   projectId: string | number,
   {
@@ -81,12 +130,18 @@ export async function updateProject(
     client,
     body,
     apfo,
+    mbaNumber,
+    coFileNumbers,
+    dldReviewer,
     userId,
   }: {
     title: string
     client: string
     body: string
     apfo: string
+    mbaNumber: string
+    coFileNumbers: string
+    dldReviewer: string
     userId: number
   }
 ) {
@@ -98,6 +153,9 @@ export async function updateProject(
       client,
       body,
       apfo,
+      mbaNumber,
+      coFileNumbers,
+      dldReviewer,
       userId,
     },
   })

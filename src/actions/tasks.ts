@@ -9,16 +9,21 @@ export async function createTaskAction(prevState: unknown, formData: FormData) {
 
   if (!data) return errors
 
-  const task = await createTask(data)
-  
-  // Revalidate paths
-  revalidatePath(`/projects/${data.projectId}`)
-  revalidatePath('/projects')
-  revalidatePath('/tasks')
-  revalidatePath('/')
-  revalidateTag('tasks')
+  try {
+    const task = await createTask(data)
+    
+    // Revalidate paths
+    revalidatePath(`/projects/${data.projectId}`)
+    revalidatePath('/projects')
+    revalidatePath('/tasks')
+    revalidatePath('/')
+    revalidateTag('tasks')
 
-  redirect(`/tasks/${task.id}`)
+    // Return success state instead of redirecting
+    return { success: true, message: 'Task created successfully!', taskId: task.id }
+  } catch (error) {
+    return { success: false, message: 'Failed to create task. Please try again.' }
+  }
 }
 
 export async function editTaskAction(
@@ -30,17 +35,22 @@ export async function editTaskAction(
 
   if (!data) return errors
 
-  const task = await updateTask(taskId, data)
-  
-  // Revalidate paths
-  revalidatePath(`/projects/${data.projectId}`)
-  revalidatePath('/projects')
-  revalidatePath('/tasks')
-  revalidatePath(`/tasks/${taskId}`)
-  revalidatePath('/')
-  revalidateTag('tasks')
+  try {
+    const task = await updateTask(taskId, data)
+    
+    // Revalidate paths
+    revalidatePath(`/projects/${data.projectId}`)
+    revalidatePath('/projects')
+    revalidatePath('/tasks')
+    revalidatePath(`/tasks/${taskId}`)
+    revalidatePath('/')
+    revalidateTag('tasks')
 
-  redirect(`/tasks/${task.id}`)
+    // Return success state instead of redirecting
+    return { success: true, message: 'Task updated successfully!', taskId: task.id }
+  } catch (error) {
+    return { success: false, message: 'Failed to update task. Please try again.' }
+  }
 }
 
 export async function deleteTaskAction(taskId: number | string) {

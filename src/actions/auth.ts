@@ -1,7 +1,6 @@
 "use server"
 
 import { z } from "zod"
-import { redirect } from "next/navigation"
 import { signInSchema, signUpSchema } from "../schemas/schemas"
 import prisma from "@/db/db"
 import {
@@ -40,9 +39,10 @@ export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
 
   if (!isCorrectPassword) return "Unable to log you in"
 
-  await createUserSession(user, await cookies())
+  await createUserSession({ id: user.id, role: user.role as "user" | "admin" }, await cookies())
 
-  redirect("/")
+  // Return null to indicate success (no error)
+  return null
 }
 
 export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
@@ -76,16 +76,18 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
 
     if (user == null) return "Unable to create account"
     
-    await createUserSession(user, await cookies())
+    await createUserSession({ id: user.id, role: user.role as "user" | "admin" }, await cookies())
   } catch (error) {
     console.error("Signup error:", error)
     return "Unable to create account"
   }
 
-  redirect("/")
+  // Return null to indicate success (no error)
+  return null
 }
 
 export async function logOut() {
   await removeUserFromSession(await cookies())
-  redirect("/")
+  // Return null to indicate success (no error)
+  return null
 }
