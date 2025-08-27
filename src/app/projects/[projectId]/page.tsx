@@ -45,8 +45,8 @@ export default async function ProjectPage({
           <div className="section-header">
             <div className="section-icon">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
               </svg>
             </div>
             <div className="section-title-group">
@@ -151,12 +151,9 @@ async function ProjectHero({ projectId }: { projectId: string }) {
         {/* Left Section - Project Info */}
         <div className="hero-left-section">
           <div className="hero-avatar">
-            <div className="avatar-circle">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-              </svg>
-            </div>
+            <Suspense fallback={<div className="avatar-circle skeleton-avatar"></div>}>
+              <ProjectManagerAvatar projectId={projectId} />
+            </Suspense>
           </div>
           
           <div className="hero-basic-info">
@@ -194,6 +191,19 @@ async function ProjectHero({ projectId }: { projectId: string }) {
         {/* Right Section - Stats & Actions */}
         <div className="hero-right-section">
           <div className="hero-stats">
+            <div className="stat-card primary">
+              <div className="stat-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                </svg>
+              </div>
+              <div className="stat-content">
+                <div className="stat-number">{tasks.length}</div>
+                <div className="stat-label">Total</div>
+              </div>
+            </div>
+            
             <div className="stat-card success">
               <div className="stat-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -217,19 +227,6 @@ async function ProjectHero({ projectId }: { projectId: string }) {
               <div className="stat-content">
                 <div className="stat-number">{activeTasks}</div>
                 <div className="stat-label">Active</div>
-              </div>
-            </div>
-            
-            <div className="stat-card primary">
-              <div className="stat-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-                </svg>
-              </div>
-              <div className="stat-content">
-                <div className="stat-number">{tasks.length}</div>
-                <div className="stat-label">Total</div>
               </div>
             </div>
           </div>
@@ -332,6 +329,42 @@ async function ProjectDetails({ projectId }: { projectId: string }) {
     return (
       <div className="error-state">
         <p className="error-message">Error loading project details</p>
+      </div>
+    )
+  }
+}
+
+async function ProjectManagerAvatar({ projectId }: { projectId: string }) {
+  try {
+    const project = await getProject(projectId)
+    if (project == null) return notFound()
+    
+    const user = await getUser(project.userId)
+    if (user == null) return notFound()
+
+    // Generate initials from user name
+    const initials = user.name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
+
+    return (
+      <Link href={`/users/${user.id}`} className="avatar-link">
+        <div className="avatar-circle">
+          <span className="avatar-text">{initials}</span>
+        </div>
+      </Link>
+    )
+  } catch (error) {
+    console.error('Error in ProjectManagerAvatar:', error)
+    return (
+      <div className="avatar-circle error">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
       </div>
     )
   }
