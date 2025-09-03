@@ -1,19 +1,22 @@
 "use client"
 
-import { useState } from "react"
+import { useTaskFilter } from "@/contexts/TaskFilterContext"
 
-type FilterType = 'all' | 'in_progress' | 'completed'
-type SortType = 'created' | 'title'
+interface TaskFiltersProps {
+  taskCounts?: {
+    all: number
+    inProgress: number
+    completed: number
+  }
+}
 
-export function TaskFilters() {
-  const [filter, setFilter] = useState<FilterType>('all')
-  const [sort, setSort] = useState<SortType>('created')
-  const [search, setSearch] = useState('')
+export function TaskFilters({ taskCounts }: TaskFiltersProps) {
+  const { filter, setFilter, sort, setSort, search, setSearch } = useTaskFilter()
 
   const filterOptions = [
-    { value: 'all', label: 'All Tasks', count: 0 },
-    { value: 'in_progress', label: 'In Progress', count: 0 },
-    { value: 'completed', label: 'Completed', count: 0 }
+    { value: 'all', label: 'All Tasks', count: taskCounts?.all || 0 },
+    { value: 'in_progress', label: 'In Progress', count: taskCounts?.inProgress || 0 },
+    { value: 'completed', label: 'Completed', count: taskCounts?.completed || 0 }
   ]
 
   const sortOptions = [
