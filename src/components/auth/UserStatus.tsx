@@ -20,9 +20,15 @@ export function UserStatus() {
         router.push("/")
       } else {
         console.error("Logout failed:", result)
+        // Even if logout fails, clear local state and redirect
+        contextLogout()
+        router.push("/")
       }
     } catch (error) {
       console.error("Logout failed:", error)
+      // Even if logout fails, clear local state and redirect
+      contextLogout()
+      router.push("/")
     } finally {
       setIsLoggingOut(false)
     }

@@ -34,7 +34,9 @@ async function _getCurrentUser({
   withFullUser = false,
   redirectIfNotFound = false,
 } = {}) {
+  console.log("_getCurrentUser: Starting...")
   const user = await getUserFromSession(await cookies())
+  console.log("_getCurrentUser: Got session user:", user ? "found" : "null")
 
   if (user == null) {
     if (redirectIfNotFound) return redirect("/login")
@@ -42,7 +44,9 @@ async function _getCurrentUser({
   }
 
   if (withFullUser) {
+    console.log("_getCurrentUser: Getting full user from DB...")
     const fullUser = await getUserFromDb(user.id)
+    console.log("_getCurrentUser: Got full user:", fullUser ? "found" : "null")
     // This should never happen
     if (fullUser == null) throw new Error("User not found in database")
     return fullUser

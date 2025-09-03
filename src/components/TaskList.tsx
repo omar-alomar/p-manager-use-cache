@@ -3,7 +3,7 @@ import { TaskItem } from "./TaskItem"
 interface Task {
   id: number
   title: string
-  description?: string
+  description?: string | null
   status: 'IN_PROGRESS' | 'COMPLETED'
   completed: boolean
   userId: number

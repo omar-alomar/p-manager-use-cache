@@ -73,7 +73,7 @@ export async function deleteTaskAction(taskId: number | string) {
     revalidatePath('/')
     revalidateTag('tasks')
     
-    redirect("/tasks")
+    return { success: true, message: 'Task deleted successfully', redirectTo: "/tasks" }
   } catch (error) {
     console.error('Error deleting task:', error)
     return { success: false, message: 'Failed to delete task' }
@@ -131,7 +131,7 @@ export async function updateTaskCompletionAction(
   taskId: number,
   data: {
     title: string
-    description?: string
+    description?: string | null
     status?: 'IN_PROGRESS' | 'COMPLETED'
     completed: boolean
     userId: number

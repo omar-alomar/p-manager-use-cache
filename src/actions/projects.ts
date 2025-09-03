@@ -12,7 +12,7 @@ export async function createProjectAction(prevState: unknown, formData: FormData
 
   const project = await createProject(data)
 
-  redirect(`/projects/${project.id}`)
+  return { success: true, message: 'Project created successfully', redirectTo: `/projects/${project.id}` }
 }
 
 export async function editProjectAction(
@@ -26,12 +26,12 @@ export async function editProjectAction(
 
   const project = await updateProject(projectId, data)
 
-  redirect(`/projects/${project.id}`)
+  return { success: true, message: 'Project updated successfully', redirectTo: `/projects/${project.id}` }
 }
 
 export async function deleteProjectAction(projectId: number | string) {
   await deleteProject(projectId)
-  redirect("/projects")
+  return { success: true, message: 'Project deleted successfully', redirectTo: "/projects" }
 }
 
 export async function updateProjectCommentsAction(

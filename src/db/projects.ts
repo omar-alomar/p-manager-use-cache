@@ -13,7 +13,7 @@ export async function getProjects({
   "use cache"
   cacheTag("projects:all")
 
-  await wait(2000)
+  await wait(500)
 
   const where: Prisma.ProjectFindManyArgs["where"] = {}
   if (query) {
@@ -31,7 +31,7 @@ export async function getProject(projectId: string | number) {
   "use cache"
   cacheTag(`projects:id=${projectId}`)
 
-  await wait(2000)
+  await wait(500)
   return prisma.project.findUnique({ where: { id: Number(projectId) } })
 }
 
@@ -39,7 +39,7 @@ export async function getUserProjects(userId: string | number) {
   "use cache"
   cacheTag(`projects:userId=${userId}`)
 
-  await wait(2000)
+  await wait(500)
   return prisma.project.findMany({ where: { userId: Number(userId) } })
 }
 
@@ -62,7 +62,7 @@ export async function createProject({
   dldReviewer: string
   userId: number
 }) {
-  await wait(2000)
+  await wait(500)
   const project = await prisma.project.create({
     data: {
       title,
@@ -145,7 +145,7 @@ export async function updateProject(
     userId: number
   }
 ) {
-  await wait(2000)
+  await wait(500)
   const project = await prisma.project.update({
     where: { id: Number(projectId) },
     data: {
@@ -168,7 +168,7 @@ export async function updateProject(
 }
 
 export async function deleteProject(projectId: string | number) {
-  await wait(2000)
+  await wait(500)
 
   const project = await prisma.project.delete({ where: { id: Number(projectId) } })
 

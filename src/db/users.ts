@@ -4,7 +4,7 @@ import { revalidateTag } from "next/cache"
 export async function getUsers() {
   "use cache"
   
-  await wait(2000)
+  await wait(500)
   
   return prisma.user.findMany({
     include: {
@@ -20,14 +20,14 @@ export async function getUsers() {
 export async function getUser(userId: string | number) {
   "use cache"
   
-  await wait(2000)
+  await wait(500)
   return prisma.user.findUnique({ where: { id: Number(userId) } })
 }
 
 export async function getUsersWithTasks() {
   "use cache"
   
-  await wait(2000)
+  await wait(500)
   
   // This query should only return users who have at least one task
   const usersWithTasks = await prisma.user.findMany({
@@ -61,7 +61,7 @@ export async function getUsersWithTasks() {
 }
 
 export async function deleteUser(userId: string | number) {
-  await wait(2000)
+  await wait(500)
 
   const user = await prisma.user.delete({ where: { id: Number(userId) } })
 

@@ -1,7 +1,6 @@
 "use client"
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react"
-import { usePathname } from "next/navigation"
 import { getCurrentUserStatus } from "@/actions/userStatus"
 
 type User = {
@@ -23,11 +22,23 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
-  const pathname = usePathname()
 
   const checkAuth = async () => {
     try {
-      const result = await getCurrentUserStatus()
+      setLoading(true)
+      console.log("Checking auth...")
+      
+      // Add a reasonable timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Auth check timeout')), 10000)
+      )
+      
+      const result = await Promise.race([
+        getCurrentUserStatus(),
+        timeoutPromise
+      ]) as any
+      
+      console.log("Auth result:", result)
       if (result.success && result.user) {
         setUser(result.user)
       } else {
@@ -38,43 +49,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null)
     } finally {
       setLoading(false)
+      console.log("Auth check complete, loading set to false")
     }
   }
 
   const logout = () => {
     setUser(null)
+    setLoading(false)
     // The actual logout will be handled by the logout action
   }
 
+  // Only check auth once on mount
   useEffect(() => {
     checkAuth()
   }, [])
-
-  // Check auth when route changes
-  useEffect(() => {
-    checkAuth()
-  }, [pathname])
-
-  // Also check auth when the window regains focus (user returns to tab)
-  useEffect(() => {
-    const handleFocus = () => {
-      checkAuth()
-    }
-
-    window.addEventListener('focus', handleFocus)
-    return () => window.removeEventListener('focus', handleFocus)
-  }, [])
-
-  // Periodic auth check when user is logged in
-  useEffect(() => {
-    if (!user) return
-
-    const interval = setInterval(() => {
-      checkAuth()
-    }, 30 * 1000) // Check every 30 seconds
-
-    return () => clearInterval(interval)
-  }, [user])
 
   const value = {
     user,
@@ -97,3 +85,4 @@ export function useAuth() {
   }
   return context
 }
+

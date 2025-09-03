@@ -97,6 +97,7 @@ async function ProjectRow({ project }: { project: any }) {
           client={project.client}
           body={project.body}
           apfo={project.apfo}
+          mbaNumber={project.mbaNumber || ""}
           dldReviewer={project.dldReviewer || ""}
           userId={project.userId}
         />
@@ -117,7 +118,9 @@ async function ProjectRow({ project }: { project: any }) {
           initialComments={project.body}
           title={project.title}
           client={project.client}
+          body={project.body}
           apfo={project.apfo}
+          mbaNumber={project.mbaNumber || ""}
           coFileNumbers={project.coFileNumbers || ""}
           dldReviewer={project.dldReviewer || ""}
           userId={project.userId}

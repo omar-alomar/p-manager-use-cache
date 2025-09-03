@@ -14,7 +14,7 @@ interface TaskItemProps {
   displayProject?: boolean
   displayUser?: boolean
   status?: 'IN_PROGRESS' | 'COMPLETED'
-  description?: string
+  description?: string | null
 }
 
 export function TaskItem({ 

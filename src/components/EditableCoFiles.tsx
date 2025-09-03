@@ -10,6 +10,7 @@ interface EditableCoFilesProps {
   client: string
   body: string
   apfo: string
+  mbaNumber: string
   dldReviewer: string
   userId: number
 }
@@ -21,6 +22,7 @@ export function EditableCoFiles({
   client,
   body,
   apfo,
+  mbaNumber,
   dldReviewer,
   userId 
 }: EditableCoFilesProps) {
@@ -51,6 +53,7 @@ export function EditableCoFiles({
         client,
         body,
         apfo,
+        mbaNumber,
         coFileNumbers: coFiles,
         dldReviewer,
         userId

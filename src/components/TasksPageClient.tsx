@@ -9,7 +9,7 @@ import { NewTaskButton } from "./NewTaskButton"
 interface Task {
   id: number
   title: string
-  description?: string
+  description?: string | null
   status: 'IN_PROGRESS' | 'COMPLETED'
   completed: boolean
   userId: number

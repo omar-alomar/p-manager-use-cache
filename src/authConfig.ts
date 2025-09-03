@@ -13,7 +13,7 @@ const msalConfig = {
   },
   system: {
     loggerOptions: {
-      loggerCallback(loglevel, message, containsPii) {
+      loggerCallback(loglevel: any, message: any, containsPii: any) {
         console.log(message);
       },
       piiLoggingEnabled: false,

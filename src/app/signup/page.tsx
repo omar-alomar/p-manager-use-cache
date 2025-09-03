@@ -19,7 +19,7 @@ export default function SignupPage() {
   useEffect(() => {
     if (user) {
       // User is already logged in, redirect to projects page
-      router.replace("/projects")
+      router.push("/projects")
       return
     }
     setIsCheckingAuth(false)
@@ -36,8 +36,7 @@ export default function SignupPage() {
         // signUp returns an error message if something went wrong
         setError(result)
       } else {
-        // Signup was successful, refresh auth state and redirect
-        await checkAuth()
+        // Signup was successful, redirect immediately
         router.push("/projects")
       }
       

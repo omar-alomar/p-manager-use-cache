@@ -112,7 +112,7 @@ export function QuickAddTaskModal({
 
         <form action={handleSubmit} className={`quick-add-form ${pending ? 'form-loading' : ''}`}>
           <div className="form-group">
-            <FormGroup errorMessage={errors.title}>
+            <FormGroup errorMessage={'title' in errors ? errors.title : undefined}>
               <label htmlFor="task-title">Task Title</label>
               <input
                 required
@@ -128,7 +128,7 @@ export function QuickAddTaskModal({
 
           {!presetUserId && (
             <div className="form-group">
-              <FormGroup errorMessage={errors.userId}>
+              <FormGroup errorMessage={'userId' in errors ? errors.userId : undefined}>
                 <label htmlFor="task-user">Assigned To</label>
                 <select
                   required
@@ -153,7 +153,7 @@ export function QuickAddTaskModal({
           )}
 
           <div className="form-group">
-            <FormGroup errorMessage={errors.projectId}>
+            <FormGroup errorMessage={'projectId' in errors ? errors.projectId : undefined}>
               <label htmlFor="task-project">Project</label>
               <select
                 required

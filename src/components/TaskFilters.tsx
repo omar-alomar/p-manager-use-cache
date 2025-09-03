@@ -2,6 +2,9 @@
 
 import { useTaskFilter } from "@/contexts/TaskFilterContext"
 
+type FilterType = 'all' | 'in_progress' | 'completed'
+type SortType = 'created' | 'title'
+
 interface TaskFiltersProps {
   taskCounts?: {
     all: number

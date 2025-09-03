@@ -90,7 +90,7 @@ export function TaskForm({
       </div>
       
       <div className="form-row">
-        <FormGroup errorMessage={errors.description}>
+        <FormGroup errorMessage={'description' in errors ? (errors.description as string) : undefined}>
           <label htmlFor="description">Description</label>
           <textarea
             name="description"

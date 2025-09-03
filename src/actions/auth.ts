@@ -87,7 +87,14 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
 }
 
 export async function logOut() {
-  await removeUserFromSession(await cookies())
-  // Return null to indicate success (no error)
-  return null
+  try {
+    console.log("Logout: Starting...")
+    await removeUserFromSession(await cookies())
+    console.log("Logout: Success")
+    // Return null to indicate success (no error)
+    return null
+  } catch (error) {
+    console.error("Logout error:", error)
+    return "Logout failed"
+  }
 }

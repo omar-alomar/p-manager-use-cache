@@ -11,7 +11,7 @@ export async function deleteUserAction(userId: number | string) {
   revalidatePath('/users')
   revalidatePath('/')
   
-  redirect("/users")
+  return { success: true, message: 'User deleted successfully', redirectTo: "/users" }
 }
 
 export async function getUsersAction() {

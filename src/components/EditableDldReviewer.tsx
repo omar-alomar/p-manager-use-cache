@@ -10,6 +10,7 @@ interface EditableDldReviewerProps {
   client: string
   body: string
   apfo: string
+  mbaNumber: string
   coFileNumbers: string
   userId: number
 }
@@ -21,6 +22,7 @@ export function EditableDldReviewer({
   client,
   body,
   apfo,
+  mbaNumber,
   coFileNumbers,
   userId 
 }: EditableDldReviewerProps) {
@@ -51,6 +53,7 @@ export function EditableDldReviewer({
         client,
         body,
         apfo,
+        mbaNumber,
         coFileNumbers,
         dldReviewer,
         userId

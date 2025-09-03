@@ -3,7 +3,7 @@ import prisma from "./db"
 export async function getTasks() {
   "use cache"
   
-  await wait(2000)
+  await wait(500)
   return prisma.task.findMany({
     include: {
       Project: true,
@@ -18,7 +18,7 @@ export async function getTasks() {
 export async function getTasksByStatus(status: 'IN_PROGRESS' | 'COMPLETED') {
   "use cache"
   
-  await wait(2000)
+  await wait(500)
   return prisma.task.findMany({
     where: { status },
     include: {
@@ -36,7 +36,7 @@ export async function getTasksByStatus(status: 'IN_PROGRESS' | 'COMPLETED') {
 export async function getUserTasks(userId: string | number) {
   "use cache"
   
-  await wait(2000)
+  await wait(500)
   return prisma.task.findMany({ 
     where: { userId: Number(userId) },
     include: {
@@ -49,7 +49,7 @@ export async function getUserTasks(userId: string | number) {
 export async function getProjectTasks(projectId: string | number) {
   "use cache"
   
-  await wait(2000)
+  await wait(500)
   return prisma.task.findMany({ 
     where: { projectId: Number(projectId) },
     include: {
@@ -62,7 +62,7 @@ export async function getProjectTasks(projectId: string | number) {
 export async function getTask(taskId: string | number) {
   "use cache"
   
-  await wait(2000)
+  await wait(500)
   return prisma.task.findUnique({ 
     where: { id: Number(taskId) },
     include: {
@@ -115,7 +115,7 @@ export async function updateTask(
     projectId
    }:{
      title: string,
-     description?: string,
+     description?: string | null,
      status?: 'IN_PROGRESS' | 'COMPLETED',
      completed: boolean,
      userId: number,

@@ -188,7 +188,9 @@ async function ProjectHero({ projectId }: { projectId: string }) {
                 initialComments={project.body}
                 title={project.title}
                 client={project.client}
+                body={project.body}
                 apfo={project.apfo}
+                mbaNumber={project.mbaNumber || ""}
                 coFileNumbers={project.coFileNumbers || ""}
                 dldReviewer={project.dldReviewer || ""}
                 userId={project.userId}
