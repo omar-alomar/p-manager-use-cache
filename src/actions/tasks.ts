@@ -16,6 +16,7 @@ export async function createTaskAction(prevState: unknown, formData: FormData) {
     revalidatePath(`/projects/${data.projectId}`)
     revalidatePath('/projects')
     revalidatePath('/tasks')
+    revalidatePath('/my-tasks')
     revalidatePath('/')
     revalidateTag('tasks')
 
@@ -42,6 +43,7 @@ export async function editTaskAction(
     revalidatePath(`/projects/${data.projectId}`)
     revalidatePath('/projects')
     revalidatePath('/tasks')
+    revalidatePath('/my-tasks')
     revalidatePath(`/tasks/${taskId}`)
     revalidatePath('/')
     revalidateTag('tasks')
@@ -54,19 +56,28 @@ export async function editTaskAction(
 }
 
 export async function deleteTaskAction(taskId: number | string) {
-  const task = await getTask(taskId)
-  if (!task) throw new Error("Task not found")
-  
-  await deleteTask(taskId)
-  
-  // Revalidate paths
-  revalidatePath(`/projects/${task.projectId}`)
-  revalidatePath('/projects')
-  revalidatePath('/tasks')
-  revalidatePath('/')
-  revalidateTag('tasks')
-  
-  redirect("/tasks")
+  try {
+    const task = await getTask(taskId)
+    if (!task) {
+      console.error(`Task ${taskId} not found`)
+      return { success: false, message: 'Task not found' }
+    }
+    
+    await deleteTask(taskId)
+    
+    // Revalidate paths
+    revalidatePath(`/projects/${task.projectId}`)
+    revalidatePath('/projects')
+    revalidatePath('/tasks')
+    revalidatePath('/my-tasks')
+    revalidatePath('/')
+    revalidateTag('tasks')
+    
+    redirect("/tasks")
+  } catch (error) {
+    console.error('Error deleting task:', error)
+    return { success: false, message: 'Failed to delete task' }
+  }
 }
 
 
@@ -139,6 +150,7 @@ export async function updateTaskCompletionAction(
     revalidatePath(`/projects/${data.projectId}`)
     revalidatePath('/projects')
     revalidatePath('/tasks')
+    revalidatePath('/my-tasks')
     revalidatePath(`/tasks/${taskId}`)
     revalidatePath('/')
     

@@ -5,9 +5,9 @@ import TasksLoading from "./loading"
 export default async function TasksPage() {
   return (
     <div className="tasks-page">
-      <div className="page-header">
-        <div className="page-header-content">
-          <h1 className="page-title">Task Management</h1>
+      <div className="page-title">
+        <div className="title-content">
+          <h1>Task Management</h1>
           <p className="page-subtitle">
             Manage and track all tasks across your projects
           </p>

@@ -31,6 +31,7 @@ export function TaskItem({
   description
 }: TaskItemProps) {
   const [completed, setCompleted] = useState(initialCompleted)
+  const [currentStatus, setCurrentStatus] = useState(status)
   const [isUpdating, setIsUpdating] = useState(false)
   const [updateCount, setUpdateCount] = useState(0)
   const [isEditing, setIsEditing] = useState(false)
@@ -55,11 +56,14 @@ export function TaskItem({
     setCompleted(newCompleted)
     setIsUpdating(true)
     
+    // Update status based on completion
+    const newStatus = newCompleted ? 'COMPLETED' : 'IN_PROGRESS'
+    
     try {
       await updateTaskCompletionAction(id, {
         title: editedTitle,
         description,
-        status,
+        status: newStatus,
         completed: newCompleted,
         userId,
         projectId
@@ -75,6 +79,7 @@ export function TaskItem({
         setCompleted(!newCompleted)
         alert('Update failed! Please try again.')
       } else {
+        setCurrentStatus(newStatus)
         setUpdateCount(c => c + 1)
       }
       
@@ -105,7 +110,7 @@ export function TaskItem({
       await updateTaskCompletionAction(id, {
         title: editedTitle,
         description,
-        status,
+        status: currentStatus,
         completed,
         userId,
         projectId
@@ -155,8 +160,16 @@ export function TaskItem({
     setIsDeleting(true)
     
     try {
-      await deleteTaskAction(id)
-      // The redirect in deleteTaskAction will handle navigation
+      const result = await deleteTaskAction(id)
+      
+      // Check if the action returned an error
+      if (result && 'success' in result && !result.success) {
+        alert(result.message || 'Failed to delete task. Please try again.')
+        setIsDeleting(false)
+        return
+      }
+      
+      // If we get here, the delete was successful and we should be redirected
       // No need to set isDeleting to false as we're redirecting
     } catch (error) {
       // Check if this is a redirect error (which is expected)
@@ -229,8 +242,8 @@ export function TaskItem({
                     {editedTitle}
                   </h4>
                   <div className="task-badges">
-                    <span className={`status-badge status-${status.toLowerCase().replace('_', '-')}`}>
-                      {status.replace('_', ' ')}
+                    <span className={`status-badge status-${currentStatus.toLowerCase().replace('_', '-')}`}>
+                      {currentStatus.replace('_', ' ')}
                     </span>
                   </div>
                 </div>
