@@ -47,6 +47,32 @@ export default async function UsersPage() {
                     </div>
                   </div>
                   
+                  {user.projects && user.projects.length > 0 && (
+                    <div className="user-projects">
+                      <div className="projects-header">
+                        <span className="projects-title">Projects</span>
+                      </div>
+                      <div className="projects-list">
+                        {user.projects.slice(0, 2).map(project => (
+                          <div key={project.id} className="project-item">
+                            <div className="project-dot"></div>
+                            <div className="project-info">
+                              <div className="project-name">{project.title}</div>
+                            </div>
+                          </div>
+                        ))}
+                        {user.projects.length > 2 && (
+                          <div className="project-item project-more">
+                            <div className="project-dot"></div>
+                            <div className="project-info">
+                              <div className="project-name">+{user.projects.length - 2} more</div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  
                   <div className="user-meta">
                     <span className="join-date">Joined {new Date(user.createdAt).toLocaleDateString()}</span>
                     <div className="meta-right">

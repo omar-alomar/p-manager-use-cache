@@ -116,15 +116,29 @@
   --space-12: 3rem;
   --space-16: 4rem;
 
-  /* Responsive Font Scaling - Optimized for 100% zoom */
-  --font-size-base: clamp(0.875rem, 0.8vw + 0.8rem, 1rem);
-  --font-size-sm: clamp(0.75rem, 0.6vw + 0.65rem, 0.875rem);
+  /* Typography Scale - Consistent and Responsive */
   --font-size-xs: clamp(0.625rem, 0.5vw + 0.55rem, 0.75rem);
+  --font-size-sm: clamp(0.75rem, 0.6vw + 0.65rem, 0.875rem);
+  --font-size-base: clamp(0.875rem, 0.8vw + 0.8rem, 1rem);
   --font-size-lg: clamp(1rem, 1vw + 0.9rem, 1.125rem);
   --font-size-xl: clamp(1.125rem, 1.2vw + 1rem, 1.25rem);
   --font-size-2xl: clamp(1.25rem, 1.5vw + 1.1rem, 1.5rem);
   --font-size-3xl: clamp(1.5rem, 2vw + 1.3rem, 2rem);
   --font-size-4xl: clamp(2rem, 2.5vw + 1.5rem, 2.5rem);
+  
+  /* Heading Sizes - Semantic and Consistent */
+  --heading-1: var(--font-size-4xl);
+  --heading-2: var(--font-size-3xl);
+  --heading-3: var(--font-size-2xl);
+  --heading-4: var(--font-size-xl);
+  --heading-5: var(--font-size-lg);
+  --heading-6: var(--font-size-base);
+  
+  /* Component Text Sizes */
+  --text-body: var(--font-size-base);
+  --text-caption: var(--font-size-sm);
+  --text-small: var(--font-size-xs);
+  --text-large: var(--font-size-lg);
 }
 
 /* Responsive font scaling for different zoom levels and screen densities */
@@ -198,6 +212,14 @@ p, h1, h2, h3, h4, h5, h6, span, div, a, button, input, textarea, label {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
+
+/* Consistent Heading Styles */
+h1 { font-size: var(--heading-1); font-weight: 700; line-height: 1.2; margin: 0 0 var(--space-4) 0; }
+h2 { font-size: var(--heading-2); font-weight: 600; line-height: 1.3; margin: 0 0 var(--space-3) 0; }
+h3 { font-size: var(--heading-3); font-weight: 600; line-height: 1.3; margin: 0 0 var(--space-3) 0; }
+h4 { font-size: var(--heading-4); font-weight: 600; line-height: 1.4; margin: 0 0 var(--space-2) 0; }
+h5 { font-size: var(--heading-5); font-weight: 500; line-height: 1.4; margin: 0 0 var(--space-2) 0; }
+h6 { font-size: var(--heading-6); font-weight: 500; line-height: 1.4; margin: 0 0 var(--space-2) 0; }
 
 .top-nav {
   color: var(--neutral-50);
@@ -339,7 +361,7 @@ p, h1, h2, h3, h4, h5, h6, span, div, a, button, input, textarea, label {
   padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-md);
   cursor: pointer;
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
   font-weight: 500;
   transition: all 0.2s ease;
   border: 1px solid var(--primary-700);
@@ -402,7 +424,7 @@ p, h1, h2, h3, h4, h5, h6, span, div, a, button, input, textarea, label {
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-md);
   border: none;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   font-family: inherit;
   cursor: pointer;
   font-weight: 600;
@@ -493,7 +515,7 @@ p, h1, h2, h3, h4, h5, h6, span, div, a, button, input, textarea, label {
 }
 
 .page-subtitle {
-  font-size: 1.125rem;
+  font-size: var(--font-size-lg);
   color: var(--neutral-600);
   font-weight: 400;
   margin: 0;
@@ -507,7 +529,7 @@ p, h1, h2, h3, h4, h5, h6, span, div, a, button, input, textarea, label {
 
 .page-title h1 {
   color: var(--neutral-900);
-  font-size: 2rem;
+  font-size: var(--heading-1);
   font-weight: 700;
   margin: 0;
   background: linear-gradient(135deg, var(--primary-700), var(--primary-900));
@@ -550,9 +572,29 @@ p, h1, h2, h3, h4, h5, h6, span, div, a, button, input, textarea, label {
   gap: 1rem;
 }
 
-.text-sm {
-  font-size: 1rem;
-}
+/* Typography Utility Classes */
+.text-xs { font-size: var(--font-size-xs); }
+.text-sm { font-size: var(--font-size-sm); }
+.text-base { font-size: var(--font-size-base); }
+.text-lg { font-size: var(--font-size-lg); }
+.text-xl { font-size: var(--font-size-xl); }
+.text-2xl { font-size: var(--font-size-2xl); }
+.text-3xl { font-size: var(--font-size-3xl); }
+.text-4xl { font-size: var(--font-size-4xl); }
+
+/* Semantic Text Classes */
+.text-body { font-size: var(--text-body); }
+.text-caption { font-size: var(--text-caption); }
+.text-small { font-size: var(--text-small); }
+.text-large { font-size: var(--text-large); }
+
+/* Heading Classes */
+.heading-1 { font-size: var(--heading-1); font-weight: 700; }
+.heading-2 { font-size: var(--heading-2); font-weight: 600; }
+.heading-3 { font-size: var(--heading-3); font-weight: 600; }
+.heading-4 { font-size: var(--heading-4); font-weight: 600; }
+.heading-5 { font-size: var(--heading-5); font-weight: 500; }
+.heading-6 { font-size: var(--heading-6); font-weight: 500; }
 
 .strike-through {
   text-decoration: line-through;
@@ -573,7 +615,7 @@ p, h1, h2, h3, h4, h5, h6, span, div, a, button, input, textarea, label {
 
 .auth-loading .loading-spinner {
   color: var(--primary-600);
-  font-size: 1.125rem;
+  font-size: var(--font-size-lg);
   font-weight: 500;
 }
 
@@ -706,7 +748,7 @@ p, h1, h2, h3, h4, h5, h6, span, div, a, button, input, textarea, label {
 .form-group label {
   font-weight: 600;
   color: var(--neutral-700);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   transition: color var(--transition-fast);
@@ -856,7 +898,7 @@ p, h1, h2, h3, h4, h5, h6, span, div, a, button, input, textarea, label {
   min-width: 120px;
   padding: var(--space-3) var(--space-6);
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   border-radius: var(--radius-md);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -1086,7 +1128,7 @@ p, h1, h2, h3, h4, h5, h6, span, div, a, button, input, textarea, label {
 }
 
 .task-stats .stat-label {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--neutral-600);
   font-weight: 500;
   text-transform: uppercase;
@@ -1578,7 +1620,7 @@ p, h1, h2, h3, h4, h5, h6, span, div, a, button, input, textarea, label {
   color: var(--error-600);
   border-color: var(--error-600);
   padding: var(--space-2) var(--space-4);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 .btn-outline.btn-danger:hover {
@@ -1593,7 +1635,7 @@ p, h1, h2, h3, h4, h5, h6, span, div, a, button, input, textarea, label {
 }
 
 .page-title .title-btns {
-  font-size: 1rem;
+  font-size: var(--text-body);
   font-weight: normal;
   display: flex;
   gap: 0.75rem;
@@ -1613,7 +1655,7 @@ p, h1, h2, h3, h4, h5, h6, span, div, a, button, input, textarea, label {
 
 .form-group .error-message {
   color: var(--error-600);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   font-weight: 500;
   margin-top: var(--space-1);
   padding: var(--space-2) var(--space-3);
@@ -1681,7 +1723,7 @@ p, h1, h2, h3, h4, h5, h6, span, div, a, button, input, textarea, label {
 }
 
 .card-title {
-  font-size: 1.25rem;
+  font-size: var(--heading-3);
   font-weight: 600;
   margin: 0;
   color: var(--neutral-900);
@@ -1689,7 +1731,7 @@ p, h1, h2, h3, h4, h5, h6, span, div, a, button, input, textarea, label {
 }
 
 .card-subtitle {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--neutral-600);
   margin-top: var(--space-1);
   font-weight: 500;
@@ -1717,7 +1759,7 @@ p, h1, h2, h3, h4, h5, h6, span, div, a, button, input, textarea, label {
 }
 
 .card-preview-text {
-  font-size: 1rem;
+  font-size: var(--text-body);
   line-height: 1.4;
 }
 
@@ -1750,14 +1792,14 @@ p, h1, h2, h3, h4, h5, h6, span, div, a, button, input, textarea, label {
 }
 
 .card-apfo {
-  font-size: 1rem;
+  font-size: var(--text-body);
   font-weight: bold;
   color: #333;
 }
 
 .card-manager {
   margin-bottom: 1rem;        /* keep a little breathing room */
-  font-size: 0.9rem;          /* a bit smaller than body text */
+  font-size: var(--font-size-sm);          /* a bit smaller than body text */
   color: #444;                /* softer than pure black */
   display: flex;
   align-items: center;
@@ -1773,7 +1815,7 @@ p, h1, h2, h3, h4, h5, h6, span, div, a, button, input, textarea, label {
 }
 
 .card-manager-inline {
-  font-size: 1rem;
+  font-size: var(--text-body);
   color: #666;
   display: flex;
   align-items: center; /* Aligns with the client text */
@@ -1868,7 +1910,7 @@ input[type="checkbox"]:checked::after {
   text-align: left;
   font-weight: 600;
   color: var(--primary-900);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   border-bottom: 1px solid var(--primary-200);
@@ -1901,7 +1943,7 @@ input[type="checkbox"]:checked::after {
   padding: var(--space-4);
   vertical-align: top;
   color: var(--neutral-700);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
 }
 
 .projects-table td:last-child {
@@ -1942,13 +1984,13 @@ input[type="checkbox"]:checked::after {
 
 .project-name {
   font-weight: 600;
-  font-size: 1rem;
+  font-size: var(--text-body);
   color: var(--primary-700);
   line-height: 1.2;
 }
 
 .project-client {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--neutral-600);
   font-weight: 500;
   margin-top: 2px;
@@ -1960,7 +2002,7 @@ input[type="checkbox"]:checked::after {
 
 .co-files {
   text-align: center;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   min-width: 120px;
 }
 
@@ -1990,7 +2032,7 @@ input[type="checkbox"]:checked::after {
   color: #92400e;
   padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   font-family: monospace;
 }
@@ -2001,7 +2043,7 @@ input[type="checkbox"]:checked::after {
 }
 
 .comments-text {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   line-height: 1.4;
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -2012,7 +2054,7 @@ input[type="checkbox"]:checked::after {
   .projects-table th,
   .projects-table td {
     padding: 0.5rem;
-    font-size: 0.875rem;
+    font-size: var(--font-size-sm);
   }
   
   .project-name-cell {
@@ -2044,7 +2086,7 @@ input[type="checkbox"]:checked::after {
 }
 
 .edit-input {
-  font-size: 1rem;
+  font-size: var(--text-body);
   font-family: inherit;
   padding: var(--space-3);
   border: 2px solid var(--primary-300);
@@ -2062,7 +2104,7 @@ input[type="checkbox"]:checked::after {
 }
 
 .edit-hint {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--neutral-500);
   font-style: italic;
 }
@@ -2098,7 +2140,7 @@ input[type="checkbox"]:checked::after {
 }
 
 .empty-tasks-state h3 {
-  font-size: 1.5rem;
+  font-size: var(--heading-2);
   font-weight: 600;
   color: var(--neutral-700);
   margin: 0 0 var(--space-2) 0;
@@ -2112,7 +2154,7 @@ input[type="checkbox"]:checked::after {
 .empty-tasks-state p {
   color: var(--neutral-500);
   margin: 0 0 var(--space-6) 0;
-  font-size: 1.125rem;
+  font-size: var(--font-size-lg);
   transition: color var(--transition-fast);
 }
 
@@ -2409,7 +2451,7 @@ input[type="checkbox"]:checked::after {
 }
 
 .comments-edit-hint {
-  font-size: 11px;
+  font-size: var(--font-size-xs);
   color: #666;
   margin-top: 4px;
   text-align: left;
@@ -2450,7 +2492,7 @@ td.comments {
 }
 
 .auth-title {
-  font-size: 1.75rem;
+  font-size: var(--heading-1);
   font-weight: 700;
   text-align: center;
   margin-bottom: var(--space-8);
@@ -2478,7 +2520,7 @@ td.comments {
 }
 
 .form-field label {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   color: #000;
   text-transform: uppercase;
@@ -2489,7 +2531,7 @@ td.comments {
   padding: var(--space-3);
   border: 2px solid var(--neutral-300);
   background-color: var(--surface-0);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   transition: all 0.2s ease;
   border-radius: var(--radius-md);
 }
@@ -2512,7 +2554,7 @@ td.comments {
   background-color: var(--error-50);
   color: var(--error-700);
   padding: var(--space-3);
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 600;
@@ -2527,7 +2569,7 @@ td.comments {
   background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
   color: var(--neutral-50);
   border: none;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -2556,7 +2598,7 @@ td.comments {
 .auth-footer {
   margin-top: 1.5rem;
   text-align: center;
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: #666;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -2581,7 +2623,7 @@ td.comments {
   }
   
   .auth-title {
-    font-size: 1.25rem;
+    font-size: var(--heading-3);
   }
 }
 
@@ -2713,7 +2755,7 @@ td.comments {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.125rem;
+  font-size: var(--font-size-lg);
   font-weight: 600;
   flex-shrink: 0;
   transition: all 0.2s ease;
@@ -2730,7 +2772,7 @@ td.comments {
 
 .team-card .user-name {
   margin: 0 0 var(--space-1) 0;
-  font-size: 1.125rem;
+  font-size: var(--font-size-lg);
   font-weight: 600;
   color: var(--neutral-900);
   line-height: 1.3;
@@ -2738,7 +2780,7 @@ td.comments {
 
 .team-card .user-email {
   color: var(--neutral-600);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   font-weight: 400;
   line-height: 1.4;
   margin: 0;
@@ -2749,7 +2791,7 @@ td.comments {
   align-items: center;
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-full);
-  font-size: 0.7rem;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -2783,6 +2825,9 @@ td.comments {
 
 .team-card-body {
   padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
 }
 
 /* Clean team card info layout */
@@ -2790,7 +2835,7 @@ td.comments {
 .team-card .user-metrics {
   display: flex;
   gap: var(--space-6);
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-1);
   padding: var(--space-3) 0;
   border-top: 1px solid var(--surface-200);
   border-bottom: 1px solid var(--surface-200);
@@ -2804,7 +2849,7 @@ td.comments {
 }
 
 .team-card .metric-value {
-  font-size: 1.25rem;
+  font-size: var(--heading-3);
   font-weight: 700;
   color: var(--neutral-900);
   line-height: 1;
@@ -2817,11 +2862,81 @@ td.comments {
 }
 
 .team-card .metric-label {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   font-weight: 500;
   color: var(--neutral-500);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+/* User Projects Section - Minimal and Subtle */
+.team-card .user-projects {
+  margin: 0 0 var(--space-4) 0;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--surface-200);
+}
+
+.team-card .projects-header {
+  margin-bottom: var(--space-2);
+}
+
+.team-card .projects-title {
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--neutral-400);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.team-card .projects-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.team-card .project-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) 0;
+}
+
+.team-card .project-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--neutral-300);
+  flex-shrink: 0;
+}
+
+.team-card .project-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.team-card .project-name {
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  color: var(--neutral-500);
+  line-height: 1.2;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.team-card .project-client {
+  font-size: var(--font-size-xs);
+  color: var(--neutral-400);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.team-card .project-more .project-name {
+  color: var(--neutral-400);
+  font-style: italic;
 }
 
 .team-card .user-meta {
@@ -2829,8 +2944,10 @@ td.comments {
   align-items: center;
   justify-content: space-between;
   color: var(--neutral-500);
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
   transition: color 0.2s ease;
+  margin-top: auto;
+  padding-top: var(--space-3);
 }
 
 .team-card:hover .user-meta {
@@ -2844,7 +2961,7 @@ td.comments {
 }
 
 .team-card .click-hint {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--primary-500);
   opacity: 0;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -2879,7 +2996,7 @@ td.comments {
   }
   
   .team-card .user-role-badge {
-    font-size: 0.65rem;
+    font-size: var(--font-size-xs);
     padding: var(--space-1) var(--space-1-5);
   }
   
@@ -2893,11 +3010,11 @@ td.comments {
   .user-avatar {
     width: 2.5rem;
     height: 2.5rem;
-    font-size: 1rem;
+    font-size: var(--text-body);
   }
   
   .team-card .user-name {
-    font-size: 1rem;
+    font-size: var(--text-body);
   }
   
   .team-card-body {
@@ -2910,7 +3027,25 @@ td.comments {
   }
   
   .metric-value {
-    font-size: 1.125rem;
+    font-size: var(--font-size-lg);
+  }
+  
+  .team-card .user-projects {
+    margin: var(--space-3) 0;
+    padding: var(--space-2) 0;
+  }
+  
+  .team-card .project-item {
+    padding: var(--space-1) 0;
+  }
+  
+  .team-card .project-name {
+    font-size: var(--font-size-xs);
+  }
+  
+  .team-card .project-dot {
+    width: 2px;
+    height: 2px;
   }
 }
 
@@ -2943,7 +3078,7 @@ td.comments {
 }
 
 .empty-state-icon {
-  font-size: 4rem;
+  font-size: var(--font-size-4xl);
   margin-bottom: var(--space-6);
   opacity: 0.5;
   color: var(--primary-500);
@@ -2952,14 +3087,14 @@ td.comments {
 .empty-state h3 {
   margin: 0 0 var(--space-3) 0;
   color: var(--neutral-800);
-  font-size: 1.5rem;
+  font-size: var(--heading-2);
   font-weight: 600;
 }
 
 .empty-state p {
   margin: 0;
   color: var(--neutral-600);
-  font-size: 1rem;
+  font-size: var(--text-body);
   line-height: 1.5;
 }
 
@@ -2978,7 +3113,7 @@ td.comments {
   border: 1.5px solid #e2e8f0;
   border-radius: 0.875rem;
   color: #475569;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -3150,7 +3285,7 @@ td.comments {
 
 .modal-title {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: var(--heading-3);
   font-weight: 600;
   color: var(--neutral-800);
   background: linear-gradient(135deg, var(--primary-700), var(--primary-900));
@@ -3202,7 +3337,7 @@ td.comments {
   margin-bottom: var(--space-2);
   font-weight: 600;
   color: var(--neutral-800);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   letter-spacing: 0.025em;
 }
 
@@ -3212,7 +3347,7 @@ td.comments {
   padding: var(--space-3) var(--space-4);
   border: 2px solid var(--surface-200);
   border-radius: var(--radius-lg);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   transition: all var(--transition-normal);
   background: var(--surface-0);
   color: var(--neutral-800);
@@ -3361,7 +3496,7 @@ td.comments {
 }
 
 .form-title {
-  font-size: 1.75rem;
+  font-size: var(--heading-1);
   font-weight: 700;
   color: var(--neutral-900);
   margin: 0;
@@ -3380,7 +3515,7 @@ td.comments {
   gap: var(--space-2);
   color: var(--success-600);
   font-weight: 500;
-  font-size: 1rem;
+  font-size: var(--text-body);
   margin-top: var(--space-3);
   padding: var(--space-3);
   background: var(--success-50);
@@ -3446,7 +3581,7 @@ td.comments {
 
 .section-title {
   margin: 0 0 0.5rem 0;
-  font-size: 1.5rem;
+  font-size: var(--heading-2);
   font-weight: 600;
   color: hsl(220, 13%, 25%);
 }
@@ -3454,7 +3589,7 @@ td.comments {
 .section-subtitle {
   margin: 0 0 2rem 0;
   color: hsl(220, 13%, 45%);
-  font-size: 1rem;
+  font-size: var(--text-body);
   line-height: 1.5;
 }
 
@@ -3498,7 +3633,7 @@ td.comments {
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  font-size: 1.125rem;
+  font-size: var(--font-size-lg);
   flex-shrink: 0;
 }
 
@@ -3510,13 +3645,13 @@ td.comments {
 
 .user-card-no-tasks .user-name {
   margin: 0;
-  font-size: 1.125rem;
+  font-size: var(--font-size-lg);
   font-weight: 600;
   color: hsl(220, 13%, 25%);
 }
 
 .user-card-no-tasks .user-role {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: hsl(210, 20%, 50%);
   text-transform: capitalize;
   padding: 0.25rem 0.75rem;
@@ -3533,7 +3668,7 @@ td.comments {
 /* Compact Quick Add Task Button - Premium Design */
 .quick-add-task-btn-compact {
   padding: 0.625rem 1rem;
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
   min-width: auto;
   width: auto;
   margin: 0;
@@ -3629,7 +3764,7 @@ td.comments {
 .empty-state-hint {
   margin: 0;
   color: hsl(220, 13%, 55%);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   font-style: italic;
 }
 
@@ -3651,15 +3786,15 @@ td.comments {
   .user-card-no-tasks .user-avatar {
     width: 2.5rem;
     height: 2.5rem;
-    font-size: 1rem;
+    font-size: var(--text-body);
   }
   
   .user-card-no-tasks .user-name {
-    font-size: 1rem;
+    font-size: var(--text-body);
   }
   
   .user-card-no-tasks .user-role {
-    font-size: 0.8rem;
+    font-size: var(--font-size-xs);
     padding: 0.2rem 0.6rem;
   }
 }
@@ -3671,11 +3806,11 @@ td.comments {
   }
   
   .section-title {
-    font-size: 1.25rem;
+    font-size: var(--heading-3);
   }
   
   .section-subtitle {
-    font-size: 0.9rem;
+    font-size: var(--font-size-sm);
     margin-bottom: 1.5rem;
   }
 }
@@ -3698,7 +3833,7 @@ td.comments {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.25rem;
+  font-size: var(--heading-3);
   font-weight: 600;
 }
 
@@ -3719,9 +3854,7 @@ td.comments {
 }
 
 /* FAB Modal - Now using unified quick-add-modal */
-.fab-modal {
-  /* Deprecated - now using quick-add-modal */
-}
+/* .fab-modal is deprecated - now using quick-add-modal */
 
 /* FAB Responsive Design */
 @media (max-width: 768px) {
@@ -3730,7 +3863,7 @@ td.comments {
     right: 1.25rem;
     width: 3rem;
     height: 3rem;
-    font-size: 1rem;
+    font-size: var(--text-body);
   }
   
   .fab:hover {
@@ -3744,7 +3877,7 @@ td.comments {
     right: 1rem;
     width: 3rem;
     height: 3rem;
-    font-size: 1rem;
+    font-size: var(--text-body);
   }
   
   .fab-modal {
@@ -4093,7 +4226,7 @@ td.comments {
 }
 
 .project-hero .stat-label {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--neutral-600);
   font-weight: 500;
   text-transform: uppercase;
@@ -4114,7 +4247,7 @@ td.comments {
   color: var(--neutral-50);
   transition: all var(--transition-normal);
   padding: var(--space-3) var(--space-5);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   border-radius: var(--radius-lg);
 }
 
@@ -4305,7 +4438,7 @@ td.comments {
   }
   
   .project-hero .hero-name {
-    font-size: 1.75rem;
+    font-size: var(--heading-1);
   }
   
   .project-hero .hero-stats {
@@ -4318,7 +4451,7 @@ td.comments {
   }
   
   .project-hero .stat-number {
-    font-size: 1.5rem;
+    font-size: var(--heading-2);
   }
   
   .projects-section {
@@ -4436,14 +4569,14 @@ td.comments {
 }
 
 .empty-title {
-  font-size: 1.5rem;
+  font-size: var(--heading-2);
   font-weight: 600;
   color: var(--neutral-700);
   margin: 0 0 var(--space-2) 0;
 }
 
 .empty-description {
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
   margin: 0 0 var(--space-6) 0;
   max-width: 400px;
   margin-left: auto;
@@ -4475,7 +4608,7 @@ td.comments {
 }
 
 .comments-subtitle {
-  font-size: 1.2rem;
+  font-size: var(--font-size-xl);
   font-weight: 600;
   color: var(--neutral-700);
   margin: 0;
@@ -4530,7 +4663,7 @@ td.comments {
 }
 
 .comment-date {
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   color: var(--neutral-500);
 }
 
@@ -4770,7 +4903,7 @@ td.comments {
 }
 
 .stat-label {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--neutral-600);
   font-weight: 500;
   text-transform: uppercase;
@@ -5049,7 +5182,7 @@ td.comments {
 }
 
 .stat-label {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--neutral-600);
   font-weight: 500;
   text-transform: uppercase;
@@ -5482,7 +5615,7 @@ td.comments {
 .empty-icon {
   margin: 0 auto var(--space-6);
   color: var(--neutral-400);
-  font-size: 3rem;
+  font-size: var(--font-size-4xl);
 }
 
 .empty-icon svg {
@@ -5491,14 +5624,14 @@ td.comments {
 }
 
 .empty-title {
-  font-size: 1.25rem;
+  font-size: var(--heading-3);
   font-weight: 600;
   color: var(--neutral-900);
   margin: 0 0 var(--space-2) 0;
 }
 
 .empty-description {
-  font-size: 1rem;
+  font-size: var(--text-body);
   color: var(--neutral-600);
   margin: 0;
   line-height: 1.5;
