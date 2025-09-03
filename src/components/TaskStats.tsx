@@ -50,8 +50,6 @@ export function TaskStats({ stats }: TaskStatsProps) {
           <div className="stat-label">In Progress</div>
         </div>
       </div>
-
-
     </div>
   )
 }
