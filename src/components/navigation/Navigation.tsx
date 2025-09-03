@@ -35,10 +35,13 @@ export function Navigation() {
         <Link href="/projects">Projects</Link>
       </li>
       <li>
-        <Link href="/users">Team</Link>
+        <Link href="/my-tasks">My Tasks</Link>
       </li>
       <li>
-        <Link href="/tasks">Tasks</Link>
+        <Link href="/tasks">All Tasks</Link>
+      </li>
+      <li>
+        <Link href="/users">Team</Link>
       </li>
       {user.role === "admin" && (
         <li>

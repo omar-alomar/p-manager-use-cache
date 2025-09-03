@@ -13,6 +13,8 @@ interface TaskItemProps {
   userName?: string
   displayProject?: boolean
   displayUser?: boolean
+  status?: 'IN_PROGRESS' | 'COMPLETED'
+  description?: string
 }
 
 export function TaskItem({ 
@@ -24,7 +26,9 @@ export function TaskItem({
   userId,
   userName,
   displayProject = true,
-  displayUser = false
+  displayUser = false,
+  status = 'IN_PROGRESS',
+  description
 }: TaskItemProps) {
   const [completed, setCompleted] = useState(initialCompleted)
   const [isUpdating, setIsUpdating] = useState(false)
@@ -54,6 +58,8 @@ export function TaskItem({
     try {
       await updateTaskCompletionAction(id, {
         title: editedTitle,
+        description,
+        status,
         completed: newCompleted,
         userId,
         projectId
@@ -98,6 +104,8 @@ export function TaskItem({
     try {
       await updateTaskCompletionAction(id, {
         title: editedTitle,
+        description,
+        status,
         completed,
         userId,
         projectId
@@ -216,18 +224,44 @@ export function TaskItem({
           ) : (
             <>
               <div className="task-title-wrapper">
-                <h4 className={`task-title ${completed ? 'completed' : ''}`}>
-                  {editedTitle}
-                </h4>
-                {displayProject && projectTitle && (
-                  <span className="task-project">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                      <polyline points="9,22 9,12 15,12 15,22"/>
-                    </svg>
-                    {projectTitle}
-                  </span>
+                <div className="task-header">
+                  <h4 className={`task-title ${completed ? 'completed' : ''}`}>
+                    {editedTitle}
+                  </h4>
+                  <div className="task-badges">
+                    <span className={`status-badge status-${status.toLowerCase().replace('_', '-')}`}>
+                      {status.replace('_', ' ')}
+                    </span>
+                  </div>
+                </div>
+                
+                {description && (
+                  <p className="task-description">{description}</p>
                 )}
+                
+                <div className="task-meta">
+                  {displayProject && projectTitle && (
+                    <span className="task-project">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        <polyline points="9,22 9,12 15,12 15,22"/>
+                      </svg>
+                      {projectTitle}
+                    </span>
+                  )}
+                  
+                  {displayUser && userName && (
+                    <span className="task-user">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                      </svg>
+                      {userName}
+                    </span>
+                  )}
+                  
+
+                </div>
               </div>
               
               <div className="task-actions">

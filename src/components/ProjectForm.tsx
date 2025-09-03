@@ -108,15 +108,26 @@ export function ProjectForm({
         </FormGroup>
       </div>
       
-      <div className="form-row form-btn-row">
+      <div className="form-actions">
         <Link
-          className="btn btn-outline"
+          className="btn btn-outline btn-cancel"
           href={project == null ? "/projects" : `/projects/${project.id}`}
         >
           Cancel
         </Link>
-        <button disabled={pending} className="btn">
-          {pending ? "Saving" : "Save"}
+        <button 
+          disabled={pending} 
+          className="btn btn-primary btn-save"
+          type="submit"
+        >
+          {pending ? (
+            <>
+              <span className="btn-spinner"></span>
+              Saving...
+            </>
+          ) : (
+            "Save Project"
+          )}
         </button>
       </div>
     </form>
@@ -162,12 +173,12 @@ export function SkeletonProjectForm() {
           <SkeletonInput />
         </FormGroup>
       </div>
-      <div className="form-row form-btn-row">
-        <Link className="btn btn-outline" href="/projects">
+      <div className="form-actions">
+        <Link className="btn btn-outline btn-cancel" href="/projects">
           Cancel
         </Link>
-        <button disabled className="btn">
-          Save
+        <button disabled className="btn btn-primary btn-save">
+          Save Project
         </button>
       </div>
     </form>

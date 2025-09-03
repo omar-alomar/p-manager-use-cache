@@ -8,9 +8,30 @@ export async function getTasks() {
     include: {
       Project: true,
       User: true
-    }
+    },
+    orderBy: [
+      { createdAt: 'desc' }
+    ]
   })
 }
+
+export async function getTasksByStatus(status: 'IN_PROGRESS' | 'COMPLETED') {
+  "use cache"
+  
+  await wait(2000)
+  return prisma.task.findMany({
+    where: { status },
+    include: {
+      Project: true,
+      User: true
+    },
+    orderBy: [
+      { createdAt: 'desc' }
+    ]
+  })
+}
+
+
 
 export async function getUserTasks(userId: string | number) {
   "use cache"
@@ -53,11 +74,15 @@ export async function getTask(taskId: string | number) {
 
 export async function createTask({
   title,
+  description,
+  status,
   completed,
   userId,
   projectId,
 }: {
   title: string
+  description?: string
+  status?: 'IN_PROGRESS' | 'COMPLETED'
   completed: boolean
   userId: number
   projectId: number
@@ -67,6 +92,8 @@ export async function createTask({
     return tx.task.create({
       data: {
         title,
+        description,
+        status: status || 'IN_PROGRESS',
         completed,
         userId,
         projectId,
@@ -81,11 +108,15 @@ export async function updateTask(
   taskId: string | number,
   {
     title,
+    description,
+    status,
     completed,
     userId,
     projectId
    }:{
      title: string,
+     description?: string,
+     status?: 'IN_PROGRESS' | 'COMPLETED',
      completed: boolean,
      userId: number,
      projectId: number
@@ -98,9 +129,12 @@ export async function updateTask(
       where: { id: Number(taskId) },
       data: {
         title,
+        description,
+        status,
         completed,
         userId,
-        projectId
+        projectId,
+        updatedAt: new Date()
       },
     })
     

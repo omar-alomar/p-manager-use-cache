@@ -71,11 +71,23 @@ export async function deleteTaskAction(taskId: number | string) {
 
 
 function validateTask(formData: FormData) {
-  const errors: { title?: string; completed?: string; userId?: string; projectId?: string } = {}
+  const errors: { 
+    title?: string; 
+    completed?: string; 
+    userId?: string; 
+    projectId?: string;
+    status?: string;
+    priority?: string;
+    dueDate?: string;
+  } = {}
+  
   const title = formData.get("title") as string
+  const description = formData.get("description") as string
+  const status = formData.get("status") as 'IN_PROGRESS' | 'COMPLETED'
   const completed = formData.get("completed") === "on"
   const userId = Number(formData.get("userId"))
   const projectId = Number(formData.get("projectId"))
+  
   let isValid = true
 
   if (title === "") {
@@ -93,7 +105,14 @@ function validateTask(formData: FormData) {
     isValid = false
   }
 
-  return [isValid ? { title, completed, userId, projectId } : undefined, errors] as const
+  return [isValid ? { 
+    title, 
+    description: description || undefined,
+    status: status || 'IN_PROGRESS',
+    completed, 
+    userId, 
+    projectId 
+  } : undefined, errors] as const
 }
 
 // Update task completion status (for checkbox toggle)
@@ -101,6 +120,8 @@ export async function updateTaskCompletionAction(
   taskId: number,
   data: {
     title: string
+    description?: string
+    status?: 'IN_PROGRESS' | 'COMPLETED'
     completed: boolean
     userId: number
     projectId: number

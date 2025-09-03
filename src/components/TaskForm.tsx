@@ -17,6 +17,8 @@ export function TaskForm({
   task?: {
     id: number
     title: string
+    description?: string
+    status?: 'IN_PROGRESS' | 'COMPLETED'
     completed: boolean
     userId: number
     projectId: number
@@ -88,6 +90,19 @@ export function TaskForm({
       </div>
       
       <div className="form-row">
+        <FormGroup errorMessage={errors.description}>
+          <label htmlFor="description">Description</label>
+          <textarea
+            name="description"
+            id="description"
+            rows={3}
+            defaultValue={task?.description}
+            placeholder="Optional task description..."
+          />
+        </FormGroup>
+      </div>
+      
+      <div className="form-row">
         <FormGroup errorMessage={errors.projectId}>
           <label htmlFor="projectId">Project</label>
           <select
@@ -123,6 +138,20 @@ export function TaskForm({
                 </option>
               ))}
             </Suspense>
+          </select>
+        </FormGroup>
+      </div>
+      
+      <div className="form-row">
+        <FormGroup errorMessage={errors.status}>
+          <label htmlFor="status">Status</label>
+          <select
+            name="status"
+            id="status"
+            defaultValue={task?.status || 'IN_PROGRESS'}
+          >
+            <option value="IN_PROGRESS">In Progress</option>
+            <option value="COMPLETED">Completed</option>
           </select>
         </FormGroup>
       </div>

@@ -14,6 +14,8 @@ interface QuickAddTaskModalProps {
   presetUserName?: string
   presetProjectId?: number
   className?: string
+  users?: { id: number; name: string }[]
+  projects?: { id: number; title: string }[]
 }
 
 export function QuickAddTaskModal({ 
@@ -22,7 +24,9 @@ export function QuickAddTaskModal({
   presetUserId, 
   presetUserName, 
   presetProjectId,
-  className = "" 
+  className = "",
+  users: propUsers,
+  projects: propProjects
 }: QuickAddTaskModalProps) {
   const [projects, setProjects] = useState<{ id: number; title: string }[]>([])
   const [users, setUsers] = useState<{ id: number; name: string }[]>([])
@@ -30,29 +34,36 @@ export function QuickAddTaskModal({
   const [isLoadingUsers, setIsLoadingUsers] = useState(false)
   const [errors, formAction, pending] = useActionState(createTaskAction, {})
 
-  // Fetch data when modal opens
+  // Use provided data or fetch when modal opens
   useEffect(() => {
     if (isOpen) {
-      const fetchData = async () => {
-        setIsLoadingProjects(true)
-        setIsLoadingUsers(true)
-        try {
-          const [projectsData, usersData] = await Promise.all([
-            getProjectsAction(),
-            getUsersAction()
-          ])
-          setProjects(projectsData)
-          setUsers(usersData)
-        } catch (error) {
-          console.error('Failed to fetch data:', error)
-        } finally {
-          setIsLoadingProjects(false)
-          setIsLoadingUsers(false)
+      if (propUsers && propProjects) {
+        // Use provided data
+        setUsers(propUsers)
+        setProjects(propProjects)
+      } else {
+        // Fetch data if not provided
+        const fetchData = async () => {
+          setIsLoadingProjects(true)
+          setIsLoadingUsers(true)
+          try {
+            const [projectsData, usersData] = await Promise.all([
+              getProjectsAction(),
+              getUsersAction()
+            ])
+            setProjects(projectsData)
+            setUsers(usersData)
+          } catch (error) {
+            console.error('Failed to fetch data:', error)
+          } finally {
+            setIsLoadingProjects(false)
+            setIsLoadingUsers(false)
+          }
         }
+        fetchData()
       }
-      fetchData()
     }
-  }, [isOpen])
+  }, [isOpen, propUsers, propProjects])
 
   const handleSubmit = async (formData: FormData) => {
     // Add the userId to the form data if preset
