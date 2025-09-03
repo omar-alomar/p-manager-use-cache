@@ -72,9 +72,12 @@ export function EditableComments({
     if (e.key === 'Escape') {
       setComments(initialComments)
       setIsEditing(false)
-    } else if (e.key === 'Enter') {
+    } else if (e.key === 'Enter' && e.shiftKey) {
+      e.preventDefault()
       handleSave()
     }
+    // Allow regular Enter to create new lines - don't prevent default
+    // Save will happen on blur (clicking off) or Shift+Enter
   }
 
   function handleTextareaChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -99,7 +102,7 @@ export function EditableComments({
           style={{ opacity: isUpdating ? 0.5 : 1 }}
         />
         <div className="comments-edit-hint">
-          {isUpdating ? "Saving..." : "Press Enter to save, Esc to cancel"}
+          {isUpdating ? "Saving..." : "Shift+Enter to save, Esc to cancel"}
         </div>
       </div>
     )

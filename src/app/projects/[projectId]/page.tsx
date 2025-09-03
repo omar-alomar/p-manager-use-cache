@@ -115,8 +115,8 @@ export default async function ProjectPage({
               </svg>
             </div>
             <div className="section-title-group">
-              <h2 className="section-title">Comments & Notes</h2>
-              <p className="section-subtitle">Project documentation</p>
+              <h2 className="section-title">External Comments</h2>
+              <p className="section-subtitle">Stakeholder feedback and notes</p>
             </div>
           </div>
           
@@ -182,9 +182,18 @@ async function ProjectHero({ projectId }: { projectId: string }) {
               )}
             </div>
             
-            {project.body && (
-              <p className="hero-description">{project.body}</p>
-            )}
+            <div className="hero-comments">
+              <EditableComments
+                projectId={project.id}
+                initialComments={project.body}
+                title={project.title}
+                client={project.client}
+                apfo={project.apfo}
+                coFileNumbers={project.coFileNumbers || ""}
+                dldReviewer={project.dldReviewer || ""}
+                userId={project.userId}
+              />
+            </div>
           </div>
         </div>
 
@@ -312,16 +321,7 @@ async function ProjectDetails({ projectId }: { projectId: string }) {
           </div>
         </div>
 
-        <div className="detail-item">
-          <label className="detail-label">
-            Description
-          </label>
-          <div className="detail-value">
-            {project.body || (
-              <span className="placeholder-text">No description provided</span>
-            )}
-          </div>
-        </div>
+
       </div>
     )
   } catch (error) {
@@ -447,52 +447,49 @@ async function Comments({ projectId }: { projectId: string }) {
 
     if (project == null) return notFound()
 
+    if (comments.length === 0) {
+      return (
+        <div className="empty-state">
+          <div className="empty-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+          </div>
+          <h3 className="empty-title">No external comments</h3>
+          <p className="empty-description">External comments from stakeholders will appear here.</p>
+        </div>
+      )
+    }
+
     return (
       <div className="comments-container">
-        <div className="project-comments">
-          <h4 className="comments-title">Project Comments</h4>
-          <EditableComments
-            projectId={project.id}
-            initialComments={project.body}
-            title={project.title}
-            client={project.client}
-            apfo={project.apfo}
-            coFileNumbers={project.coFileNumbers || ""}
-            dldReviewer={project.dldReviewer || ""}
-            userId={project.userId}
-          />
-        </div>
-        
-        {comments.length > 0 && (
-          <div className="external-comments">
-            <h4 className="comments-title">External Comments</h4>
-            <div className="comments-list">
-              {comments.map(comment => (
-                <div key={comment.id} className="comment-item">
-                  <div className="comment-header">
-                    <div className="comment-author">
-                      <div className="author-avatar">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                          <circle cx="12" cy="7" r="4"/>
-                        </svg>
-                      </div>
-                      <span className="author-email">{comment.email}</span>
+        <div className="external-comments">
+          <div className="comments-list">
+            {comments.map(comment => (
+              <div key={comment.id} className="comment-item">
+                <div className="comment-header">
+                  <div className="comment-author">
+                    <div className="author-avatar">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                      </svg>
                     </div>
-                    <span className="comment-date">
-                      {new Date(comment.createdAt).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric'
-                      })}
-                    </span>
+                    <span className="author-email">{comment.email}</span>
                   </div>
-                  <div className="comment-body">{comment.body}</div>
+                  <span className="comment-date">
+                    {new Date(comment.createdAt).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric'
+                    })}
+                  </span>
                 </div>
-              ))}
-            </div>
+                <div className="comment-body">{comment.body}</div>
+              </div>
+            ))}
           </div>
-        )}
+        </div>
       </div>
     )
   } catch (error) {

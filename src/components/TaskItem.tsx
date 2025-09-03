@@ -139,12 +139,15 @@ export function TaskItem({
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'Enter') {
-      handleSaveTitle()
-    } else if (e.key === 'Escape') {
+    if (e.key === 'Escape') {
       setEditedTitle(title)
       setIsEditing(false)
+    } else if (e.key === 'Enter' && e.shiftKey) {
+      e.preventDefault()
+      handleSaveTitle()
     }
+    // Allow regular Enter to create new lines - don't prevent default
+    // Save will happen on blur (clicking off) or Shift+Enter
   }
 
   function handleStartEdit() {
@@ -232,7 +235,7 @@ export function TaskItem({
                 className="edit-input"
                 placeholder="Task title..."
               />
-              <div className="edit-hint">Press Enter to save, Escape to cancel</div>
+              <div className="edit-hint">Shift+Enter to save, Escape to cancel</div>
             </div>
           ) : (
             <>
