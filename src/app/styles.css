@@ -2589,8 +2589,8 @@ td.comments {
 .team-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--space-4);
-  margin-top: var(--space-4);
+  gap: var(--space-6);
+  margin-top: var(--space-6);
 }
 
 .team-card {
@@ -2625,7 +2625,7 @@ td.comments {
 
 .team-card-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--space-3);
   padding: var(--space-4);
   background: var(--surface-50);
@@ -2736,87 +2736,122 @@ td.comments {
   line-height: 1.3;
 }
 
-.team-card .user-role {
+.team-card .user-email {
+  color: var(--neutral-600);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.team-card .user-role-badge {
   display: inline-flex;
   align-items: center;
   padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-sm);
-  font-size: 0.75rem;
-  font-weight: 500;
+  border-radius: var(--radius-full);
+  font-size: 0.7rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.025em;
+  letter-spacing: 0.05em;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  margin-right: 0;
+}
+
+.team-card:hover .user-role-badge {
+  margin-right: var(--space-1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
 .role-admin {
   color: var(--error-700);
   background: var(--error-100);
+  border: 1px solid var(--error-200);
 }
 
 .role-user {
   color: var(--primary-700);
   background: var(--primary-100);
+  border: 1px solid var(--primary-200);
 }
 
 .role-default {
   color: var(--neutral-600);
   background: var(--neutral-100);
+  border: 1px solid var(--neutral-200);
 }
 
 .team-card-body {
   padding: var(--space-4);
 }
 
-.team-card .user-email,
-.team-card .user-joined {
+/* Clean team card info layout */
+
+.team-card .user-metrics {
+  display: flex;
+  gap: var(--space-6);
+  margin-bottom: var(--space-4);
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--surface-200);
+  border-bottom: 1px solid var(--surface-200);
+}
+
+.team-card .metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.team-card .metric-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--neutral-900);
+  line-height: 1;
+  margin-bottom: var(--space-1);
+  transition: color 0.2s ease;
+}
+
+.team-card:hover .metric-value {
+  color: var(--primary-600);
+}
+
+.team-card .metric-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--neutral-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.team-card .user-meta {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  margin-bottom: var(--space-3);
+  justify-content: space-between;
+  color: var(--neutral-500);
+  font-size: 0.8rem;
+  transition: color 0.2s ease;
+}
+
+.team-card:hover .user-meta {
   color: var(--neutral-600);
-  font-size: 0.875rem;
-  padding: 0;
-  background: none;
-  border: none;
-  transition: color 0.2s ease;
 }
 
-.team-card .user-email:last-child,
-.team-card .user-joined:last-child {
-  margin-bottom: 0;
-}
-
-.team-card .email-icon,
-.team-card .joined-icon {
+.team-card .meta-right {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 1.25rem;
-  height: 1.25rem;
-  background: none;
-  border-radius: none;
-  color: var(--neutral-400);
-  flex-shrink: 0;
-  transition: color 0.2s ease;
-}
-
-.team-card:hover .user-email,
-.team-card:hover .user-joined {
-  color: var(--neutral-700);
-}
-
-.team-card:hover .email-icon,
-.team-card:hover .joined-icon {
-  color: var(--primary-500);
+  gap: var(--space-1);
 }
 
 .team-card .click-hint {
-  margin-left: auto;
-  font-size: 1rem;
-  color: var(--primary-400);
+  font-size: 0.875rem;
+  color: var(--primary-500);
   opacity: 0;
-  transition: all 0.2s ease;
-  transform: translateX(-4px);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(12px);
   font-weight: 500;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .team-card:hover .click-hint {
@@ -2824,75 +2859,9 @@ td.comments {
   transform: translateX(0);
 }
 
-.team-card .user-stats {
-  display: flex;
-  gap: var(--space-4);
-  margin: var(--space-4) 0 0 0;
-  padding: var(--space-3) 0;
-  background: none;
-  border-radius: none;
-  border: none;
-  position: relative;
-  overflow: visible;
-}
 
-.team-card .stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-1);
-  flex: 1;
-  position: relative;
-}
 
-.team-card .stat-item:not(:last-child)::after {
-  content: '';
-  position: absolute;
-  right: -0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 1px;
-  height: 1.5rem;
-  background: var(--neutral-200);
-}
 
-.team-card .stat-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
-  background: none;
-  border-radius: none;
-  color: var(--neutral-400);
-  flex-shrink: 0;
-  transition: color 0.2s ease;
-}
-
-.team-card:hover .stat-icon {
-  color: var(--primary-500);
-}
-
-.team-card .stat-label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--neutral-500);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  text-align: center;
-}
-
-.team-card .stat-value {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--neutral-700);
-  transition: color 0.2s ease;
-  text-align: center;
-}
-
-.team-card:hover .stat-value {
-  color: var(--primary-600);
-}
 
 
 
@@ -2907,6 +2876,11 @@ td.comments {
   .team-card-header {
     padding: var(--space-3);
     gap: var(--space-2);
+  }
+  
+  .team-card .user-role-badge {
+    font-size: 0.65rem;
+    padding: var(--space-1) var(--space-1-5);
   }
   
   .user-actions {
@@ -2930,18 +2904,13 @@ td.comments {
     padding: var(--space-3);
   }
   
-  .user-stats {
+  .user-metrics {
+    gap: var(--space-4);
     padding: var(--space-2) 0;
-    gap: var(--space-3);
   }
   
-  .stat-icon {
-    width: 1.25rem;
-    height: 1.25rem;
-  }
-  
-  .stat-value {
-    font-size: 1rem;
+  .metric-value {
+    font-size: 1.125rem;
   }
 }
 
@@ -2953,25 +2922,9 @@ td.comments {
 
 /* Clean, minimal team cards */
 
-.team-count {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
-  color: var(--primary-700);
-  padding: var(--space-3) var(--space-6);
-  border-radius: 2rem;
-  font-size: 0.95rem;
-  font-weight: 600;
-  border: 1px solid var(--primary-200);
-  box-shadow: var(--shadow-sm);
-  transition: all var(--transition-normal);
-}
+/* Team count styling removed - now using page-subtitle */
 
-.team-count:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
+/* Removed team-count hover styles */
 
 /* Empty State */
 .empty-state {
