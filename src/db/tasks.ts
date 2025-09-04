@@ -15,12 +15,12 @@ export async function getTasks() {
   })
 }
 
-export async function getTasksByStatus(status: 'IN_PROGRESS' | 'COMPLETED') {
+export async function getTasksByCompletion(completed: boolean) {
   "use cache"
   
   await wait(500)
   return prisma.task.findMany({
-    where: { status },
+    where: { completed },
     include: {
       Project: true,
       User: true
@@ -74,15 +74,11 @@ export async function getTask(taskId: string | number) {
 
 export async function createTask({
   title,
-  description,
-  status,
   completed,
   userId,
   projectId,
 }: {
   title: string
-  description?: string
-  status?: 'IN_PROGRESS' | 'COMPLETED'
   completed: boolean
   userId: number
   projectId: number
@@ -92,8 +88,6 @@ export async function createTask({
     return tx.task.create({
       data: {
         title,
-        description,
-        status: status || 'IN_PROGRESS',
         completed,
         userId,
         projectId,
@@ -108,15 +102,11 @@ export async function updateTask(
   taskId: string | number,
   {
     title,
-    description,
-    status,
     completed,
     userId,
     projectId
    }:{
      title: string,
-     description?: string | null,
-     status?: 'IN_PROGRESS' | 'COMPLETED',
      completed: boolean,
      userId: number,
      projectId: number
@@ -129,8 +119,6 @@ export async function updateTask(
       where: { id: Number(taskId) },
       data: {
         title,
-        description,
-        status,
         completed,
         userId,
         projectId,

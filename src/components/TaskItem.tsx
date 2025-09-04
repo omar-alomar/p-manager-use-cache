@@ -13,8 +13,6 @@ interface TaskItemProps {
   userName?: string
   displayProject?: boolean
   displayUser?: boolean
-  status?: 'IN_PROGRESS' | 'COMPLETED'
-  description?: string | null
 }
 
 export function TaskItem({ 
@@ -26,12 +24,12 @@ export function TaskItem({
   userId,
   userName,
   displayProject = true,
-  displayUser = false,
-  status = 'IN_PROGRESS',
-  description
+  displayUser = false
 }: TaskItemProps) {
   const [completed, setCompleted] = useState(initialCompleted)
-  const [currentStatus, setCurrentStatus] = useState(status)
+  
+  // Derive status from completed field
+  const currentStatus = completed ? 'COMPLETED' : 'IN_PROGRESS'
   const [isUpdating, setIsUpdating] = useState(false)
   const [updateCount, setUpdateCount] = useState(0)
   const [isEditing, setIsEditing] = useState(false)
@@ -56,14 +54,9 @@ export function TaskItem({
     setCompleted(newCompleted)
     setIsUpdating(true)
     
-    // Update status based on completion
-    const newStatus = newCompleted ? 'COMPLETED' : 'IN_PROGRESS'
-    
     try {
       await updateTaskCompletionAction(id, {
         title: editedTitle,
-        description,
-        status: newStatus,
         completed: newCompleted,
         userId,
         projectId
@@ -79,7 +72,6 @@ export function TaskItem({
         setCompleted(!newCompleted)
         alert('Update failed! Please try again.')
       } else {
-        setCurrentStatus(newStatus)
         setUpdateCount(c => c + 1)
       }
       
@@ -109,7 +101,6 @@ export function TaskItem({
     try {
       await updateTaskCompletionAction(id, {
         title: editedTitle,
-        description,
         status: currentStatus,
         completed,
         userId,
@@ -250,10 +241,6 @@ export function TaskItem({
                     </span>
                   </div>
                 </div>
-                
-                {description && (
-                  <p className="task-description">{description}</p>
-                )}
                 
                 <div className="task-meta">
                   {displayProject && projectTitle && (

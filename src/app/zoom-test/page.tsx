@@ -1,4 +1,14 @@
-export default function ZoomTestPage() {
+import { redirect } from "next/navigation"
+import { getCurrentUser } from "@/auth/currentUser"
+
+export default async function ZoomTestPage() {
+  // Check if user is authenticated
+  const user = await getCurrentUser()
+  
+  // Redirect to login if not authenticated
+  if (!user) {
+    redirect("/login")
+  }
   return (
     <div className="zoom-test-container">
       <h1>Zoom Test Page</h1>

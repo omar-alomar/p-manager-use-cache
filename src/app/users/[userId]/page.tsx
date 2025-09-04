@@ -5,7 +5,8 @@ import { getUser } from "@/db/users"
 import { ProjectCard, SkeletonProjectCard } from "@/components/ProjectCard"
 import { Skeleton, SkeletonList } from "@/components/Skeleton"
 import { Suspense } from "react"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
+import { getCurrentUser } from "@/auth/currentUser"
 import { CalendarIcon, BriefcaseIcon, CheckCircleIcon, ClockIcon, UserIcon, EnvelopeIcon } from "@/components/icons"
 import Link from "next/link"
 import { InteractiveProjectCardWithTasks } from "@/components/InteractiveProjectCardWithTasks"
@@ -15,6 +16,14 @@ export default async function UserPage({
 }: {
   params: Promise<{ userId: string }>
 }) {
+  // Check if user is authenticated
+  const user = await getCurrentUser()
+  
+  // Redirect to login if not authenticated
+  if (!user) {
+    redirect("/login")
+  }
+
   const { userId } = await params
 
   return (
@@ -53,8 +62,8 @@ export default async function UserPage({
             <BriefcaseIcon />
           </div>
           <div className="section-title-group">
-            <h2 className="section-title">Projects & Tasks</h2>
-            <p className="section-subtitle">Active projects with current task assignments</p>
+            <h2 className="section-title">Projects & Assigned Tasks</h2>
+            <p className="section-subtitle">Active projects with tasks assigned to this user</p>
           </div>
         </div>
         
@@ -78,14 +87,11 @@ async function UserHero({ userId }: { userId: string }) {
   const user = await getUser(userId)
   if (user == null) return notFound()
 
-  // Get user stats
+  // Get user stats - only assigned tasks
   const projects = await getUserProjects(userId)
-  const allTasks = await Promise.all(
-    projects.map(project => getProjectTasks(project.id))
-  )
-  const tasks = allTasks.flat()
-  const completedTasks = tasks.filter(task => task.completed).length
-  const activeTasks = tasks.filter(task => !task.completed).length
+  const userTasks = await getUserTasks(userId)
+  const completedTasks = userTasks.filter(task => task.completed).length
+  const activeTasks = userTasks.filter(task => !task.completed).length
 
   // Generate initials for avatar
   const initials = user.name
@@ -180,7 +186,10 @@ async function UserProjectsWithTasks({ userId }: { userId: string }) {
   return (
     <div className="projects-grid">
       {projects.map(async (project) => {
-        const projectTasks = await getProjectTasks(project.id)
+        // Get only tasks assigned to this specific user for this project
+        const userTasks = await getUserTasks(userId)
+        const projectUserTasks = userTasks.filter(task => task.projectId === project.id)
+        
         let projectManager = null
         
         try {
@@ -194,7 +203,7 @@ async function UserProjectsWithTasks({ userId }: { userId: string }) {
             key={project.id} 
             {...project} 
             showManager={true}
-            tasks={projectTasks}
+            tasks={projectUserTasks}
             projectManager={projectManager ? { id: projectManager.id, name: projectManager.name } : undefined}
           />
         )

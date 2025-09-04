@@ -9,8 +9,6 @@ import { NewTaskButton } from "./NewTaskButton"
 interface Task {
   id: number
   title: string
-  description?: string | null
-  status: 'IN_PROGRESS' | 'COMPLETED'
   completed: boolean
   userId: number
   projectId: number
@@ -27,20 +25,25 @@ interface TasksPageClientProps {
 }
 
 export function TasksPageClient({ tasks, users, projects }: TasksPageClientProps) {
-  const { filter, sort, search } = useTaskFilter()
+  const { filter, sort, search, userFilter, projectFilter } = useTaskFilter()
 
   // Filter tasks based on current filter
   const filteredTasks = tasks.filter(task => {
-    // Status filter
-    if (filter === 'in_progress' && task.status !== 'IN_PROGRESS') return false
-    if (filter === 'completed' && task.status !== 'COMPLETED') return false
+    // Status filter - derive from completed field
+    if (filter === 'in_progress' && task.completed) return false
+    if (filter === 'completed' && !task.completed) return false
+    
+    // User filter
+    if (userFilter && task.userId !== userFilter) return false
+    
+    // Project filter
+    if (projectFilter && task.projectId !== projectFilter) return false
     
     // Search filter
     if (search) {
       const searchLower = search.toLowerCase()
       return (
         task.title.toLowerCase().includes(searchLower) ||
-        task.description?.toLowerCase().includes(searchLower) ||
         task.User.name.toLowerCase().includes(searchLower) ||
         task.Project.title.toLowerCase().includes(searchLower)
       )
@@ -62,25 +65,25 @@ export function TasksPageClient({ tasks, users, projects }: TasksPageClientProps
   // Calculate stats for all tasks (not filtered)
   const stats = {
     total: tasks.length,
-    completed: tasks.filter(t => t.status === 'COMPLETED').length,
-    inProgress: tasks.filter(t => t.status === 'IN_PROGRESS').length
+    completed: tasks.filter(t => t.completed).length,
+    inProgress: tasks.filter(t => !t.completed).length
   }
 
   // Calculate task counts for filter tabs
   const taskCounts = {
     all: tasks.length,
-    inProgress: tasks.filter(t => t.status === 'IN_PROGRESS').length,
-    completed: tasks.filter(t => t.status === 'COMPLETED').length
+    inProgress: tasks.filter(t => !t.completed).length,
+    completed: tasks.filter(t => t.completed).length
   }
 
   return (
     <div className="tasks-content">
       {/* Stats Section */}
-      <TaskStats stats={stats} />
+      <TaskStats stats={stats} context="all-tasks" />
 
       {/* Filters and Actions */}
       <div className="tasks-controls">
-        <TaskFilters taskCounts={taskCounts} />
+        <TaskFilters taskCounts={taskCounts} users={users} projects={projects} context="all-tasks" />
         <NewTaskButton users={users} projects={projects} />
       </div>
 

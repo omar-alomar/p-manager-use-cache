@@ -9,7 +9,7 @@ interface EditableCoFilesProps {
   title: string
   client: string
   body: string
-  apfo: string
+  apfo: Date | null
   mbaNumber: string
   dldReviewer: string
   userId: number

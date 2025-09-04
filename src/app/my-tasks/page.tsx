@@ -1,8 +1,17 @@
 import { Suspense } from "react"
+import { redirect } from "next/navigation"
+import { getCurrentUser } from "@/auth/currentUser"
 import { MyTasksContent } from "@/components/MyTasksContent"
 import TasksLoading from "../tasks/loading"
 
 export default async function MyTasksPage() {
+  // Check if user is authenticated
+  const user = await getCurrentUser()
+  
+  // Redirect to login if not authenticated
+  if (!user) {
+    redirect("/login")
+  }
   return (
     <div className="my-tasks-page">
       <div className="page-title">
@@ -15,7 +24,7 @@ export default async function MyTasksPage() {
       </div>
 
       <Suspense fallback={<TasksLoading />}>
-        <MyTasksContent />
+        <MyTasksContent currentUser={user} />
       </Suspense>
     </div>
   )

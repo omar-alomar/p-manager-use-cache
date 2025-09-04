@@ -9,8 +9,6 @@ import { NewTaskButton } from "./NewTaskButton"
 interface Task {
   id: number
   title: string
-  description?: string | null
-  status: 'IN_PROGRESS' | 'COMPLETED'
   completed: boolean
   userId: number
   projectId: number
@@ -27,20 +25,18 @@ interface MyTasksClientProps {
 }
 
 export function MyTasksClient({ myTasks, users, projects }: MyTasksClientProps) {
-  const { filter, sort, search } = useTaskFilter()
+  const { sort, search, projectFilter } = useTaskFilter()
 
-  // Filter tasks based on current filter
+  // Filter tasks based on search and project filter only (no status filtering)
   const filteredTasks = myTasks.filter(task => {
-    // Status filter
-    if (filter === 'in_progress' && task.status !== 'IN_PROGRESS') return false
-    if (filter === 'completed' && task.status !== 'COMPLETED') return false
+    // Project filter
+    if (projectFilter && task.projectId !== projectFilter) return false
     
     // Search filter
     if (search) {
       const searchLower = search.toLowerCase()
       return (
         task.title.toLowerCase().includes(searchLower) ||
-        task.description?.toLowerCase().includes(searchLower) ||
         task.Project.title.toLowerCase().includes(searchLower)
       )
     }
@@ -61,29 +57,22 @@ export function MyTasksClient({ myTasks, users, projects }: MyTasksClientProps) 
   // Calculate stats for current user's tasks (not filtered)
   const stats = {
     total: myTasks.length,
-    completed: myTasks.filter(t => t.status === 'COMPLETED').length,
-    inProgress: myTasks.filter(t => t.status === 'IN_PROGRESS').length
+    completed: myTasks.filter(t => t.completed).length,
+    inProgress: myTasks.filter(t => !t.completed).length
   }
 
-  // Calculate task counts for filter tabs
-  const taskCounts = {
-    all: myTasks.length,
-    inProgress: myTasks.filter(t => t.status === 'IN_PROGRESS').length,
-    completed: myTasks.filter(t => t.status === 'COMPLETED').length
-  }
-
-  // Group filtered and sorted tasks by status for display
-  const inProgressTasks = sortedTasks.filter(t => t.status === 'IN_PROGRESS')
-  const completedTasks = sortedTasks.filter(t => t.status === 'COMPLETED')
+  // Group tasks by status for display (always show both sections)
+  const inProgressTasks = sortedTasks.filter(t => !t.completed)
+  const completedTasks = sortedTasks.filter(t => t.completed)
 
   return (
     <div className="my-tasks-content">
       {/* Stats Section */}
-      <TaskStats stats={stats} />
+      <TaskStats stats={stats} context="my-tasks" />
 
       {/* Filters and Actions */}
       <div className="tasks-controls">
-        <TaskFilters taskCounts={taskCounts} />
+        <TaskFilters projects={projects} context="my-tasks" />
         <NewTaskButton users={users} projects={projects} />
       </div>
 

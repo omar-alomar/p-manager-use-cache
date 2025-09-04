@@ -12,6 +12,9 @@ async function createUsers() {
           id: user.id,
           name: user.name,
           email: user.email,
+          password: user.password,
+          salt: user.salt,
+          role: user.role,
         },
       })
     })
@@ -39,6 +42,13 @@ async function createProjects() {
   await prisma.project.deleteMany()
   return Promise.all(
     seedData.projects.map(async project => {
+      // Convert MM/DD/YYYY string to ISO date string
+      const convertApfoDate = (dateStr: string) => {
+        if (!dateStr) return null
+        const [month, day, year] = dateStr.split('/')
+        return new Date(parseInt(year), parseInt(month) - 1, parseInt(day)).toISOString()
+      }
+
       return prisma.project.create({
         data: {
           id: project.id,
@@ -46,7 +56,10 @@ async function createProjects() {
           client: project.client,
           body: project.body,
           userId: project.userId,
-          apfo: project.apfo
+          apfo: convertApfoDate(project.apfo),
+          mbaNumber: project.mbaNumber,
+          coFileNumbers: project.coFileNumbers,
+          dldReviewer: project.dldReviewer,
         },
       })
     })

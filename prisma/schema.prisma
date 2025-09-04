@@ -10,21 +10,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum TaskStatus {
-  IN_PROGRESS
-  COMPLETED
-}
-
 model Task {
-  id          Int         @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   title       String
-  description String?
-  status      TaskStatus  @default(IN_PROGRESS)
-  completed   Boolean     @default(false)
+  completed   Boolean  @default(false)
   userId      Int
-  projectId   Int         @default(0)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  projectId   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   User User @relation(fields: [userId], references: [id], onDelete: Cascade)
   Project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
@@ -54,7 +47,7 @@ model Project {
   client String @default("")
   body   String
   userId Int
-  apfo   String @default("")
+  apfo   DateTime?
   mbaNumber String @default("")
   coFileNumbers String @default("")
   dldReviewer String @default("")

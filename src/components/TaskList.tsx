@@ -3,8 +3,6 @@ import { TaskItem } from "./TaskItem"
 interface Task {
   id: number
   title: string
-  description?: string | null
-  status: 'IN_PROGRESS' | 'COMPLETED'
   completed: boolean
   userId: number
   projectId: number
@@ -78,8 +76,6 @@ export function TaskList({
             userName={task.User.name}
             displayProject={showProject}
             displayUser={showUser}
-            status={task.status}
-            description={task.description}
           />
         ))}
       </div>

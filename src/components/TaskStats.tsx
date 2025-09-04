@@ -1,17 +1,27 @@
+"use client"
+
+import { useTaskFilter } from "@/contexts/TaskFilterContext"
+
 interface TaskStatsProps {
   stats: {
     total: number
     completed: number
     inProgress: number
   }
+  context?: 'all-tasks' | 'my-tasks'
 }
 
-export function TaskStats({ stats }: TaskStatsProps) {
+export function TaskStats({ stats, context = 'all-tasks' }: TaskStatsProps) {
+  const { filter, setFilter } = useTaskFilter()
   const completionRate = stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0
+  const isClickable = context === 'all-tasks'
 
   return (
     <div className="task-stats">
-      <div className="stat-card">
+      <div 
+        className={`stat-card ${isClickable ? 'stat-card-clickable' : ''} ${filter === 'all' ? 'active' : ''}`}
+        onClick={isClickable ? () => setFilter('all') : undefined}
+      >
         <div className="stat-icon total">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/>
@@ -25,7 +35,10 @@ export function TaskStats({ stats }: TaskStatsProps) {
         </div>
       </div>
 
-      <div className="stat-card">
+      <div 
+        className={`stat-card ${isClickable ? 'stat-card-clickable' : ''} ${filter === 'completed' ? 'active' : ''}`}
+        onClick={isClickable ? () => setFilter('completed') : undefined}
+      >
         <div className="stat-icon completed">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M20 6L9 17l-5-5"/>
@@ -38,7 +51,10 @@ export function TaskStats({ stats }: TaskStatsProps) {
         </div>
       </div>
 
-      <div className="stat-card">
+      <div 
+        className={`stat-card ${isClickable ? 'stat-card-clickable' : ''} ${filter === 'in_progress' ? 'active' : ''}`}
+        onClick={isClickable ? () => setFilter('in_progress') : undefined}
+      >
         <div className="stat-icon in-progress">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="12" cy="12" r="10"/>

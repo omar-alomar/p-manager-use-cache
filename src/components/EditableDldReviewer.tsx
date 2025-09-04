@@ -9,7 +9,7 @@ interface EditableDldReviewerProps {
   title: string
   client: string
   body: string
-  apfo: string
+  apfo: Date | null
   mbaNumber: string
   coFileNumbers: string
   userId: number

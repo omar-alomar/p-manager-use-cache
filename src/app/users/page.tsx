@@ -1,8 +1,16 @@
+import { redirect } from "next/navigation"
+import { getCurrentUser } from "@/auth/currentUser"
 import { getUsers } from "@/db/users"
 import Link from "next/link"
-import { UserDeleteButton } from "@/components/UserDeleteButton"
 
 export default async function UsersPage() {
+  // Check if user is authenticated
+  const user = await getCurrentUser()
+  
+  // Redirect to login if not authenticated
+  if (!user) {
+    redirect("/login")
+  }
   const users = await getUsers()
 
   return (
@@ -84,9 +92,6 @@ export default async function UsersPage() {
                   </div>
                 </div>
               </Link>
-              <div className="user-actions">
-                <UserDeleteButton userId={user.id} userName={user.name} />
-              </div>
             </div>
           ))
         )}

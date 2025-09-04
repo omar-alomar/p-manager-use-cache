@@ -93,8 +93,6 @@ function validateTask(formData: FormData) {
   } = {}
   
   const title = formData.get("title") as string
-  const description = formData.get("description") as string
-  const status = formData.get("status") as 'IN_PROGRESS' | 'COMPLETED'
   const completed = formData.get("completed") === "on"
   const userId = Number(formData.get("userId"))
   const projectId = Number(formData.get("projectId"))
@@ -118,8 +116,6 @@ function validateTask(formData: FormData) {
 
   return [isValid ? { 
     title, 
-    description: description || undefined,
-    status: status || 'IN_PROGRESS',
     completed, 
     userId, 
     projectId 
@@ -131,8 +127,6 @@ export async function updateTaskCompletionAction(
   taskId: number,
   data: {
     title: string
-    description?: string | null
-    status?: 'IN_PROGRESS' | 'COMPLETED'
     completed: boolean
     userId: number
     projectId: number

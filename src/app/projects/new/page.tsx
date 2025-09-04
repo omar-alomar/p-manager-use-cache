@@ -1,7 +1,16 @@
+import { redirect } from "next/navigation"
+import { getCurrentUser } from "@/auth/currentUser"
 import { ProjectForm } from "@/components/ProjectForm"
 import { getUsers } from "@/db/users"
 
 export default async function NewProjectPage() {
+  // Check if user is authenticated
+  const user = await getCurrentUser()
+  
+  // Redirect to login if not authenticated
+  if (!user) {
+    redirect("/login")
+  }
   const users = await getUsers()
 
   return (

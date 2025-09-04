@@ -1,61 +1,370 @@
 {
   "users": [
-    { "id": 1, "name": "Omar Alomar",    "email": "omar@mba-eng.com" },
-    { "id": 2, "name": "Samer Alomar",   "email": "samer@mba-eng.com" },
-    { "id": 3, "name": "Mashid Tringa",  "email": "mashid@mba-eng.com" },
-    { "id": 4, "name": "Maya Mildenberg","email": "maya@mba-eng.com" },
-    { "id": 5, "name": "Mark Sweadner",  "email": "mark@mba-eng.com" },
-    { "id": 6, "name": "Jamie Sweadner", "email": "jamie@mba-eng.com" },
-    { "id": 7, "name": "Dima Hmaidi",    "email": "dima@mba-eng.com" }
+    { 
+      "id": 1, 
+      "name": "Omar Alomar", 
+      "email": "omar@mba-eng.com", 
+      "role": "user",
+      "password": "b4b7a4263d287687639daf072fbc0ba7ba9ec0b4b8c8db2148bbcc402302c1837d0a9d6e5900a2b81d8b574f5482f2985ac20fd5d65ee7dc2837e14e6e72d598",
+      "salt": "salt123456789"
+    },
+    { 
+      "id": 2, 
+      "name": "Samer Alomar", 
+      "email": "samer@mba-eng.com", 
+      "role": "user",
+      "password": "b4b7a4263d287687639daf072fbc0ba7ba9ec0b4b8c8db2148bbcc402302c1837d0a9d6e5900a2b81d8b574f5482f2985ac20fd5d65ee7dc2837e14e6e72d598",
+      "salt": "salt123456789"
+    },
+    { 
+      "id": 3, 
+      "name": "Mashid Tringa", 
+      "email": "mashid@mba-eng.com", 
+      "role": "user",
+      "password": "b4b7a4263d287687639daf072fbc0ba7ba9ec0b4b8c8db2148bbcc402302c1837d0a9d6e5900a2b81d8b574f5482f2985ac20fd5d65ee7dc2837e14e6e72d598",
+      "salt": "salt123456789"
+    },
+    { 
+      "id": 4, 
+      "name": "Maya Mildenberg", 
+      "email": "maya@mba-eng.com", 
+      "role": "user",
+      "password": "b4b7a4263d287687639daf072fbc0ba7ba9ec0b4b8c8db2148bbcc402302c1837d0a9d6e5900a2b81d8b574f5482f2985ac20fd5d65ee7dc2837e14e6e72d598",
+      "salt": "salt123456789"
+    },
+    { 
+      "id": 5, 
+      "name": "Mark Sweadner", 
+      "email": "mark@mba-eng.com", 
+      "role": "user",
+      "password": "b4b7a4263d287687639daf072fbc0ba7ba9ec0b4b8c8db2148bbcc402302c1837d0a9d6e5900a2b81d8b574f5482f2985ac20fd5d65ee7dc2837e14e6e72d598",
+      "salt": "salt123456789"
+    },
+    { 
+      "id": 6, 
+      "name": "Jamie Sweadner", 
+      "email": "jamie@mba-eng.com", 
+      "role": "user",
+      "password": "b4b7a4263d287687639daf072fbc0ba7ba9ec0b4b8c8db2148bbcc402302c1837d0a9d6e5900a2b81d8b574f5482f2985ac20fd5d65ee7dc2837e14e6e72d598",
+      "salt": "salt123456789"
+    },
+    { 
+      "id": 7, 
+      "name": "Dima Hmaidi", 
+      "email": "dima@mba-eng.com", 
+      "role": "user",
+      "password": "b4b7a4263d287687639daf072fbc0ba7ba9ec0b4b8c8db2148bbcc402302c1837d0a9d6e5900a2b81d8b574f5482f2985ac20fd5d65ee7dc2837e14e6e72d598",
+      "salt": "salt123456789"
+    },
+    { 
+      "id": 8, 
+      "name": "Admin User", 
+      "email": "admin@mba-eng.com", 
+      "role": "admin",
+      "password": "4a79487330ee3409cf83eb6ba4bc5ea0cb12308af9a5ea0c8d48b214bd8271958b0ac1dd6353c5d26230219498fdc40d293c062cf691897b97a22a3c33640b66",
+      "salt": "salt987654321"
+    },
+    { 
+      "id": 9, 
+      "name": "Sarah Johnson", 
+      "email": "sarah@mba-eng.com", 
+      "role": "user",
+      "password": "b4b7a4263d287687639daf072fbc0ba7ba9ec0b4b8c8db2148bbcc402302c1837d0a9d6e5900a2b81d8b574f5482f2985ac20fd5d65ee7dc2837e14e6e72d598",
+      "salt": "salt123456789"
+    },
+    { 
+      "id": 10, 
+      "name": "Michael Chen", 
+      "email": "michael@mba-eng.com", 
+      "role": "user",
+      "password": "b4b7a4263d287687639daf072fbc0ba7ba9ec0b4b8c8db2148bbcc402302c1837d0a9d6e5900a2b81d8b574f5482f2985ac20fd5d65ee7dc2837e14e6e72d598",
+      "salt": "salt123456789"
+    }
   ],
   "projects": [
     {
       "id": 1,
-      "title": "Rose Lane",
-      "client": "Rose Real Estate",
-      "body": "Full site design and grading plan for residential subdivision on Rose Lane.",
+      "title": "Rose Lane Subdivision",
+      "client": "Rose Real Estate Development",
+      "body": "Full site design and grading plan for residential subdivision on Rose Lane. Includes stormwater management, utility design, and erosion control measures.",
       "userId": 1,
-      "apfo": "09/12/2025"
+      "apfo": "09/12/2025",
+      "mbaNumber": "24-001",
+      "coFileNumbers": "23-009, 19-023",
+      "dldReviewer": "John Smith"
     },
     {
       "id": 2,
-      "title": "Mullinix",
+      "title": "Mullinix Commercial Development",
       "client": "Ron Martin / August El Communities",
-      "body": "Roadway alignment, stormwater management, and erosion control for the Mullinix property.",
+      "body": "Roadway alignment, stormwater management, and erosion control for the Mullinix property. Commercial development with parking and utility infrastructure.",
       "userId": 2,
-      "apfo": "10/03/2025"
+      "apfo": "10/03/2025",
+      "mbaNumber": "24-002",
+      "coFileNumbers": "23-015",
+      "dldReviewer": "Jane Doe"
     },
     {
       "id": 3,
-      "title": "Dorsey Run Road",
-      "client": "Kirk Haplin",
-      "body": "Placeholder project for testing seeds and schema functionality.",
+      "title": "Dorsey Run Road Extension",
+      "client": "Kirk Haplin Construction",
+      "body": "Roadway extension and utility installation for Dorsey Run Road. Includes traffic impact study and environmental assessment.",
       "userId": 3,
-      "apfo": "12/12/2025"
+      "apfo": "12/12/2025",
+      "mbaNumber": "24-003",
+      "coFileNumbers": "23-021, 19-045",
+      "dldReviewer": "Bob Wilson"
     },
     {
       "id": 4,
       "title": "The Sanctuary Lot 57",
       "client": "Burkard Builders",
-      "body": "Placeholder project for testing seeds and schema functionality.",
+      "body": "Residential lot development with custom home design. Includes site preparation, utility connections, and landscaping plans.",
       "userId": 3,
-      "apfo": "01/02/20206"
+      "apfo": "01/02/2026",
+      "mbaNumber": "24-004",
+      "coFileNumbers": "23-033",
+      "dldReviewer": "Alice Brown"
+    },
+    {
+      "id": 5,
+      "title": "Westfield Shopping Center",
+      "client": "Westfield Development Group",
+      "body": "Large-scale commercial development with multiple retail spaces, parking structure, and utility infrastructure. Phase 1 of 3-phase project.",
+      "userId": 4,
+      "apfo": "03/15/2026",
+      "mbaNumber": "24-005",
+      "coFileNumbers": "23-047, 19-067, 23-089",
+      "dldReviewer": "Charlie Davis"
+    },
+    {
+      "id": 6,
+      "title": "Riverside Park Renovation",
+      "client": "City of Springfield",
+      "body": "Public park renovation including playground equipment, walking trails, and stormwater management improvements.",
+      "userId": 5,
+      "apfo": "05/20/2026",
+      "mbaNumber": "24-006",
+      "coFileNumbers": "23-101",
+      "dldReviewer": "Diana Miller"
+    },
+    {
+      "id": 7,
+      "title": "Tech Campus Phase 2",
+      "client": "Innovation Partners LLC",
+      "body": "Second phase of technology campus development. Includes additional office buildings, parking, and utility expansion.",
+      "userId": 6,
+      "apfo": "07/10/2026",
+      "mbaNumber": "24-007",
+      "coFileNumbers": "23-123, 19-145",
+      "dldReviewer": "Edward Taylor"
+    },
+    {
+      "id": 8,
+      "title": "Greenfield Residential",
+      "client": "Greenfield Homes",
+      "body": "New residential development with 150 single-family homes. Includes community amenities, stormwater management, and utility infrastructure.",
+      "userId": 7,
+      "apfo": "09/05/2026",
+      "mbaNumber": "24-008",
+      "coFileNumbers": "23-167, 19-189, 23-201",
+      "dldReviewer": "Fiona Garcia"
     }
   ],
   "tasks": [
-    { "id": 1, "title": "Set up database",           "completed": true,  "userId": 1, "projectId": 1 },
-    { "id": 2, "title": "Write API endpoints",       "completed": false, "userId": 2, "projectId": 2 },
-    { "id": 3, "title": "Design landing page",       "completed": false, "userId": 3, "projectId": 3 },
-    { "id": 4, "title": "Integrate authentication",  "completed": false, "userId": 4, "projectId": 4 },
-    { "id": 5, "title": "Write unit tests",          "completed": true,  "userId": 5, "projectId": 1 },
-    { "id": 6, "title": "Deploy to staging",         "completed": false, "userId": 6, "projectId": 2 },
-    { "id": 7, "title": "Review pull requests",      "completed": false, "userId": 7, "projectId": 3 }
+    { 
+      "id": 1, 
+      "title": "Grading for micro bio", 
+      "description": "Complete grading plan for microbiological analysis requirements",
+      "completed": true, 
+      "userId": 1, 
+      "projectId": 1
+    },
+    { 
+      "id": 2, 
+      "title": "ECP submission", 
+      "description": "Submit Erosion Control Plan to county for approval",
+      "completed": false, 
+      "userId": 2, 
+      "projectId": 2
+    },
+    { 
+      "id": 3, 
+      "title": "Address Sam comments on SDP", 
+      "description": "Review and address comments from Sam on Site Development Plan",
+      "completed": false, 
+      "userId": 3, 
+      "projectId": 3
+    },
+    { 
+      "id": 4, 
+      "title": "Add stormdrain calculations to report", 
+      "description": "Include detailed stormdrain calculations in final engineering report",
+      "completed": false, 
+      "userId": 4, 
+      "projectId": 4
+    },
+    { 
+      "id": 5, 
+      "title": "Create prelim sewer plan", 
+      "description": "Develop preliminary sewer system design and layout",
+      "completed": true, 
+      "userId": 5, 
+      "projectId": 1
+    },
+    { 
+      "id": 6, 
+      "title": "DED/DLD checklist review", 
+      "description": "Complete DED/DLD checklist review and submit for approval",
+      "completed": false, 
+      "userId": 6, 
+      "projectId": 2
+    },
+    { 
+      "id": 7, 
+      "title": "F plan submittal", 
+      "description": "Submit final F plan to regulatory authorities",
+      "completed": false, 
+      "userId": 7, 
+      "projectId": 3
+    },
+    { 
+      "id": 8, 
+      "title": "Traffic impact study", 
+      "description": "Conduct comprehensive traffic impact study for project area",
+      "completed": false, 
+      "userId": 1, 
+      "projectId": 5
+    },
+    { 
+      "id": 9, 
+      "title": "Environmental assessment", 
+      "description": "Complete environmental impact assessment and mitigation plan",
+      "completed": true, 
+      "userId": 2, 
+      "projectId": 5
+    },
+    { 
+      "id": 10, 
+      "title": "Utility coordination meeting", 
+      "description": "Schedule and conduct utility coordination meeting with all providers",
+      "completed": false, 
+      "userId": 3, 
+      "projectId": 6
+    },
+    { 
+      "id": 11, 
+      "title": "Park design review", 
+      "description": "Review park design with city planning department",
+      "completed": false, 
+      "userId": 4, 
+      "projectId": 6
+    },
+    { 
+      "id": 12, 
+      "title": "Building permit application", 
+      "description": "Submit building permit application for Phase 2 structures",
+      "completed": true, 
+      "userId": 5, 
+      "projectId": 7
+    },
+    { 
+      "id": 13, 
+      "title": "Community amenities design", 
+      "description": "Design community amenities including pool and clubhouse",
+      "completed": false, 
+      "userId": 6, 
+      "projectId": 8
+    },
+    { 
+      "id": 14, 
+      "title": "Stormwater management plan", 
+      "description": "Develop comprehensive stormwater management plan for residential development",
+      "completed": false, 
+      "userId": 7, 
+      "projectId": 8
+    },
+    { 
+      "id": 15, 
+      "title": "Final inspection preparation", 
+      "description": "Prepare all documentation for final project inspection",
+      "completed": false, 
+      "userId": 1, 
+      "projectId": 4
+    }
   ],
   "comments": [
-    { "id": 1, "email": "alice@example.com", "body": "Looks great, just tweak the margins.",      "projectId": 1 },
-    { "id": 2, "email": "bob@example.com",   "body": "Can we change the pond location slightly?", "projectId": 1 },
-    { "id": 3, "email": "carol@example.com", "body": "Stormwater calcs need updating.",           "projectId": 2 },
-    { "id": 4, "email": "dave@example.com",  "body": "Alignment seems off by a foot here.",       "projectId": 2 },
-    { "id": 5, "email": "eve@example.com",   "body": "Test project placeholder comment.",           "projectId": 3 }
+    { 
+      "id": 1, 
+      "email": "alice@example.com", 
+      "body": "Looks great, just tweak the margins on the grading plan.", 
+      "projectId": 1 
+    },
+    { 
+      "id": 2, 
+      "email": "bob@example.com", 
+      "body": "Can we change the pond location slightly? The current placement conflicts with the utility easement.", 
+      "projectId": 1 
+    },
+    { 
+      "id": 3, 
+      "email": "carol@example.com", 
+      "body": "Stormwater calculations need updating based on the new rainfall data from NOAA.", 
+      "projectId": 2 
+    },
+    { 
+      "id": 4, 
+      "email": "dave@example.com", 
+      "body": "Roadway alignment seems off by a foot here. Please double-check the survey data.", 
+      "projectId": 2 
+    },
+    { 
+      "id": 5, 
+      "email": "eve@example.com", 
+      "body": "The traffic impact study looks comprehensive. Good work on the intersection analysis.", 
+      "projectId": 3 
+    },
+    { 
+      "id": 6, 
+      "email": "frank@example.com", 
+      "body": "Environmental assessment is approved. Proceed with the mitigation plan as outlined.", 
+      "projectId": 4 
+    },
+    { 
+      "id": 7, 
+      "email": "grace@example.com", 
+      "body": "Utility coordination meeting went well. All providers are on board with the timeline.", 
+      "projectId": 5 
+    },
+    { 
+      "id": 8, 
+      "email": "henry@example.com", 
+      "body": "Park design meets all ADA requirements. Ready for final approval.", 
+      "projectId": 6 
+    },
+    { 
+      "id": 9, 
+      "email": "iris@example.com", 
+      "body": "Building permits have been issued. Construction can begin as scheduled.", 
+      "projectId": 7 
+    },
+    { 
+      "id": 10, 
+      "email": "jack@example.com", 
+      "body": "Community amenities design is innovative. The residents will love the new features.", 
+      "projectId": 8 
+    },
+    { 
+      "id": 11, 
+      "email": "karen@example.com", 
+      "body": "Stormwater management plan needs minor adjustments for the detention pond sizing.", 
+      "projectId": 8 
+    },
+    { 
+      "id": 12, 
+      "email": "larry@example.com", 
+      "body": "Final inspection is scheduled for next week. All documentation looks complete.", 
+      "projectId": 4 
+    }
   ]
 }

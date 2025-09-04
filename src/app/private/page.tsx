@@ -1,8 +1,17 @@
 // app/private/page.tsx
 
 import Link from "next/link"
+import { redirect } from "next/navigation"
+import { getCurrentUser } from "@/auth/currentUser"
 
-export default function PrivatePage() {
+export default async function PrivatePage() {
+  // Check if user is authenticated
+  const user = await getCurrentUser()
+  
+  // Redirect to login if not authenticated
+  if (!user) {
+    redirect("/login")
+  }
   return (
     <div>
       <div className="page-title">

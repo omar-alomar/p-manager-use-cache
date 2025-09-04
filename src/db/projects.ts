@@ -56,8 +56,8 @@ export async function createProject({
   title: string
   client: string
   body: string
-  apfo: string
-  mbaNumber: string
+  apfo: Date | null
+  mbaNumber: string | null
   coFileNumbers: string
   dldReviewer: string
   userId: number
@@ -69,10 +69,12 @@ export async function createProject({
       client,
       body,
       apfo,
-      mbaNumber,
+      mbaNumber: mbaNumber || "",
       coFileNumbers,
       dldReviewer,
-      userId,
+      user: {
+        connect: { id: userId }
+      },
     },
   })
 
@@ -120,7 +122,7 @@ function validateProject(formData: FormData) {
     isValid = false
   }
 
-  return [isValid ? { title, client, body, apfo, mbaNumber, coFileNumbers, dldReviewer, userId } : undefined, errors] as const
+  return [isValid ? { title, client, body, apfo: apfo ? new Date(apfo) : null, mbaNumber: mbaNumber || "", coFileNumbers, dldReviewer, userId } : undefined, errors] as const
 }
 
 export async function updateProject(
@@ -138,8 +140,8 @@ export async function updateProject(
     title: string
     client: string
     body: string
-    apfo: string
-    mbaNumber: string
+    apfo: Date | null
+    mbaNumber: string | null
     coFileNumbers: string
     dldReviewer: string
     userId: number
@@ -153,7 +155,7 @@ export async function updateProject(
       client,
       body,
       apfo,
-      mbaNumber,
+      mbaNumber: mbaNumber || "",
       coFileNumbers,
       dldReviewer,
       userId,

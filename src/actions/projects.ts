@@ -12,7 +12,7 @@ export async function createProjectAction(prevState: unknown, formData: FormData
 
   const project = await createProject(data)
 
-  return { success: true, message: 'Project created successfully', redirectTo: `/projects/${project.id}` }
+  return { success: true, message: 'Project created successfully', redirectTo: `/projects` }
 }
 
 export async function editProjectAction(
@@ -40,8 +40,8 @@ export async function updateProjectCommentsAction(
     title: string
     client: string
     body: string  // This is the comments field
-    apfo: string
-    mbaNumber: string
+    apfo: Date | null
+    mbaNumber: string | null
     coFileNumbers: string
     dldReviewer: string
     userId: number
@@ -62,8 +62,8 @@ export async function updateProjectCoFilesAction(
     title: string
     client: string
     body: string
-    apfo: string
-    mbaNumber: string
+    apfo: Date | null
+    mbaNumber: string | null
     coFileNumbers: string
     dldReviewer: string
     userId: number
@@ -84,8 +84,8 @@ export async function updateProjectDldReviewerAction(
     title: string
     client: string
     body: string
-    apfo: string
-    mbaNumber: string
+    apfo: Date | null
+    mbaNumber: string | null
     coFileNumbers: string
     dldReviewer: string
     userId: number
@@ -106,8 +106,8 @@ export async function updateProjectMbaNumberAction(
     title: string
     client: string
     body: string
-    apfo: string
-    mbaNumber: string
+    apfo: Date | null
+    mbaNumber: string | null
     coFileNumbers: string
     dldReviewer: string
     userId: number
@@ -163,5 +163,5 @@ function validateProject(formData: FormData) {
     isValid = false
   }
 
-  return [isValid ? { title, client, body, apfo, mbaNumber, coFileNumbers, dldReviewer, userId } : undefined, errors] as const
+  return [isValid ? { title, client, body, apfo: apfo ? new Date(apfo) : null, mbaNumber: mbaNumber || "", coFileNumbers, dldReviewer, userId } : undefined, errors] as const
 }

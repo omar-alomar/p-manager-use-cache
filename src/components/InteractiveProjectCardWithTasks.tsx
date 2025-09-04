@@ -23,7 +23,7 @@ interface InteractiveProjectCardWithTasksProps {
   title: string
   client: string
   body: string
-  apfo: string
+  apfo: Date | null
   userId: number
   showManager?: boolean
   tasks: Task[]
@@ -122,7 +122,13 @@ export function InteractiveProjectCardWithTasks({
           {apfo && (
             <div className="project-apfo">
               <span className="apfo-label">APFO</span>
-              <span className="apfo-value">{apfo}</span>
+              <span className="apfo-value">
+                {new Date(apfo).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                })}
+              </span>
             </div>
           )}
           {showManager && projectManager && <ProjectManagerInline projectManager={projectManager} />}
@@ -143,7 +149,7 @@ export function InteractiveProjectCardWithTasks({
           <div className="project-tasks-section">
             <div className="tasks-header">
               <h4 className="tasks-title">
-                Tasks ({activeTasks.length} active, {completedTasks.length} completed)
+                Assigned Tasks ({activeTasks.length} active, {completedTasks.length} completed)
               </h4>
             </div>
             

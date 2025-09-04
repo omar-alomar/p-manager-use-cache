@@ -3,7 +3,8 @@ import { getProject } from "@/db/projects"
 import { getUser } from "@/db/users"
 import Link from "next/link"
 import { Suspense } from "react"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
+import { getCurrentUser } from "@/auth/currentUser"
 import { DeleteButton } from "./_DeleteButton"
 import { getProjectTasks } from "@/db/tasks"
 import { TaskItem } from "@/components/TaskItem"
@@ -16,6 +17,14 @@ export default async function ProjectPage({
 }: {
   params: Promise<{ projectId: string }>
 }) {
+  // Check if user is authenticated
+  const user = await getCurrentUser()
+  
+  // Redirect to login if not authenticated
+  if (!user) {
+    redirect("/login")
+  }
+
   const { projectId } = await params
 
   return (
@@ -177,7 +186,11 @@ async function ProjectHero({ projectId }: { projectId: string }) {
                     <line x1="16" y1="17" x2="8" y2="17"/>
                     <polyline points="10,9 9,9 8,9"/>
                   </svg>
-                  {project.apfo}
+                  {new Date(project.apfo).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                  })}
                 </span>
               )}
             </div>
@@ -304,9 +317,15 @@ async function ProjectDetails({ projectId }: { projectId: string }) {
         {project.apfo && (
           <div className="detail-item">
             <label className="detail-label">
-              APFO
+              APFO Date
             </label>
-            <div className="detail-value">{project.apfo}</div>
+            <div className="detail-value">
+              {new Date(project.apfo).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </div>
           </div>
         )}
 
@@ -427,7 +446,6 @@ async function Tasks({ projectId }: { projectId: string }) {
             displayProject={false}
             displayUser={true}
             status={task.status}
-            description={task.description}
           />
         ))}
       </div>

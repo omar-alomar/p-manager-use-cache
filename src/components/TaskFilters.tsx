@@ -11,10 +11,13 @@ interface TaskFiltersProps {
     inProgress: number
     completed: number
   }
+  users?: { id: number; name: string }[]
+  projects?: { id: number; title: string }[]
+  context?: 'all-tasks' | 'my-tasks'
 }
 
-export function TaskFilters({ taskCounts }: TaskFiltersProps) {
-  const { filter, setFilter, sort, setSort, search, setSearch } = useTaskFilter()
+export function TaskFilters({ taskCounts, users, projects, context = 'all-tasks' }: TaskFiltersProps) {
+  const { filter, setFilter, sort, setSort, search, setSearch, userFilter, setUserFilter, projectFilter, setProjectFilter } = useTaskFilter()
 
   const filterOptions = [
     { value: 'all', label: 'All Tasks', count: taskCounts?.all || 0 },
@@ -28,7 +31,7 @@ export function TaskFilters({ taskCounts }: TaskFiltersProps) {
   ]
 
   return (
-    <div className="task-filters">
+    <div className={`task-filters task-filters--${context}`}>
       <div className="filter-group">
         <div className="search-box">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -45,22 +48,24 @@ export function TaskFilters({ taskCounts }: TaskFiltersProps) {
         </div>
       </div>
 
-      <div className="filter-group">
-        <div className="filter-tabs">
-          {filterOptions.map((option) => (
-            <button
-              key={option.value}
-              onClick={() => setFilter(option.value as FilterType)}
-              className={`filter-tab ${filter === option.value ? 'active' : ''}`}
-            >
-              {option.label}
-              {option.count > 0 && (
-                <span className="filter-count">{option.count}</span>
-              )}
-            </button>
-          ))}
+      {context !== 'my-tasks' && (
+        <div className="filter-group">
+          <div className="filter-tabs">
+            {filterOptions.map((option) => (
+              <button
+                key={option.value}
+                onClick={() => setFilter(option.value as FilterType)}
+                className={`filter-tab ${filter === option.value ? 'active' : ''}`}
+              >
+                {option.label}
+                {option.count > 0 && (
+                  <span className="filter-count">{option.count}</span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="filter-group">
         <div className="sort-controls">
@@ -79,6 +84,48 @@ export function TaskFilters({ taskCounts }: TaskFiltersProps) {
           </select>
         </div>
       </div>
+
+      {users && users.length > 0 && (
+        <div className="filter-group">
+          <div className="filter-controls">
+            <label htmlFor="user-filter">Filter by user:</label>
+            <select
+              id="user-filter"
+              value={userFilter || ''}
+              onChange={(e) => setUserFilter(e.target.value ? Number(e.target.value) : null)}
+              className="filter-select"
+            >
+              <option value="">All Users</option>
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
+
+      {projects && projects.length > 0 && (
+        <div className="filter-group">
+          <div className="filter-controls">
+            <label htmlFor="project-filter">Filter by project:</label>
+            <select
+              id="project-filter"
+              value={projectFilter || ''}
+              onChange={(e) => setProjectFilter(e.target.value ? Number(e.target.value) : null)}
+              className="filter-select"
+            >
+              <option value="">All Projects</option>
+              {projects.map((project) => (
+                <option key={project.id} value={project.id}>
+                  {project.title}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

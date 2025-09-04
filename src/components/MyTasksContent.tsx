@@ -4,22 +4,26 @@ import { getProjects } from "@/db/projects"
 import { TaskFilterProvider } from "@/contexts/TaskFilterContext"
 import { MyTasksClient } from "./MyTasksClient"
 
-export async function MyTasksContent() {
-  // For now, we'll use a hardcoded user ID. In a real app, this would come from the session
-  const currentUserId = 1 // This should come from auth context
-  
-  const [myTasks, users, projects] = await Promise.all([
-    getUserTasks(currentUserId),
+interface MyTasksContentProps {
+  currentUser: { id: number; name: string }
+}
+
+export async function MyTasksContent({ currentUser }: MyTasksContentProps) {
+  const [myTasks, users, allProjects] = await Promise.all([
+    getUserTasks(currentUser.id),
     getUsers(),
     getProjects()
   ])
+
+  // Filter projects to only include those assigned to the current user
+  const userProjects = allProjects.filter(project => project.userId === currentUser.id)
 
   return (
     <TaskFilterProvider>
       <MyTasksClient 
         myTasks={myTasks} 
         users={users} 
-        projects={projects} 
+        projects={userProjects} 
       />
     </TaskFilterProvider>
   )

@@ -12,6 +12,10 @@ interface TaskFilterContextType {
   setSort: (sort: SortType) => void
   search: string
   setSearch: (search: string) => void
+  userFilter: number | null
+  setUserFilter: (userId: number | null) => void
+  projectFilter: number | null
+  setProjectFilter: (projectId: number | null) => void
 }
 
 const TaskFilterContext = createContext<TaskFilterContextType | undefined>(undefined)
@@ -20,6 +24,8 @@ export function TaskFilterProvider({ children }: { children: ReactNode }) {
   const [filter, setFilter] = useState<FilterType>('all')
   const [sort, setSort] = useState<SortType>('created')
   const [search, setSearch] = useState('')
+  const [userFilter, setUserFilter] = useState<number | null>(null)
+  const [projectFilter, setProjectFilter] = useState<number | null>(null)
 
   return (
     <TaskFilterContext.Provider value={{
@@ -28,7 +34,11 @@ export function TaskFilterProvider({ children }: { children: ReactNode }) {
       sort,
       setSort,
       search,
-      setSearch
+      setSearch,
+      userFilter,
+      setUserFilter,
+      projectFilter,
+      setProjectFilter
     }}>
       {children}
     </TaskFilterContext.Provider>

@@ -9,7 +9,7 @@ interface EditableCommentsProps {
   title: string
   client: string
   body: string
-  apfo: string
+  apfo: Date | null
   mbaNumber: string
   coFileNumbers: string
   dldReviewer: string

@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import { FormGroup } from "./FormGroup"
 import { Suspense, useActionState } from "react"
 import Link from "next/link"
@@ -16,7 +17,7 @@ export function ProjectForm({
   title: string
   client: string
   body: string
-  apfo: string
+  apfo: Date | null
   coFileNumbers: string
   dldReviewer: string
   userId: number
@@ -24,12 +25,25 @@ export function ProjectForm({
 }) {
   const action =
     project == null ? createProjectAction : editProjectAction.bind(null, project.id)
-  const [errors, formAction, pending] = useActionState(action, {})
+  const [state, formAction, pending] = useActionState(action, {})
+  
+  // Handle success state for project creation/editing
+  React.useEffect(() => {
+    if ('success' in state && state.success) {
+      if (!project) {
+        // For new projects, redirect to projects page
+        window.location.href = '/projects'
+      } else {
+        // For edited projects, redirect to project detail
+        window.location.href = `/projects/${project.id}`
+      }
+    }
+  }, [state, project])
 
   return (
     <form action={formAction} className="form">
       <div className="form-row">
-        <FormGroup errorMessage={errors.title}>
+        <FormGroup errorMessage={'title' in state ? state.title : undefined}>
           <label htmlFor="title">Title</label>
           <input
             required
@@ -39,7 +53,7 @@ export function ProjectForm({
             defaultValue={project?.title}
           />
         </FormGroup>
-        <FormGroup errorMessage={errors.client}>
+        <FormGroup errorMessage={'client' in state ? state.client : undefined}>
           <label htmlFor="client">Client</label>
           <input
             required
@@ -51,7 +65,7 @@ export function ProjectForm({
         </FormGroup>
       </div>
       <div className="form-row">
-        <FormGroup errorMessage={errors.userId}>
+        <FormGroup errorMessage={'userId' in state ? state.userId : undefined}>
           <label htmlFor="userId">Project Manager</label>
           <select
             required
@@ -68,27 +82,27 @@ export function ProjectForm({
             </Suspense>
           </select>
         </FormGroup>
-        <FormGroup errorMessage={errors.apfo}>
-          <label htmlFor="apfo">APFO</label>
+        <FormGroup errorMessage={'apfo' in state ? state.apfo : undefined}>
+          <label htmlFor="apfo">APFO Date</label>
           <input
             required
-            type="text"
+            type="date"
             name="apfo"
             id="apfo"
-            defaultValue={project?.apfo}
+            defaultValue={project?.apfo ? new Date(project.apfo).toISOString().split('T')[0] : ''}
           />
         </FormGroup>
       </div>
 
       <div className="form-row">
-        <FormGroup errorMessage={errors.body}>
+        <FormGroup errorMessage={'body' in state ? state.body : undefined}>
           <label htmlFor="body">Description</label>
           <textarea required name="body" id="body" defaultValue={project?.body} />
         </FormGroup>
       </div>
       
       <div className="form-row">
-        <FormGroup errorMessage={errors.coFileNumbers}>
+        <FormGroup errorMessage={'coFileNumbers' in state ? state.coFileNumbers : undefined}>
           <label htmlFor="coFileNumbers">Co File #'s</label>
           <input
             type="text"
@@ -97,7 +111,7 @@ export function ProjectForm({
             defaultValue={project?.coFileNumbers}
           />
         </FormGroup>
-        <FormGroup errorMessage={errors.dldReviewer}>
+        <FormGroup errorMessage={'dldReviewer' in state ? state.dldReviewer : undefined}>
           <label htmlFor="dldReviewer">DLD Reviewer</label>
           <input
             type="text"

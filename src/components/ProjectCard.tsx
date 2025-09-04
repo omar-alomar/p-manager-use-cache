@@ -17,7 +17,7 @@ export function ProjectCard({
   title: string
   client: string
   body: string
-  apfo: string
+  apfo: Date | null
   userId: number
   showManager?: boolean
 }) {
@@ -36,7 +36,13 @@ export function ProjectCard({
           {apfo && (
             <div className="project-apfo">
               <span className="apfo-label">APFO</span>
-              <span className="apfo-value">{apfo}</span>
+              <span className="apfo-value">
+                {apfo ? new Date(apfo).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                }) : ''}
+              </span>
             </div>
           )}
           {showManager && <ProjectManagerInline userId={userId} />}

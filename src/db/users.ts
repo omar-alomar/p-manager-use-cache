@@ -71,6 +71,20 @@ export async function deleteUser(userId: string | number) {
   return user
 }
 
+export async function updateUserRole(userId: string | number, newRole: string) {
+  await wait(500)
+
+  const user = await prisma.user.update({
+    where: { id: Number(userId) },
+    data: { role: newRole }
+  })
+
+  revalidateTag("users:all")
+  revalidateTag(`users:id=${user.id}`)
+
+  return user
+}
+
 function wait(duration: number) {
   return new Promise(resolve => {
     setTimeout(resolve, duration)
