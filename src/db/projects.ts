@@ -43,6 +43,32 @@ export async function getUserProjects(userId: string | number) {
   return prisma.project.findMany({ where: { userId: Number(userId) } })
 }
 
+export async function getProjectsWithUserTasks(userId: string | number) {
+  "use cache"
+  cacheTag(`projects:userTasks=${userId}`)
+
+  await wait(500)
+  
+  // Get projects where the user is either the manager OR has tasks assigned
+  return prisma.project.findMany({
+    where: {
+      OR: [
+        { userId: Number(userId) }, // Projects where user is the manager
+        { 
+          tasks: {
+            some: {
+              userId: Number(userId) // Projects where user has tasks assigned
+            }
+          }
+        }
+      ]
+    },
+    orderBy: {
+      title: 'asc'
+    }
+  })
+}
+
 export async function createProject({
   title,
   client,

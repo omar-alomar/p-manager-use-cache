@@ -1,6 +1,6 @@
 import { getUserTasks } from "@/db/tasks"
 import { getUsers } from "@/db/users"
-import { getProjects } from "@/db/projects"
+import { getProjectsWithUserTasks } from "@/db/projects"
 import { TaskFilterProvider } from "@/contexts/TaskFilterContext"
 import { MyTasksClient } from "./MyTasksClient"
 
@@ -9,14 +9,11 @@ interface MyTasksContentProps {
 }
 
 export async function MyTasksContent({ currentUser }: MyTasksContentProps) {
-  const [myTasks, users, allProjects] = await Promise.all([
+  const [myTasks, users, userProjects] = await Promise.all([
     getUserTasks(currentUser.id),
     getUsers(),
-    getProjects()
+    getProjectsWithUserTasks(currentUser.id)
   ])
-
-  // Filter projects to only include those assigned to the current user
-  const userProjects = allProjects.filter(project => project.userId === currentUser.id)
 
   return (
     <TaskFilterProvider>
