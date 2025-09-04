@@ -13,6 +13,7 @@ interface TaskItemProps {
   userName?: string
   displayProject?: boolean
   displayUser?: boolean
+  onUpdate?: (taskId: number, updates: { completed?: boolean; title?: string }) => void
 }
 
 export function TaskItem({ 
@@ -24,7 +25,8 @@ export function TaskItem({
   userId,
   userName,
   displayProject = true,
-  displayUser = false
+  displayUser = false,
+  onUpdate
 }: TaskItemProps) {
   const [completed, setCompleted] = useState(initialCompleted)
   
@@ -73,6 +75,8 @@ export function TaskItem({
         alert('Update failed! Please try again.')
       } else {
         setUpdateCount(c => c + 1)
+        // Notify parent component of the update
+        onUpdate?.(id, { completed: newCompleted })
       }
       
     } catch (error) {
@@ -117,6 +121,8 @@ export function TaskItem({
         alert('Update failed! Please try again.')
       } else {
         setUpdateCount(c => c + 1)
+        // Notify parent component of the update
+        onUpdate?.(id, { title: editedTitle })
       }
       
     } catch (error) {

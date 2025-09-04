@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { UserIcon, BriefcaseIcon } from "@/components/icons"
-import { updateTaskCompletionAction } from "@/actions/tasks"
+import { TaskItem } from "./TaskItem"
 
 interface Task {
   id: number
@@ -11,6 +11,8 @@ interface Task {
   completed: boolean
   userId: number
   projectId: number
+  User?: { name: string }
+  Project?: { title: string }
 }
 
 interface ProjectManager {
@@ -50,7 +52,6 @@ export function InteractiveProjectCardWithTasks({
   ) : []
   
   const [localTasks, setLocalTasks] = useState<Task[]>(validTasks)
-  const [updatingTasks, setUpdatingTasks] = useState<Set<number>>(new Set())
 
   const activeTasks = localTasks.filter(task => !task.completed)
   const completedTasks = localTasks.filter(task => task.completed)
@@ -67,44 +68,15 @@ export function InteractiveProjectCardWithTasks({
     setLocalTasks(validTasks)
   }, [tasks])
 
-  const handleTaskToggle = async (taskId: number, newCompleted: boolean) => {
-    const task = localTasks.find(t => t.id === taskId)
-    if (!task) return
-
-    // Optimistically update the UI
+  // Handle task updates from TaskItem component
+  const handleTaskUpdate = (taskId: number, updates: { completed?: boolean; title?: string }) => {
     setLocalTasks(prev => 
-      prev.map(t => 
-        t.id === taskId ? { ...t, completed: newCompleted } : t
+      prev.map(task => 
+        task.id === taskId 
+          ? { ...task, ...updates }
+          : task
       )
     )
-    
-    setUpdatingTasks(prev => new Set(prev).add(taskId))
-
-    try {
-      await updateTaskCompletionAction(taskId, {
-        title: task.title,
-        completed: newCompleted,
-        userId: task.userId,
-        projectId: task.projectId
-      })
-    } catch (error) {
-      console.error('Failed to update task:', error)
-      // Revert the optimistic update on error
-      setLocalTasks(prev => 
-        prev.map(t => 
-          t.id === taskId ? { ...t, completed: !newCompleted } : t
-        )
-      )
-      
-      // Show user-friendly error message
-      alert(`Failed to update task. Please try again.`)
-    } finally {
-      setUpdatingTasks(prev => {
-        const newSet = new Set(prev)
-        newSet.delete(taskId)
-        return newSet
-      })
-    }
   }
 
   return (
@@ -155,28 +127,19 @@ export function InteractiveProjectCardWithTasks({
             
             <div className="project-tasks-list">
               {localTasks.slice(0, 5).map(task => (
-                <div 
-                  key={task.id} 
-                  className={`project-task-item ${task.completed ? 'completed' : 'active'} ${updatingTasks.has(task.id) ? 'updating' : ''}`}
-                >
-                  <div className="task-checkbox-wrapper">
-                    <input
-                      type="checkbox"
-                      checked={task.completed}
-                      onChange={(e) => handleTaskToggle(task.id, e.target.checked)}
-                      disabled={updatingTasks.has(task.id)}
-                      className="project-task-checkbox"
-                      title={task.completed ? 'Mark as incomplete' : 'Mark as complete'}
-                    />
-                    {updatingTasks.has(task.id) && (
-                      <div className="task-updating-indicator">
-                        <div className="spinner-ring"></div>
-                      </div>
-                    )}
-                  </div>
-                  <div className="task-status-indicator"></div>
-                  <span className="task-title">{task.title}</span>
-                </div>
+                <TaskItem
+                  key={task.id}
+                  id={task.id}
+                  initialCompleted={task.completed}
+                  title={task.title}
+                  projectId={task.projectId}
+                  projectTitle={task.Project?.title || title}
+                  userId={task.userId}
+                  userName={task.User?.name || ''}
+                  displayProject={false}
+                  displayUser={false}
+                  onUpdate={handleTaskUpdate}
+                />
               ))}
               
               {localTasks.length > 5 && (

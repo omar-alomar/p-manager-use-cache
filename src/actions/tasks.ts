@@ -3,6 +3,7 @@
 import { createTask, deleteTask, updateTask, getTask } from "@/db/tasks"
 import { redirect } from "next/navigation"
 import { revalidatePath, revalidateTag } from "next/cache"
+import prisma from "@/db/db"
 
 export async function createTaskAction(prevState: unknown, formData: FormData) {
   const [data, errors] = validateTask(formData)
@@ -163,6 +164,13 @@ export async function updateTaskCompletionAction(
 
 // Verify task update helper
 export async function verifyTaskUpdate(taskId: number) {
-  const task = await getTask(taskId)
+  // Bypass cache to get fresh data immediately after update
+  const task = await prisma.task.findUnique({ 
+    where: { id: Number(taskId) },
+    include: {
+      Project: true,
+      User: true
+    }
+  })
   return task
 }
