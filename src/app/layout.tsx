@@ -19,8 +19,11 @@ export default function RootLayout({
       <body>
         <AuthProvider>
           <nav className="top-nav">
-            <div className="nav-text-large nav-list">
-              <Link href="/projects">Mildenberg Project Platform</Link>
+            <div className="nav-text-large">
+              <Link href="/projects" className="nav-title-link">
+                <div>Mildenberg Project Platform</div>
+                <div className="nav-subtitle">Alpha Version 1.0</div>
+              </Link>
             </div>
             <Navigation />
             <div className="user-status-container">
