@@ -144,7 +144,7 @@ function validateProject(formData: FormData) {
   }
 
   if (client === "") {
-    errors.title = "Required"
+    errors.client = "Required"
     isValid = false
   }
 
@@ -154,7 +154,7 @@ function validateProject(formData: FormData) {
   }
 
   if (apfo === "") {
-    errors.body = "Required"
+    errors.apfo = "Required"
     isValid = false
   }
 

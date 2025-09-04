@@ -2,6 +2,9 @@ import { Suspense } from "react"
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/auth/currentUser"
 import { MyTasksContent } from "@/components/MyTasksContent"
+import { NewTaskButton } from "@/components/NewTaskButton"
+import { getUsers } from "@/db/users"
+import { getProjectsWithUserTasks } from "@/db/projects"
 import TasksLoading from "../tasks/loading"
 
 export default async function MyTasksPage() {
@@ -12,6 +15,13 @@ export default async function MyTasksPage() {
   if (!user) {
     redirect("/login")
   }
+
+  // Fetch data for the NewTaskButton
+  const [users, projects] = await Promise.all([
+    getUsers(),
+    getProjectsWithUserTasks(user.id)
+  ])
+
   return (
     <div className="my-tasks-page">
       <div className="page-title">
@@ -20,6 +30,9 @@ export default async function MyTasksPage() {
           <p className="page-subtitle">
             Tasks assigned to you across all projects
           </p>
+        </div>
+        <div className="title-btns">
+          <NewTaskButton users={users} projects={projects} />
         </div>
       </div>
 

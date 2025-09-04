@@ -18,6 +18,7 @@ export function ProjectForm({
   client: string
   body: string
   apfo: Date | null
+  mbaNumber: string
   coFileNumbers: string
   dldReviewer: string
   userId: number
@@ -102,6 +103,15 @@ export function ProjectForm({
       </div>
       
       <div className="form-row">
+        <FormGroup errorMessage={'mbaNumber' in state ? state.mbaNumber : undefined}>
+          <label htmlFor="mbaNumber">MBA Number</label>
+          <input
+            type="text"
+            name="mbaNumber"
+            id="mbaNumber"
+            defaultValue={project?.mbaNumber}
+          />
+        </FormGroup>
         <FormGroup errorMessage={'coFileNumbers' in state ? state.coFileNumbers : undefined}>
           <label htmlFor="coFileNumbers">Co File #'s</label>
           <input
@@ -111,6 +121,9 @@ export function ProjectForm({
             defaultValue={project?.coFileNumbers}
           />
         </FormGroup>
+      </div>
+      
+      <div className="form-row">
         <FormGroup errorMessage={'dldReviewer' in state ? state.dldReviewer : undefined}>
           <label htmlFor="dldReviewer">DLD Reviewer</label>
           <input

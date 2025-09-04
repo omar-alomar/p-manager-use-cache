@@ -15,73 +15,92 @@ export default async function EditProjectPage({
   if (project == null) return notFound()
 
   return (
-    <div className="project-page">
-      {/* Edit Project Hero Section */}
-      <div className="project-hero edit-hero">
-        <div className="hero-background">
-          <div className="hero-pattern"></div>
-        </div>
-        <div className="hero-content">
-          <div className="hero-main">
-            <div className="hero-title-section">
-              <h1 className="hero-title">Edit Project</h1>
-              <div className="hero-meta">
-                <div className="meta-item">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                  </svg>
-                  <span>Editing: {project.title}</span>
-                </div>
-                {project.client && (
-                  <div className="meta-item">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                      <circle cx="9" cy="7" r="4"/>
-                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                    </svg>
-                    <span>Client: {project.client}</span>
-                  </div>
-                )}
-                {project.apfo && (
-                  <div className="meta-item">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                    </svg>
-                    <span>APFO: {project.apfo}</span>
-                  </div>
-                )}
-              </div>
+    <div className="project-profile-container">
+      {/* Hero Section */}
+      <div className="project-hero">
+        {/* Left Section - Project Info */}
+        <div className="hero-left-section">
+          <div className="hero-avatar">
+            <div className="avatar-circle edit-avatar">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
             </div>
-            <div className="hero-actions">
-              <Link className="btn btn-outline btn-hero" href={`/projects/${projectId}`}>
+          </div>
+          
+          <div className="hero-basic-info">
+            <h1 className="hero-name">Edit Project</h1>
+            <div className="hero-tags">
+              <span className="hero-tag client">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
                 </svg>
-                Back to Project
-              </Link>
+                {project.title}
+              </span>
+              {project.client && (
+                <span className="hero-tag apfo">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                  </svg>
+                  {project.client}
+                </span>
+              )}
+              {project.apfo && (
+                <span className="hero-tag apfo">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14,2 14,8 20,8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <polyline points="10,9 9,9 8,9"/>
+                  </svg>
+                  {new Date(project.apfo).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                  })}
+                </span>
+              )}
             </div>
+          </div>
+        </div>
+
+        {/* Right Section - Actions */}
+        <div className="hero-right-section">
+          <div className="hero-actions">
+            <Link className="btn btn-outline btn-hero" href={`/projects/${projectId}`}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+              Back to Project
+            </Link>
           </div>
         </div>
       </div>
 
-      {/* Edit Form Content */}
-      <div className="project-content">
-        <div className="content-grid">
-          <div className="content-section">
-            <div className="section-header">
-              <h2 className="section-title">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                </svg>
-                Project Information
-              </h2>
+      <div className="project-content-grid">
+        {/* Project Form Section */}
+        <div className="content-section">
+          <div className="section-header">
+            <div className="section-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
             </div>
-            <div className="form-container">
-              <ProjectForm users={users} project={project} />
+            <div className="section-title-group">
+              <h2 className="section-title">Edit Project Information</h2>
+              <p className="section-subtitle">Update project details and metadata</p>
             </div>
+          </div>
+          
+          <div className="section-content">
+            <ProjectForm users={users} project={project} />
           </div>
         </div>
       </div>

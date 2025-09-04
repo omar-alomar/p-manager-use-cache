@@ -6,7 +6,7 @@ import { Navigation } from "@/components/navigation/Navigation"
 import { AuthProvider } from "@/components/auth/AuthContext"
 
 export const metadata: Metadata = {
-  title: "Read Only Blog",
+  title: "Mildenberg Project Platform",
 }
 
 export default function RootLayout({
@@ -20,7 +20,7 @@ export default function RootLayout({
         <AuthProvider>
           <nav className="top-nav">
             <div className="nav-text-large nav-list">
-              <Link href="/projects">My App</Link>
+              <Link href="/projects">Mildenberg Project Platform</Link>
             </div>
             <Navigation />
             <div className="user-status-container">

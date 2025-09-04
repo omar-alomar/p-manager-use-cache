@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useActionState } from "react"
+import { createPortal } from "react-dom"
 import { createTaskAction } from "@/actions/tasks"
 import { getProjectsAction } from "@/actions/projects"
 import { getUsersAction } from "@/actions/users"
@@ -32,7 +33,13 @@ export function QuickAddTaskModal({
   const [users, setUsers] = useState<{ id: number; name: string }[]>([])
   const [isLoadingProjects, setIsLoadingProjects] = useState(false)
   const [isLoadingUsers, setIsLoadingUsers] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
   const [errors, formAction, pending] = useActionState(createTaskAction, {})
+
+  // Set mounted state on client side
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // Use provided data or fetch when modal opens
   useEffect(() => {
@@ -65,26 +72,20 @@ export function QuickAddTaskModal({
     }
   }, [isOpen, propUsers, propProjects])
 
-  const handleSubmit = async (formData: FormData) => {
-    // Add the userId to the form data if preset
-    if (presetUserId) {
-      formData.append('userId', presetUserId.toString())
+  // Handle successful form submission
+  useEffect(() => {
+    if (errors && 'success' in errors && errors.success) {
+      onClose()
     }
-    
-    // Submit the form
-    await formAction(formData)
-    
-    // Close the modal on successful submission
-    onClose()
-  }
+  }, [errors, onClose])
 
-  if (!isOpen) return null
+  if (!isOpen || !isMounted) return null
 
   const modalTitle = presetUserName 
     ? `Quick Add Task for ${presetUserName}`
     : "Quick Add Task"
 
-  return (
+  const modalContent = (
     <>
       {/* Backdrop */}
       <div 
@@ -110,7 +111,15 @@ export function QuickAddTaskModal({
           </button>
         </div>
 
-        <form action={handleSubmit} className={`quick-add-form ${pending ? 'form-loading' : ''}`}>
+        <form action={formAction} className={`quick-add-form ${pending ? 'form-loading' : ''}`}>
+          {/* Hidden inputs for preset values */}
+          {presetUserId && (
+            <input type="hidden" name="userId" value={presetUserId} />
+          )}
+          {presetProjectId && (
+            <input type="hidden" name="projectId" value={presetProjectId} />
+          )}
+          
           <div className="form-group">
             <FormGroup errorMessage={'title' in errors ? errors.title : undefined}>
               <label htmlFor="task-title">Task Title</label>
@@ -152,30 +161,31 @@ export function QuickAddTaskModal({
             </div>
           )}
 
-          <div className="form-group">
-            <FormGroup errorMessage={'projectId' in errors ? errors.projectId : undefined}>
-              <label htmlFor="task-project">Project</label>
-              <select
-                required
-                name="projectId"
-                id="task-project"
-                className="form-select"
-                disabled={isLoadingProjects}
-                defaultValue={presetProjectId?.toString() || ""}
-              >
-                <option value="">Select a project</option>
-                {isLoadingProjects ? (
-                  <option value="" disabled>Loading projects...</option>
-                ) : (
-                  projects.map(project => (
-                    <option key={project.id} value={project.id}>
-                      {project.title}
-                    </option>
-                  ))
-                )}
-              </select>
-            </FormGroup>
-          </div>
+          {!presetProjectId && (
+            <div className="form-group">
+              <FormGroup errorMessage={'projectId' in errors ? errors.projectId : undefined}>
+                <label htmlFor="task-project">Project</label>
+                <select
+                  required
+                  name="projectId"
+                  id="task-project"
+                  className="form-select"
+                  disabled={isLoadingProjects}
+                >
+                  <option value="">Select a project</option>
+                  {isLoadingProjects ? (
+                    <option value="" disabled>Loading projects...</option>
+                  ) : (
+                    projects.map(project => (
+                      <option key={project.id} value={project.id}>
+                        {project.title}
+                      </option>
+                    ))
+                  )}
+                </select>
+              </FormGroup>
+            </div>
+          )}
 
           <div className="modal-actions">
             <button
@@ -207,4 +217,6 @@ export function QuickAddTaskModal({
       </div>
     </>
   )
+
+  return createPortal(modalContent, document.body)
 }

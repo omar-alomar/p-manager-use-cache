@@ -4,7 +4,6 @@ import { useTaskFilter } from "@/contexts/TaskFilterContext"
 import { TaskStats } from "./TaskStats"
 import { TaskFilters } from "./TaskFilters"
 import { TaskList } from "./TaskList"
-import { NewTaskButton } from "./NewTaskButton"
 
 interface Task {
   id: number
@@ -73,7 +72,6 @@ export function MyTasksClient({ myTasks, users, projects }: MyTasksClientProps) 
       {/* Filters and Actions */}
       <div className="tasks-controls">
         <TaskFilters projects={projects} context="my-tasks" />
-        <NewTaskButton users={users} projects={projects} />
       </div>
 
       {/* Task Lists by Status */}
