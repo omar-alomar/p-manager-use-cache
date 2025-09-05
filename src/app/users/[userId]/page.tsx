@@ -178,7 +178,7 @@ async function UserProjectsWithTasks({ userId }: { userId: string }) {
           <BriefcaseIcon />
         </div>
         <h3 className="empty-title">No projects yet</h3>
-        <p className="empty-description">This user hasn't been assigned to any projects.</p>
+        <p className="empty-description">This user hasn&apos;t been assigned to any projects.</p>
       </div>
     )
   }

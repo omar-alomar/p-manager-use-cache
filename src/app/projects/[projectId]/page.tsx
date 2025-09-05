@@ -445,7 +445,6 @@ async function Tasks({ projectId }: { projectId: string }) {
             userName={task.User?.name} 
             displayProject={false}
             displayUser={true}
-            status={task.status}
           />
         ))}
       </div>

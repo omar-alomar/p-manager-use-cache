@@ -8,7 +8,7 @@ interface User {
   name: string
   email: string
   role: string
-  createdAt: string
+  createdAt: Date
   projects: { id: number; title: string }[]
   tasks: { id: number; title: string }[]
 }
@@ -60,7 +60,7 @@ export function AdminUserManagement({ users }: AdminUserManagementProps) {
                   </td>
                   <td className="email-cell">{user.email}</td>
                   <td className="role-cell">
-                    <UserRoleButton userId={user.id} currentRole={user.role} />
+                    <UserRoleButton userId={user.id} currentRole={user.role} userName={user.name} />
                   </td>
                   <td className="projects-cell">
                     <span className="count-badge">{user.projects.length}</span>

@@ -10,8 +10,8 @@ interface Task {
   completed: boolean
   userId: number
   projectId: number
-  createdAt: string
-  updatedAt: string
+  createdAt: Date
+  updatedAt: Date
   User: {
     id: number
     name: string

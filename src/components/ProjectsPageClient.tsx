@@ -201,7 +201,7 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
             <tr>
               <th>PROJECT NAME</th>
               <th>MBA #</th>
-              <th>Co File #'s</th>
+              <th>Co File #&apos;s</th>
               <th>P<br />MGR</th>
               <th 
                 className="sortable-header" 

@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const result = await Promise.race([
         getCurrentUserStatus(),
         timeoutPromise
-      ]) as any
+      ]) as { success: boolean; user?: User }
       
       console.log("Auth result:", result)
       if (result.success && result.user) {

@@ -9,7 +9,7 @@ import TasksLoading from "../tasks/loading"
 
 export default async function MyTasksPage() {
   // Check if user is authenticated
-  const user = await getCurrentUser()
+  const user = await getCurrentUser({ withFullUser: true })
   
   // Redirect to login if not authenticated
   if (!user) {

@@ -61,9 +61,9 @@ export function EditableCoFiles({
       
       setIsEditing(false)
     } catch (error) {
-      console.error('Failed to update Co File #\'s:', error)
+      console.error('Failed to update Co File #&apos;s:', error)
       setCoFiles(initialCoFiles)
-      alert('Failed to update Co File #\'s. Please try again.')
+      alert('Failed to update Co File #&apos;s. Please try again.')
     } finally {
       setIsUpdating(false)
     }
@@ -94,7 +94,7 @@ export function EditableCoFiles({
           onKeyDown={handleKeyDown}
           disabled={isUpdating}
           className="co-files-edit-input"
-          placeholder="Enter Co File #'s..."
+          placeholder="Enter Co File #&apos;s..."
           style={{ opacity: isUpdating ? 0.5 : 1 }}
         />
         <div className="co-files-edit-hint">
@@ -110,7 +110,7 @@ export function EditableCoFiles({
       onClick={() => setIsEditing(true)}
       title="Click to edit"
     >
-      {coFiles || <span className="co-files-placeholder">Click to add Co File #'s</span>}
+      {coFiles || <span className="co-files-placeholder">Click to add Co File #&apos;s</span>}
     </div>
   )
 }

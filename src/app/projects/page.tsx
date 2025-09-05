@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/Skeleton"
 
 export default async function ProjectsPage() {
   // Check if user is authenticated
-  const user = await getCurrentUser()
+  const user = await getCurrentUser({ withFullUser: true })
   
   // Redirect to login if not authenticated
   if (!user) {
@@ -52,7 +52,7 @@ function ProjectsTableSkeleton() {
           <tr>
             <th>PROJECT NAME</th>
             <th>MBA #</th>
-            <th>Co File #'s</th>
+            <th>Co File #&apos;s</th>
             <th>P<br />MGR</th>
             <th>APFO<br />DATE</th>
             <th>COMMENTS</th>

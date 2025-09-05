@@ -14,12 +14,7 @@ interface Project {
   mbaNumber: string
   coFileNumbers: string
   dldReviewer: string
-  createdAt: string
-  user: {
-    id: number
-    name: string
-  }
-  tasks: { id: number; title: string }[]
+  createdAt: Date
 }
 
 interface AdminProjectManagementProps {
@@ -73,12 +68,12 @@ export function AdminProjectManagement({ projects }: AdminProjectManagementProps
                   </td>
                   <td className="manager-cell">
                     <div className="manager-info">
-                      <div className="manager-name">{project.user?.name || 'Unknown'}</div>
+                      <div className="manager-name">Unknown</div>
                       <div className="manager-id">ID: {project.userId}</div>
                     </div>
                   </td>
                   <td className="count-cell">
-                    <span className="count-badge">{project.tasks?.length || 0}</span>
+                    <span className="count-badge">0</span>
                   </td>
                   <td className="date-cell">
                     <span className="created-date">

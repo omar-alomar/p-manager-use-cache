@@ -113,7 +113,7 @@ export function ProjectForm({
           />
         </FormGroup>
         <FormGroup errorMessage={'coFileNumbers' in state ? state.coFileNumbers : undefined}>
-          <label htmlFor="coFileNumbers">Co File #'s</label>
+          <label htmlFor="coFileNumbers">Co File #&apos;s</label>
           <input
             type="text"
             name="coFileNumbers"
@@ -192,7 +192,7 @@ export function SkeletonProjectForm() {
       </div>
       <div className="form-row">
         <FormGroup>
-          <label htmlFor="coFileNumbers">Co File #'s</label>
+          <label htmlFor="coFileNumbers">Co File #&apos;s</label>
           <SkeletonInput />
         </FormGroup>
         <FormGroup>

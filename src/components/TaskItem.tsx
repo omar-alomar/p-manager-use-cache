@@ -105,7 +105,6 @@ export function TaskItem({
     try {
       await updateTaskCompletionAction(id, {
         title: editedTitle,
-        status: currentStatus,
         completed,
         userId,
         projectId
