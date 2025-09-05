@@ -22,7 +22,7 @@ export async function addCommentAction(formData: FormData) {
   if (!success) {
     return {
       success: false,
-      message: error.errors[0]?.message || "Invalid input"
+      message: error.issues[0]?.message || "Invalid input"
     }
   }
 
