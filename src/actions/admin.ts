@@ -7,8 +7,6 @@ import { deleteProject } from "@/db/projects"
 import { deleteTask } from "@/db/tasks"
 import { revalidatePath } from "next/cache"
 
-export const runtime = "nodejs";
-export const revalidate = 0; // or: export const dynamic = "force-dynamic";
 
 export async function getAdminStatsAction() {
   const [users, projects, tasks] = await Promise.all([

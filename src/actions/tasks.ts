@@ -5,8 +5,6 @@ import { redirect } from "next/navigation"
 import { revalidatePath, revalidateTag } from "next/cache"
 import prisma from "@/db/db"
 
-export const runtime = "nodejs";
-export const revalidate = 0; // or: export const dynamic = "force-dynamic";
 
 export async function createTaskAction(prevState: unknown, formData: FormData) {
   const [data, errors] = validateTask(formData)
