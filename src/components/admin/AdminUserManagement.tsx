@@ -71,12 +71,14 @@ export function AdminUserManagement({ users }: AdminUserManagementProps) {
                     })}
                   </td>
                   <td className="actions-cell">
-                    <AdminDeleteButton
-                      itemId={user.id}
-                      itemName={user.name}
-                      itemType="user"
-                      onDelete={deleteUserAction}
-                    />
+                                          <AdminDeleteButton
+                        itemId={user.id}
+                        itemName={user.name}
+                        itemType="user"
+                        onDelete={async (id) => {
+                          await deleteUserAction(id)
+                        }}
+                      />
                   </td>
                 </tr>
               ))
