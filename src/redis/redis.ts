@@ -15,7 +15,6 @@ export function getRedis(): Redis | null {
     const url = process.env.REDIS_URL;
     if (url) {
       client = new Redis(url, {
-        lazyConnect: true,
         maxRetriesPerRequest: 0,
         enableReadyCheck: false,
         reconnectOnError: () => false,
@@ -25,7 +24,7 @@ export function getRedis(): Redis | null {
       const host = process.env.REDIS_HOST || "redis";
       const port = Number(process.env.REDIS_PORT || 6379);
       const password = process.env.REDIS_PASSWORD;
-      client = new Redis({ host, port, password, lazyConnect: true, maxRetriesPerRequest: 0, enableReadyCheck: false });
+      client = new Redis({ host, port, password, maxRetriesPerRequest: 0, enableReadyCheck: false });
     }
   }
   return client;

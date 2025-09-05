@@ -31,9 +31,10 @@ export async function updateUserSessionData(user: UserSession, cookies: Pick<Coo
   if (!sessionId) return null;
 
   const r = getRedis();
+  if (!r) return null;
+  
   try {
-    await r?.connect?.();
-    await r?.setex?.(`session:${sessionId}`, SESSION_EXPIRATION_SECONDS, JSON.stringify(sessionSchema.parse(user)));
+    await r.setex(`session:${sessionId}`, SESSION_EXPIRATION_SECONDS, JSON.stringify(sessionSchema.parse(user)));
   } catch (e) {
     console.error("Redis SETEX failed (updateUserSessionData)", e);
   }
@@ -44,12 +45,13 @@ export async function createUserSession(user: UserSession, cookies: Pick<Cookies
   const jsonData = JSON.stringify(sessionSchema.parse(user));
 
   const r = getRedis();
-  try {
-    await r?.connect?.();
-    await r?.setex?.(`session:${sessionId}`, SESSION_EXPIRATION_SECONDS, jsonData);
-  } catch (e) {
-    // DO NOT throw—auth should still succeed with just the cookie
-    console.error("Redis SETEX failed (createUserSession)", e);
+  if (r) {
+    try {
+      await r.setex(`session:${sessionId}`, SESSION_EXPIRATION_SECONDS, jsonData);
+    } catch (e) {
+      // DO NOT throw—auth should still succeed with just the cookie
+      console.error("Redis SETEX failed (createUserSession)", e);
+    }
   }
 
   setCookie(sessionId, cookies);
@@ -63,11 +65,12 @@ export async function updateUserSessionExpiration(cookies: Pick<Cookies, "get" |
   if (!user) return;
 
   const r = getRedis();
-  try {
-    await r?.connect?.();
-    await r?.setex?.(`session:${sessionId}`, SESSION_EXPIRATION_SECONDS, JSON.stringify(user));
-  } catch (e) {
-    console.error("Redis SETEX failed (refresh)", e);
+  if (r) {
+    try {
+      await r.setex(`session:${sessionId}`, SESSION_EXPIRATION_SECONDS, JSON.stringify(user));
+    } catch (e) {
+      console.error("Redis SETEX failed (refresh)", e);
+    }
   }
   setCookie(sessionId, cookies);
 }
@@ -77,11 +80,12 @@ export async function removeUserFromSession(cookies: Pick<Cookies, "get" | "dele
   if (!sessionId) return null;
 
   const r = getRedis();
-  try {
-    await r?.connect?.();
-    await r?.del?.(`session:${sessionId}`);
-  } catch (e) {
-    console.error("Redis DEL failed", e);
+  if (r) {
+    try {
+      await r.del(`session:${sessionId}`);
+    } catch (e) {
+      console.error("Redis DEL failed", e);
+    }
   }
   cookies.delete(COOKIE_SESSION_KEY);
 }
@@ -98,9 +102,10 @@ function setCookie(sessionId: string, cookies: Pick<Cookies, "set">) {
 
 async function getUserSessionById(sessionId: string) {
   const r = getRedis();
+  if (!r) return null;
+  
   try {
-    await r?.connect?.();
-    const raw = await r?.get?.(`session:${sessionId}`);
+    const raw = await r.get(`session:${sessionId}`);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     const { success, data } = sessionSchema.safeParse(parsed);
