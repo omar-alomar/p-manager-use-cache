@@ -2,6 +2,10 @@
 
 import { getCurrentUser } from "@/auth/currentUser"
 
+export const runtime = "nodejs";
+export const revalidate = 0; // or: export const dynamic = "force-dynamic";
+
+
 export async function getCurrentUserStatus() {
   try {
     console.log("getCurrentUserStatus: Starting...")

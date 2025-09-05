@@ -5,6 +5,9 @@ import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
 import { getProjects } from "@/db/projects"
 
+export const runtime = "nodejs";
+export const revalidate = 0; // or: export const dynamic = "force-dynamic";
+
 export async function createProjectAction(prevState: unknown, formData: FormData) {
   const [data, errors] = validateProject(formData)
 

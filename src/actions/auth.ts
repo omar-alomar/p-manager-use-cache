@@ -11,6 +11,9 @@ import {
 import { cookies } from "next/headers"
 import { createUserSession, removeUserFromSession } from "../auth/session"
 
+export const runtime = "nodejs";
+export const revalidate = 0; // or: export const dynamic = "force-dynamic";
+
 export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
   const { success, data } = signInSchema.safeParse(unsafeData)
 

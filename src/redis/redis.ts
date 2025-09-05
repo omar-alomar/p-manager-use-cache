@@ -1,16 +1,32 @@
-import Redis from "ioredis"
+// src/redis/redis.ts  (or wherever you keep it)
+import Redis from "ioredis";
 
-const globalForRedis = global as unknown as { redis: Redis | undefined }
+const isBuild =
+  process.env.SKIP_REDIS === "1" ||
+  process.env.NEXT_PHASE === "phase-production-build";
 
-const redisConfig = {
-  host: process.env.REDIS_HOST || 'localhost',
-  port: parseInt(process.env.REDIS_PORT || '6379'),
-  password: process.env.REDIS_PASSWORD,
-  // Do NOT set username - use password-only auth like your CLI
+let client: Redis | null = null;
+
+export function getRedis(): Redis | null {
+  if (isBuild) return null;
+
+  if (!client) {
+    // Prefer REDIS_URL (e.g., redis://:pass@redis:6379/0)
+    const url = process.env.REDIS_URL;
+    if (url) {
+      client = new Redis(url, {
+        lazyConnect: true,
+        maxRetriesPerRequest: 0,
+        enableReadyCheck: false,
+        reconnectOnError: () => false,
+      });
+    } else {
+      // Fallback to host/port with a safe default host for Docker
+      const host = process.env.REDIS_HOST || "redis";
+      const port = Number(process.env.REDIS_PORT || 6379);
+      const password = process.env.REDIS_PASSWORD;
+      client = new Redis({ host, port, password, lazyConnect: true, maxRetriesPerRequest: 0, enableReadyCheck: false });
+    }
+  }
+  return client;
 }
-
-export const redisClient =
-  globalForRedis.redis ??
-  new Redis(redisConfig)
-
-if (process.env.NODE_ENV !== "production") globalForRedis.redis = redisClient

@@ -4,6 +4,9 @@ import { deleteUser, getUsers, updateUserRole } from "@/db/users"
 import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
 
+export const runtime = "nodejs";
+export const revalidate = 0; // or: export const dynamic = "force-dynamic";
+
 export async function deleteUserAction(userId: number | string) {
   await deleteUser(userId)
   

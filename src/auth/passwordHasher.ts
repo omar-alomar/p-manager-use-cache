@@ -1,5 +1,8 @@
 import crypto from "crypto"
 
+export const runtime = "nodejs";
+export const revalidate = 0; // or: export const dynamic = "force-dynamic";
+
 export function hashPassword(password: string, salt: string): Promise<string> {
   return new Promise((resolve, reject) => {
     crypto.scrypt(password.normalize(), salt, 64, (error, hash) => { // normalizing password is important because of unicode chaos. é can be inputted/interpreted a few ways in Unicode for example e(U+301 or U+0065).
