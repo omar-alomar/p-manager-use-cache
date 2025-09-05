@@ -1,12 +1,14 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import "./styles.css"
 import Link from "next/link"
 import { UserStatus } from "@/components/auth/UserStatus"
 import { Navigation } from "@/components/navigation/Navigation"
+import { MobileNavigation } from "@/components/navigation/MobileNavigation"
 import { AuthProvider } from "@/components/auth/AuthContext"
 
 export const metadata: Metadata = {
   title: "Mildenberg Project Platform",
+  description: "Project management platform for Mildenberg team",
   icons: {
     icon: [
       { url: '/favicon.ico' },
@@ -14,6 +16,12 @@ export const metadata: Metadata = {
     ],
     apple: '/apple-touch-icon.png',
   },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
 }
 
 export default function RootLayout({
@@ -37,6 +45,7 @@ export default function RootLayout({
             </div>
             <div className="user-status-container">
               <UserStatus />
+              <MobileNavigation />
             </div>
           </nav>
           <div className="container">{children}</div>
