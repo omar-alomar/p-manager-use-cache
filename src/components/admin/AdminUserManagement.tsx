@@ -2,6 +2,8 @@
 
 import Link from "next/link"
 import { UserRoleButton } from "./UserRoleButton"
+import { AdminDeleteButton } from "./AdminDeleteButton"
+import { deleteUserAction } from "@/actions/users"
 
 interface User {
   id: number
@@ -48,14 +50,7 @@ export function AdminUserManagement({ users }: AdminUserManagementProps) {
                 <tr key={user.id}>
                   <td className="user-cell">
                     <Link href={`/users/${user.id}`} className="user-link">
-                      <div className="user-avatar">
-                        <span className="avatar-text">
-                          {user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
-                        </span>
-                      </div>
-                      <div className="user-info">
-                        <div className="user-name">{user.name}</div>
-                      </div>
+                      <div className="user-name">{user.name}</div>
                     </Link>
                   </td>
                   <td className="email-cell">{user.email}</td>
@@ -76,12 +71,12 @@ export function AdminUserManagement({ users }: AdminUserManagementProps) {
                     })}
                   </td>
                   <td className="actions-cell">
-                    <Link 
-                      href={`/users/${user.id}`}
-                      className="btn btn-sm btn-outline"
-                    >
-                      View
-                    </Link>
+                    <AdminDeleteButton
+                      itemId={user.id}
+                      itemName={user.name}
+                      itemType="user"
+                      onDelete={deleteUserAction}
+                    />
                   </td>
                 </tr>
               ))

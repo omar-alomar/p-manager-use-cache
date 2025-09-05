@@ -7,6 +7,13 @@ import { AuthProvider } from "@/components/auth/AuthContext"
 
 export const metadata: Metadata = {
   title: "Mildenberg Project Platform",
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/favicon-32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: '/apple-touch-icon.png',
+  },
 }
 
 export default function RootLayout({
@@ -25,7 +32,9 @@ export default function RootLayout({
                 <div className="nav-subtitle">Alpha Version 1.0</div>
               </Link>
             </div>
-            <Navigation />
+            <div className="nav-center">
+              <Navigation />
+            </div>
             <div className="user-status-container">
               <UserStatus />
             </div>

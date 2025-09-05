@@ -55,7 +55,7 @@ function ProjectsTableSkeleton() {
             <th>Co File #&apos;s</th>
             <th>P<br />MGR</th>
             <th>APFO<br />DATE</th>
-            <th>COMMENTS</th>
+            <th>OVERVIEW</th>
           </tr>
         </thead>
         <tbody>

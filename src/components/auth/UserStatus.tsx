@@ -17,18 +17,18 @@ export function UserStatus() {
       if (result === null) {
         // Logout was successful, update context and redirect
         contextLogout()
-        router.push("/")
+        router.push("/login")
       } else {
         console.error("Logout failed:", result)
         // Even if logout fails, clear local state and redirect
         contextLogout()
-        router.push("/")
+        router.push("/login")
       }
     } catch (error) {
       console.error("Logout failed:", error)
       // Even if logout fails, clear local state and redirect
       contextLogout()
-      router.push("/")
+      router.push("/login")
     } finally {
       setIsLoggingOut(false)
     }
@@ -62,9 +62,17 @@ export function UserStatus() {
     )
   }
 
+  const handleProfileClick = () => {
+    router.push("/profile")
+  }
+
   return (
     <div className="user-status">
-      <div className="user-info">
+      <div 
+        onClick={handleProfileClick}
+        className="user-info user-info-link"
+        style={{ cursor: 'pointer' }}
+      >
         <span className="user-name">{user.name}</span>
         <span className="user-email">({user.email})</span>
         <span className="user-role">Role: {user.role}</span>

@@ -215,7 +215,7 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
                   </span>
                 )}
               </th>
-              <th>COMMENTS</th>
+              <th>OVERVIEW</th>
             </tr>
           </thead>
           <tbody>

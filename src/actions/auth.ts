@@ -1,7 +1,7 @@
 "use server"
 
 import { z } from "zod"
-import { signInSchema, signUpSchema } from "../schemas/schemas"
+import { signInSchema, signUpSchema, updateProfileSchema, changePasswordSchema } from "../schemas/schemas"
 import prisma from "@/db/db"
 import {
   comparePasswords,
@@ -10,6 +10,7 @@ import {
 } from "../auth/passwordHasher"
 import { cookies } from "next/headers"
 import { createUserSession, removeUserFromSession } from "../auth/session"
+import { getCurrentUser } from "../auth/currentUser"
 
 
 export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
@@ -97,5 +98,75 @@ export async function logOut() {
   } catch (error) {
     console.error("Logout error:", error)
     return "Logout failed"
+  }
+}
+
+export async function updateProfile(unsafeData: z.infer<typeof updateProfileSchema>) {
+  const { success, data } = updateProfileSchema.safeParse(unsafeData)
+
+  if (!success) return "Invalid profile data"
+
+  try {
+    // Get current user from session
+    const currentUser = await getCurrentUser({ redirectIfNotFound: true })
+    
+    // Update user profile
+    await prisma.user.update({
+      where: { id: currentUser.id },
+      data: { name: data.name }
+    })
+
+    return null // Success
+  } catch (error) {
+    console.error("Update profile error:", error)
+    return "Failed to update profile"
+  }
+}
+
+export async function changePassword(unsafeData: z.infer<typeof changePasswordSchema>) {
+  const { success, data } = changePasswordSchema.safeParse(unsafeData)
+
+  if (!success) return "Invalid password data"
+
+  try {
+    // Get current user from session
+    const currentUser = await getCurrentUser({ redirectIfNotFound: true })
+    
+    // Get user with password data
+    const user = await prisma.user.findUnique({
+      where: { id: currentUser.id },
+      select: { password: true, salt: true }
+    })
+
+    if (!user || !user.password || !user.salt) {
+      return "User not found or invalid password setup"
+    }
+
+    // Verify current password
+    const isCorrectPassword = await comparePasswords({
+      hashedPassword: user.password,
+      password: data.currentPassword,
+      salt: user.salt,
+    })
+
+    if (!isCorrectPassword) return "Current password is incorrect"
+
+    // Hash new password
+    const newSalt = generateSalt()
+    const hashedNewPassword = await hashPassword(data.newPassword, newSalt)
+
+    // Update password
+    await prisma.user.update({
+      where: { id: currentUser.id },
+      data: { 
+        password: hashedNewPassword,
+        salt: newSalt
+      }
+    })
+
+    return null // Success
+  } catch (error) {
+    console.error("Change password error:", error)
+    return "Failed to change password"
   }
 }

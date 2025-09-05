@@ -11,6 +11,7 @@ import { TaskItem } from "@/components/TaskItem"
 import { EditableComments } from "@/components/EditableComments"
 import { AddTaskToProjectButton } from "@/components/AddTaskToProjectButton"
 import { ProjectEmptyStateActions } from "@/components/ProjectEmptyStateActions"
+import { CommentForm } from "@/components/CommentForm"
 
 export default async function ProjectPage({
   params,
@@ -124,12 +125,18 @@ export default async function ProjectPage({
               </svg>
             </div>
             <div className="section-title-group">
-              <h2 className="section-title">External Comments</h2>
-              <p className="section-subtitle">Stakeholder feedback and notes</p>
+              <h2 className="section-title">Project Comments</h2>
+              <p className="section-subtitle">Share feedback and discuss this project</p>
             </div>
           </div>
           
           <div className="section-content">
+            <CommentForm projectId={projectId} />
+            
+            <div className="comments-divider">
+              <span>Recent Comments</span>
+            </div>
+            
             <Suspense
               fallback={
                 <div className="skeleton-content">
@@ -329,18 +336,6 @@ async function ProjectDetails({ projectId }: { projectId: string }) {
           </div>
         )}
 
-        <div className="detail-item">
-          <label className="detail-label">
-            Created
-          </label>
-          <div className="detail-value">
-            {new Date(project.createdAt).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            })}
-          </div>
-        </div>
 
 
       </div>
@@ -474,8 +469,8 @@ async function Comments({ projectId }: { projectId: string }) {
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
             </svg>
           </div>
-          <h3 className="empty-title">No external comments</h3>
-          <p className="empty-description">External comments from stakeholders will appear here.</p>
+          <h3 className="empty-title">No comments yet</h3>
+          <p className="empty-description">Be the first to share your thoughts about this project!</p>
         </div>
       )
     }
