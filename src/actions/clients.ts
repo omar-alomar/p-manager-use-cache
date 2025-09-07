@@ -26,7 +26,8 @@ export async function createClientAction(prevState: unknown, formData: FormData)
 export async function editClientAction(
   clientId: number,
   prevState: unknown,
-  formData: FormData
+  formData: FormData,
+  redirectTo: string = "/clients"
 ) {
   const [data, errors] = validateClient(formData)
 
@@ -37,7 +38,7 @@ export async function editClientAction(
     ...data,
   })
 
-  return { success: true, message: 'Client updated successfully', redirectTo: `/clients` }
+  return { success: true, message: 'Client updated successfully', redirectTo }
 }
 
 export async function deleteClientAction(clientId: number) {

@@ -6,8 +6,10 @@ import { notFound } from "next/navigation"
 
 export default async function EditClientPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ clientId: string }>
+  searchParams: Promise<{ from?: string }>
 }) {
   // Check if user is authenticated
   const user = await getCurrentUser()
@@ -18,11 +20,15 @@ export default async function EditClientPage({
   }
 
   const { clientId } = await params
+  const { from } = await searchParams
   const client = await getClient(clientId)
 
   if (!client) {
     notFound()
   }
+
+  // Determine redirect destination based on where the edit was initiated
+  const redirectTo = from === 'client-page' ? `/clients/${clientId}` : '/clients'
 
   return (
     <>
@@ -43,6 +49,7 @@ export default async function EditClientPage({
           }}
           clientId={client.id}
           isEdit={true}
+          redirectTo={redirectTo}
         />
       </div>
     </>

@@ -32,7 +32,12 @@ export async function getProject(projectId: string | number) {
   cacheTag(`projects:id=${projectId}`)
 
   await wait(500)
-  return prisma.project.findUnique({ where: { id: Number(projectId) } })
+  return prisma.project.findUnique({ 
+    where: { id: Number(projectId) },
+    include: {
+      clientRef: true
+    }
+  })
 }
 
 export async function getUserProjects(userId: string | number) {

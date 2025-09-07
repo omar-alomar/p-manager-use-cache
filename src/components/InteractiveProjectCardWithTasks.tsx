@@ -5,6 +5,19 @@ import Link from "next/link"
 import { UserIcon, BriefcaseIcon } from "@/components/icons"
 import { TaskItem } from "./TaskItem"
 
+function getApfoStatus(apfo: Date | null): string {
+  if (!apfo) return 'normal'
+  
+  const today = new Date()
+  const apfoDate = new Date(apfo)
+  const diffTime = apfoDate.getTime() - today.getTime()
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  
+  if (diffDays <= 14) return 'urgent'
+  if (diffDays <= 28) return 'warning'
+  return 'normal'
+}
+
 interface Task {
   id: number
   title: string
@@ -92,7 +105,7 @@ export function InteractiveProjectCardWithTasks({
         
         <div className="project-meta">
           {apfo && (
-            <div className="project-apfo">
+            <div className={`project-apfo ${getApfoStatus(apfo)}`}>
               <span className="apfo-label">APFO</span>
               <span className="apfo-value">
                 {new Date(apfo).toLocaleDateString('en-US', {

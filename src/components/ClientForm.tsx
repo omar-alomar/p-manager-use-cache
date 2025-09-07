@@ -8,7 +8,8 @@ import { useRouter } from "next/navigation"
 export function ClientForm({ 
   initialData,
   clientId,
-  isEdit = false 
+  isEdit = false,
+  redirectTo = "/clients"
 }: { 
   initialData?: {
     name: string
@@ -18,11 +19,12 @@ export function ClientForm({
   }
   clientId?: number
   isEdit?: boolean
+  redirectTo?: string
 }) {
   const router = useRouter()
   const [state, formAction] = useActionState(
     isEdit && clientId ? 
-      editClientAction.bind(null, clientId) :
+      editClientAction.bind(null, clientId, null, redirectTo) :
       createClientAction,
     null
   )
@@ -132,7 +134,7 @@ export function ClientForm({
           <button type="submit" className="btn btn-primary">
             {isEdit ? 'Update Client' : 'Create Client'}
           </button>
-          <a href="/clients" className="btn btn-secondary">
+          <a href={redirectTo} className="btn btn-secondary">
             Cancel
           </a>
         </div>

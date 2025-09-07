@@ -5231,6 +5231,19 @@ td.comments {
   line-height: 1.5;
 }
 
+.client-link {
+  color: var(--neutral-800);
+  text-decoration: none;
+  transition: all var(--transition-normal);
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.client-link:hover {
+  color: var(--neutral-900);
+  text-decoration: underline;
+}
+
 .description-text {
   line-height: 1.6;
   color: var(--neutral-700);
@@ -5251,16 +5264,32 @@ td.comments {
 }
 
 .user-link {
-  color: var(--primary-600);
+  color: var(--neutral-800);
   text-decoration: none;
-  font-weight: 500;
-  transition: color 0.2s ease;
+  font-weight: 400;
+  transition: all var(--transition-normal);
   font-size: var(--font-size-base);
+  cursor: pointer;
 }
 
 .user-link:hover {
-  color: var(--primary-700);
+  color: var(--neutral-900);
   text-decoration: underline;
+}
+
+/* Override complex user-link effects to match simple client-link styling */
+.user-link::before,
+.user-link::after {
+  display: none !important;
+}
+
+.user-link:hover::before,
+.user-link:hover::after {
+  display: none !important;
+}
+
+.user-link:active {
+  transform: none !important;
 }
 
 /* Tasks Section */
@@ -6233,8 +6262,8 @@ td.comments {
   }
 }
 
-/* ===== ENHANCED PROJECT CARD WITH TASKS ===== */
-.enhanced-project-card.with-tasks {
+/* ===== ENHANCED PROJECT CARD ===== */
+.enhanced-project-card {
   background: var(--surface-0);
   border: 1px solid var(--surface-200);
   border-radius: var(--radius-xl);
@@ -6245,13 +6274,13 @@ td.comments {
   overflow: hidden;
 }
 
-.enhanced-project-card.with-tasks:hover {
+.enhanced-project-card:hover {
   box-shadow: var(--shadow-lg);
   border-color: var(--primary-200);
   transform: translateY(-2px);
 }
 
-.enhanced-project-card.with-tasks::before {
+.enhanced-project-card::before {
   content: '';
   position: absolute;
   top: 0;
@@ -6260,6 +6289,11 @@ td.comments {
   height: 2px;
   background: linear-gradient(90deg, var(--primary-300), var(--primary-400), var(--primary-500));
   opacity: 0.2;
+}
+
+/* ===== ENHANCED PROJECT CARD WITH TASKS ===== */
+.enhanced-project-card.with-tasks {
+  /* Inherits all base styles from .enhanced-project-card */
 }
 
 /* Project Card Header */
@@ -6319,6 +6353,35 @@ td.comments {
   font-size: var(--font-size-xs);
 }
 
+/* APFO urgent (within 2 weeks) */
+.project-apfo.urgent {
+  background: var(--error-50);
+  border-color: var(--error-200);
+}
+
+.project-apfo.urgent .apfo-label {
+  color: var(--error-700);
+}
+
+.project-apfo.urgent .apfo-value {
+  color: var(--error-800);
+}
+
+/* APFO warning (within 4 weeks) */
+.project-apfo.warning {
+  background: var(--warning-50);
+  border-color: var(--warning-200);
+}
+
+.project-apfo.warning .apfo-label {
+  color: var(--warning-700);
+}
+
+.project-apfo.warning .apfo-value {
+  color: var(--warning-800);
+}
+
+/* APFO normal (more than 4 weeks) - default green */
 .apfo-label {
   color: var(--success-700);
   font-weight: 600;
@@ -6852,6 +6915,21 @@ td.comments {
   border: 1px solid var(--primary-200);
 }
 
+.hero-tag.client.clickable {
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  text-decoration: none;
+}
+
+.hero-tag.client.clickable:hover {
+  background: var(--primary-100);
+  color: var(--primary-800);
+  border-color: var(--primary-300);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-decoration: underline;
+}
+
 .hero-tag.apfo {
   background: var(--success-50);
   color: var(--success-700);
@@ -7007,14 +7085,15 @@ td.comments {
 }
 
 .user-link {
-  color: var(--primary-600);
-  font-weight: 500;
+  color: var(--neutral-800);
+  font-weight: 400;
   text-decoration: none;
-  transition: color var(--transition-normal);
+  transition: all var(--transition-normal);
+  cursor: pointer;
 }
 
 .user-link:hover {
-  color: var(--primary-700);
+  color: var(--neutral-900);
   text-decoration: underline;
 }
 
@@ -7822,63 +7901,20 @@ td.comments {
 }
 
 .user-link {
-  color: var(--text-700);
+  color: var(--neutral-800);
   text-decoration: none;
-  display: inline-block;
-  position: relative;
-  font-weight: var(--font-medium);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: var(--radius-sm);
-  padding: var(--space-1) var(--space-2);
-  margin: calc(-1 * var(--space-1)) calc(-1 * var(--space-2));
-}
-
-.user-link::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--primary-50);
-  border-radius: var(--radius-sm);
-  opacity: 0;
-  transform: scale(0.95);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: -1;
-}
-
-.user-link::after {
-  content: '';
-  position: absolute;
-  bottom: 2px;
-  left: var(--space-2);
-  right: var(--space-2);
-  height: 2px;
-  background: var(--primary-500);
-  border-radius: 1px;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 400;
+  transition: all var(--transition-normal);
+  cursor: pointer;
 }
 
 .user-link:hover {
-  color: var(--primary-700);
-  transform: translateY(-0.5px);
-}
-
-.user-link:hover::before {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.user-link:hover::after {
-  transform: scaleX(1);
+  color: var(--neutral-900);
+  text-decoration: underline;
 }
 
 .user-link:active {
-  transform: translateY(0);
-  transition-duration: 0.1s;
+  transform: none;
 }
 
 .user-name {

@@ -214,7 +214,7 @@ function ClientRow({ client }: { client: ClientWithProjects }) {
       <td className="client-actions">
         <div className="action-buttons">
           <Link 
-            href={`/clients/${client.id}/edit`}
+            href={`/clients/${client.id}/edit?from=clients-list`}
             className="action-btn edit"
           >
             Edit

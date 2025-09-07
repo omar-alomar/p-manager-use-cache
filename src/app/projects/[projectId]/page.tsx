@@ -176,13 +176,16 @@ async function ProjectHero({ projectId }: { projectId: string }) {
             <h1 className="hero-name">{project.title}</h1>
             <div className="hero-tags">
               {project.client && (
-                <span className="hero-tag client">
+                <Link 
+                  href={project.clientRef ? `/clients/${project.clientRef.id}` : '#'}
+                  className="hero-tag client clickable"
+                >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                     <circle cx="12" cy="7" r="4"/>
                   </svg>
                   {project.client}
-                </span>
+                </Link>
               )}
               {project.apfo && (
                 <span className="hero-tag apfo">
@@ -300,12 +303,6 @@ async function ProjectDetails({ projectId }: { projectId: string }) {
             Project Manager
           </label>
           <div className="detail-value">
-            <div className="user-avatar">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-              </svg>
-            </div>
             <Suspense fallback={<span className="loading-text">Loading...</span>}>
               <UserDetails userId={project.userId} />
             </Suspense>
@@ -317,7 +314,14 @@ async function ProjectDetails({ projectId }: { projectId: string }) {
             <label className="detail-label">
               Client
             </label>
-            <div className="detail-value">{project.client}</div>
+            <div className="detail-value">
+              <Link 
+                href={project.clientRef ? `/clients/${project.clientRef.id}` : '#'}
+                className="client-link"
+              >
+                {project.client}
+              </Link>
+            </div>
           </div>
         )}
 

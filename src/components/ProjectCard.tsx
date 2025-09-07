@@ -4,6 +4,19 @@ import { getUser } from "@/db/users"
 import { notFound } from "next/navigation"
 import { BriefcaseIcon, UserIcon, CalendarIcon } from "./icons"
 
+function getApfoStatus(apfo: Date | null): string {
+  if (!apfo) return 'normal'
+  
+  const today = new Date()
+  const apfoDate = new Date(apfo)
+  const diffTime = apfoDate.getTime() - today.getTime()
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  
+  if (diffDays <= 14) return 'urgent'
+  if (diffDays <= 28) return 'warning'
+  return 'normal'
+}
+
 export function ProjectCard({
   id,
   title,
@@ -34,7 +47,7 @@ export function ProjectCard({
         
         <div className="project-meta">
           {apfo && (
-            <div className="project-apfo">
+            <div className={`project-apfo ${getApfoStatus(apfo)}`}>
               <span className="apfo-label">APFO</span>
               <span className="apfo-value">
                 {apfo ? new Date(apfo).toLocaleDateString('en-US', {

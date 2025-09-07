@@ -4,6 +4,7 @@ import { Suspense } from "react"
 import { notFound, redirect } from "next/navigation"
 import { getCurrentUser } from "@/auth/currentUser"
 import { DeleteClientButton } from "./_DeleteButton"
+import { ProjectCard } from "@/components/ProjectCard"
 
 export default async function ClientPage({
   params,
@@ -168,7 +169,7 @@ async function ClientHero({ clientId }: { clientId: string }) {
           {/* Action Buttons */}
           <div className="hero-actions">
             <Link 
-              href={`/clients/${clientId}/edit`}
+              href={`/clients/${clientId}/edit?from=client-page`}
               className="hero-action-btn primary"
             >
               Edit Client
@@ -278,20 +279,18 @@ async function ClientProjects({ clientId }: { clientId: string }) {
     }
 
     return (
-      <div className="projects-list">
+      <div className="projects-grid">
         {client.projects.map(project => (
-          <div key={project.id} className="project-item">
-            <div className="project-item-content">
-              <Link href={`/projects/${project.id}`} className="project-item-title">
-                {project.title}
-              </Link>
-              <div className="project-item-meta">
-                <span className="project-manager">
-                  PM: {project.user.name}
-                </span>
-              </div>
-            </div>
-          </div>
+          <ProjectCard
+            key={project.id}
+            id={project.id}
+            title={project.title}
+            client={project.client || 'No client specified'}
+            body={project.body}
+            apfo={project.apfo}
+            userId={project.user.id}
+            showManager={true}
+          />
         ))}
       </div>
     )
