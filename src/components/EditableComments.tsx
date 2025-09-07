@@ -7,7 +7,7 @@ interface EditableCommentsProps {
   projectId: number
   initialComments: string
   title: string
-  client: string
+  clientId: number | null
   body: string
   apfo: Date | null
   mbaNumber: string
@@ -20,7 +20,7 @@ export function EditableComments({
   projectId, 
   initialComments, 
   title,
-  client,
+  clientId,
   body,
   apfo,
   mbaNumber,
@@ -54,7 +54,7 @@ export function EditableComments({
     try {
       await updateProjectCommentsAction(projectId, {
         title,
-        client,
+        clientId,
         body: comments,
         apfo,
         mbaNumber,

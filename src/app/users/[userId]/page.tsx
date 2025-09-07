@@ -201,7 +201,12 @@ async function UserProjectsWithTasks({ userId }: { userId: string }) {
         return (
           <InteractiveProjectCardWithTasks 
             key={project.id} 
-            {...project} 
+            id={project.id}
+            title={project.title}
+            client={project.clientRef?.name || 'No client specified'}
+            body={project.body}
+            apfo={project.apfo}
+            userId={project.userId}
             showManager={true}
             tasks={projectUserTasks}
             projectManager={projectManager ? { id: projectManager.id, name: projectManager.name } : undefined}

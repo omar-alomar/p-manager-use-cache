@@ -7,7 +7,7 @@ interface EditableCoFilesProps {
   projectId: number
   initialCoFiles: string
   title: string
-  client: string
+  clientId: number | null
   body: string
   apfo: Date | null
   mbaNumber: string
@@ -19,7 +19,7 @@ export function EditableCoFiles({
   projectId, 
   initialCoFiles, 
   title,
-  client,
+  clientId,
   body,
   apfo,
   mbaNumber,
@@ -50,7 +50,7 @@ export function EditableCoFiles({
     try {
       await updateProjectCoFilesAction(projectId, {
         title,
-        client,
+        clientId,
         body,
         apfo,
         mbaNumber,

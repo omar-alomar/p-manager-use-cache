@@ -7,7 +7,7 @@ interface EditableDldReviewerProps {
   projectId: number
   initialDldReviewer: string
   title: string
-  client: string
+  clientId: number | null
   body: string
   apfo: Date | null
   mbaNumber: string
@@ -19,7 +19,7 @@ export function EditableDldReviewer({
   projectId, 
   initialDldReviewer, 
   title,
-  client,
+  clientId,
   body,
   apfo,
   mbaNumber,
@@ -50,7 +50,7 @@ export function EditableDldReviewer({
     try {
       await updateProjectDldReviewerAction(projectId, {
         title,
-        client,
+        clientId,
         body,
         apfo,
         mbaNumber,

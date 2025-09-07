@@ -143,7 +143,6 @@
     {
       "id": 1,
       "title": "Rose Lane Subdivision",
-      "client": "Rose Real Estate Development",
       "clientId": 1,
       "body": "Full site design and grading plan for residential subdivision on Rose Lane. Includes stormwater management, utility design, and erosion control measures.",
       "userId": 1,
@@ -155,7 +154,6 @@
     {
       "id": 2,
       "title": "Mullinix Commercial Development",
-      "client": "Ron Martin / August El Communities",
       "clientId": 2,
       "body": "Roadway alignment, stormwater management, and erosion control for the Mullinix property. Commercial development with parking and utility infrastructure.",
       "userId": 2,
@@ -167,7 +165,6 @@
     {
       "id": 3,
       "title": "Dorsey Run Road Extension",
-      "client": "Kirk Haplin Construction",
       "clientId": 3,
       "body": "Roadway extension and utility installation for Dorsey Run Road. Includes traffic impact study and environmental assessment.",
       "userId": 3,
@@ -179,7 +176,6 @@
     {
       "id": 4,
       "title": "The Sanctuary Lot 57",
-      "client": "Burkard Builders",
       "clientId": 4,
       "body": "Residential lot development with custom home design. Includes site preparation, utility connections, and landscaping plans.",
       "userId": 3,
@@ -191,7 +187,6 @@
     {
       "id": 5,
       "title": "Westfield Shopping Center",
-      "client": "Westfield Development Group",
       "clientId": 5,
       "body": "Large-scale commercial development with multiple retail spaces, parking structure, and utility infrastructure. Phase 1 of 3-phase project.",
       "userId": 4,
@@ -203,7 +198,6 @@
     {
       "id": 6,
       "title": "Riverside Park Renovation",
-      "client": "City of Springfield",
       "clientId": 6,
       "body": "Public park renovation including playground equipment, walking trails, and stormwater management improvements.",
       "userId": 5,
@@ -215,7 +209,6 @@
     {
       "id": 7,
       "title": "Tech Campus Phase 2",
-      "client": "Innovation Partners LLC",
       "clientId": 7,
       "body": "Second phase of technology campus development. Includes additional office buildings, parking, and utility expansion.",
       "userId": 6,
@@ -227,7 +220,6 @@
     {
       "id": 8,
       "title": "Greenfield Residential",
-      "client": "Greenfield Homes",
       "clientId": 8,
       "body": "New residential development with 150 single-family homes. Includes community amenities, stormwater management, and utility infrastructure.",
       "userId": 7,

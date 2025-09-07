@@ -53,7 +53,6 @@ async function createProjects() {
         data: {
           id: project.id,
           title: project.title,
-          client: project.client,
           clientId: project.clientId,
           body: project.body,
           userId: project.userId,

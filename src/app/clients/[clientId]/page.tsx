@@ -285,11 +285,12 @@ async function ClientProjects({ clientId }: { clientId: string }) {
             key={project.id}
             id={project.id}
             title={project.title}
-            client={project.client || 'No client specified'}
+            client={project.clientRef?.name || 'No client specified'}
             body={project.body}
             apfo={project.apfo}
             userId={project.user.id}
             showManager={true}
+            showClient={false}
           />
         ))}
       </div>

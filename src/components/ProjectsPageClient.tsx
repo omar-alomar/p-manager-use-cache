@@ -93,7 +93,7 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
         
         return (
           project.title.toLowerCase().includes(searchLower) ||
-          project.client.toLowerCase().includes(searchLower) ||
+          (project.clientRef?.name || '').toLowerCase().includes(searchLower) ||
           project.body.toLowerCase().includes(searchLower) ||
           projectManagerName.toLowerCase().includes(searchLower) ||
           (project.mbaNumber && project.mbaNumber.toLowerCase().includes(searchLower)) ||
@@ -238,7 +238,7 @@ function ProjectRow({ project, userMap }: { project: Project; userMap: Map<numbe
         <Link href={`/projects/${project.id}`} className="project-name-link">
           <div className="project-name-link-content">
             <div className="project-name">{project.title}</div>
-            <div className="project-client">{project.client}</div>
+            <div className="project-client">{project.clientRef?.name || 'No client'}</div>
           </div>
         </Link>
       </td>
@@ -247,7 +247,7 @@ function ProjectRow({ project, userMap }: { project: Project; userMap: Map<numbe
           projectId={project.id}
           initialMbaNumber={project.mbaNumber || ""}
           title={project.title}
-          client={project.client}
+          clientId={project.clientId}
           body={project.body}
           apfo={project.apfo}
           coFileNumbers={project.coFileNumbers || ""}
@@ -260,7 +260,7 @@ function ProjectRow({ project, userMap }: { project: Project; userMap: Map<numbe
           projectId={project.id}
           initialCoFiles={project.coFileNumbers || ""}
           title={project.title}
-          client={project.client}
+          clientId={project.clientId}
           body={project.body}
           apfo={project.apfo}
           mbaNumber={project.mbaNumber || ""}
@@ -293,7 +293,7 @@ function ProjectRow({ project, userMap }: { project: Project; userMap: Map<numbe
           projectId={project.id}
           initialComments={project.body}
           title={project.title}
-          client={project.client}
+          clientId={project.clientId}
           body={project.body}
           apfo={project.apfo}
           mbaNumber={project.mbaNumber || ""}

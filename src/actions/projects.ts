@@ -38,7 +38,7 @@ export async function updateProjectCommentsAction(
   projectId: number,
   data: {
     title: string
-    client: string
+    clientId: number | null
     body: string  // This is the comments field
     apfo: Date | null
     mbaNumber: string | null
@@ -60,7 +60,7 @@ export async function updateProjectCoFilesAction(
   projectId: number,
   data: {
     title: string
-    client: string
+    clientId: number | null
     body: string
     apfo: Date | null
     mbaNumber: string | null
@@ -82,7 +82,7 @@ export async function updateProjectDldReviewerAction(
   projectId: number,
   data: {
     title: string
-    client: string
+    clientId: number | null
     body: string
     apfo: Date | null
     mbaNumber: string | null
@@ -104,7 +104,7 @@ export async function updateProjectMbaNumberAction(
   projectId: number,
   data: {
     title: string
-    client: string
+    clientId: number | null
     body: string
     apfo: Date | null
     mbaNumber: string | null

@@ -24,7 +24,12 @@ export async function getProjects({
     where.userId = Number(userId)
   }
 
-  return prisma.project.findMany({ where })
+  return prisma.project.findMany({ 
+    where,
+    include: {
+      clientRef: true
+    }
+  })
 }
 
 export async function getProject(projectId: string | number) {
@@ -45,7 +50,12 @@ export async function getUserProjects(userId: string | number) {
   cacheTag(`projects:userId=${userId}`)
 
   await wait(500)
-  return prisma.project.findMany({ where: { userId: Number(userId) } })
+  return prisma.project.findMany({ 
+    where: { userId: Number(userId) },
+    include: {
+      clientRef: true
+    }
+  })
 }
 
 export async function getProjectsWithUserTasks(userId: string | number) {
@@ -67,6 +77,9 @@ export async function getProjectsWithUserTasks(userId: string | number) {
           }
         }
       ]
+    },
+    include: {
+      clientRef: true
     },
     orderBy: {
       title: 'asc'
@@ -95,20 +108,9 @@ export async function createProject({
 }) {
   await wait(500)
   
-  // Get client name for the client string field
-  let clientName = ""
-  if (clientId) {
-    const client = await prisma.client.findUnique({
-      where: { id: clientId },
-      select: { name: true }
-    })
-    clientName = client?.name || ""
-  }
-  
   const project = await prisma.project.create({
     data: {
       title,
-      client: clientName,
       clientRef: clientId ? {
         connect: { id: clientId }
       } : undefined,
@@ -135,9 +137,8 @@ export async function createProject({
 }
 
 function validateProject(formData: FormData) {
-  const errors: { title?: string; client?: string, body?: string; apfo?: string; mbaNumber?: string; coFileNumbers?: string; dldReviewer?: string; userId?: string } = {}
+  const errors: { title?: string; body?: string; apfo?: string; mbaNumber?: string; coFileNumbers?: string; dldReviewer?: string; userId?: string } = {}
   const title = formData.get("title") as string
-  const client = formData.get("client") as string
   const body = formData.get("body") as string
   const apfo = formData.get("apfo") as string
   const mbaNumber = formData.get("mbaNumber") as string
@@ -148,11 +149,6 @@ function validateProject(formData: FormData) {
 
   if (title === "") {
     errors.title = "Required"
-    isValid = false
-  }
-
-  if (client === "") {
-    errors.client = "Required"
     isValid = false
   }
 
@@ -171,7 +167,7 @@ function validateProject(formData: FormData) {
     isValid = false
   }
 
-  return [isValid ? { title, client, body, apfo: apfo ? new Date(apfo) : null, mbaNumber: mbaNumber || "", coFileNumbers, dldReviewer, userId } : undefined, errors] as const
+  return [isValid ? { title, body, apfo: apfo ? new Date(apfo) : null, mbaNumber: mbaNumber || "", coFileNumbers, dldReviewer, userId } : undefined, errors] as const
 }
 
 export async function updateProject(
@@ -198,21 +194,10 @@ export async function updateProject(
 ) {
   await wait(500)
   
-  // Get client name for the client string field
-  let clientName = ""
-  if (clientId) {
-    const client = await prisma.client.findUnique({
-      where: { id: clientId },
-      select: { name: true }
-    })
-    clientName = client?.name || ""
-  }
-  
   const project = await prisma.project.update({
     where: { id: Number(projectId) },
     data: {
       title,
-      client: clientName,
       clientRef: clientId ? {
         connect: { id: clientId }
       } : {
@@ -223,7 +208,9 @@ export async function updateProject(
       mbaNumber: mbaNumber || "",
       coFileNumbers,
       dldReviewer,
-      userId,
+      user: {
+        connect: { id: userId }
+      },
     },
   })
 

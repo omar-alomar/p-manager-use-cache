@@ -7,7 +7,7 @@ interface EditableMbaNumberProps {
   projectId: number
   initialMbaNumber: string
   title: string
-  client: string
+  clientId: number | null
   body: string
   apfo: Date | null
   coFileNumbers: string
@@ -19,7 +19,7 @@ export function EditableMbaNumber({
   projectId, 
   initialMbaNumber, 
   title,
-  client,
+  clientId,
   body,
   apfo,
   coFileNumbers,
@@ -50,7 +50,7 @@ export function EditableMbaNumber({
     try {
       await updateProjectMbaNumberAction(projectId, {
         title,
-        client,
+        clientId,
         body,
         apfo,
         mbaNumber,

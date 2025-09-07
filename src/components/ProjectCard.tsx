@@ -24,7 +24,8 @@ export function ProjectCard({
   body,
   apfo,
   userId,
-  showManager = true
+  showManager = true,
+  showClient = true
 }: {
   id: number
   title: string
@@ -33,16 +34,19 @@ export function ProjectCard({
   apfo: Date | null
   userId: number
   showManager?: boolean
+  showClient?: boolean
 }) {
   return (
     <div className="enhanced-project-card">
       <div className="project-card-header">
         <div className="project-title-section">
           <h3 className="project-title">{title}</h3>
-          <div className="project-client">
-            <BriefcaseIcon />
-            <span>{client || 'No client specified'}</span>
-          </div>
+          {showClient && (
+            <div className="project-client">
+              <BriefcaseIcon />
+              <span>{client || 'No client specified'}</span>
+            </div>
+          )}
         </div>
         
         <div className="project-meta">

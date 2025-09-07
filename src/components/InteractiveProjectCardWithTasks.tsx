@@ -41,6 +41,7 @@ interface InteractiveProjectCardWithTasksProps {
   apfo: Date | null
   userId: number
   showManager?: boolean
+  showClient?: boolean
   tasks: Task[]
   projectManager?: ProjectManager | null
 }
@@ -53,6 +54,7 @@ export function InteractiveProjectCardWithTasks({
   apfo,
   userId,
   showManager = true,
+  showClient = true,
   tasks,
   projectManager
 }: InteractiveProjectCardWithTasksProps) {
@@ -97,10 +99,12 @@ export function InteractiveProjectCardWithTasks({
       <div className="project-card-header">
         <div className="project-title-section">
           <h3 className="project-title">{title}</h3>
-          <div className="project-client">
-            <BriefcaseIcon />
-            <span>{client || 'No client specified'}</span>
-          </div>
+          {showClient && (
+            <div className="project-client">
+              <BriefcaseIcon />
+              <span>{client || 'No client specified'}</span>
+            </div>
+          )}
         </div>
         
         <div className="project-meta">
