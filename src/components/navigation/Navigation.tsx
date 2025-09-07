@@ -35,6 +35,9 @@ export function Navigation() {
         <Link href="/projects">Projects</Link>
       </li>
       <li>
+        <Link href="/clients">Clients</Link>
+      </li>
+      <li>
         <Link href="/my-tasks">My Tasks</Link>
       </li>
       <li>

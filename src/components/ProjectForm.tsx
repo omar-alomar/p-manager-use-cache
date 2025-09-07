@@ -1,21 +1,25 @@
 "use client"
 
-import React from "react"
+import React, { useState } from "react"
 import { FormGroup } from "./FormGroup"
 import { Suspense, useActionState } from "react"
 import Link from "next/link"
 import { SkeletonInput } from "./Skeleton"
 import { createProjectAction, editProjectAction } from "@/actions/projects"
+import { ClientModal } from "./ClientModal"
 
 export function ProjectForm({
   users,
+  clients,
   project,
 }: {
   users: { id: number; name: string }[]
+  clients: { id: number; name: string; email: string }[]
   project?: {
   id: number
   title: string
   client: string
+  clientId: number | null
   body: string
   apfo: Date | null
   mbaNumber: string
@@ -27,6 +31,8 @@ export function ProjectForm({
   const action =
     project == null ? createProjectAction : editProjectAction.bind(null, project.id)
   const [state, formAction, pending] = useActionState(action, {})
+  const [showClientModal, setShowClientModal] = useState(false)
+  const [clientsList, setClientsList] = useState(clients)
   
   // Handle success state for project creation/editing
   React.useEffect(() => {
@@ -41,8 +47,20 @@ export function ProjectForm({
     }
   }, [state, project])
 
+  // Handle new client creation
+  const handleClientCreated = (newClient: { id: number; name: string; email: string }) => {
+    setClientsList(prev => [...prev, newClient])
+    setShowClientModal(false)
+    // Optionally select the new client
+    const select = document.getElementById('clientId') as HTMLSelectElement
+    if (select) {
+      select.value = newClient.id.toString()
+    }
+  }
+
   return (
-    <form action={formAction} className="form">
+    <>
+      <form action={formAction} className="form">
       <div className="form-row">
         <FormGroup errorMessage={'title' in state ? state.title : undefined}>
           <label htmlFor="title">Title</label>
@@ -54,15 +72,34 @@ export function ProjectForm({
             defaultValue={project?.title}
           />
         </FormGroup>
-        <FormGroup errorMessage={'client' in state ? state.client : undefined}>
-          <label htmlFor="client">Client</label>
-          <input
-            required
-            type="text"
-            name="client"
-            id="client"
-            defaultValue={project?.client}
-          />
+        <FormGroup errorMessage={'clientId' in state ? state.clientId : undefined}>
+          <label htmlFor="clientId">Client</label>
+          <div className="client-select-container">
+            <select
+              required
+              name="clientId"
+              id="clientId"
+              defaultValue={project?.clientId || ""}
+            >
+              <option value="">Select a client...</option>
+              {clientsList.map(client => (
+                <option key={client.id} value={client.id}>
+                  {client.name}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              className="client-add-btn"
+              onClick={() => setShowClientModal(true)}
+              title="Add new client"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+            </button>
+          </div>
         </FormGroup>
       </div>
       <div className="form-row">
@@ -158,6 +195,14 @@ export function ProjectForm({
         </button>
       </div>
     </form>
+    
+    {showClientModal && (
+      <ClientModal
+        onClose={() => setShowClientModal(false)}
+        onClientCreated={handleClientCreated}
+      />
+    )}
+    </>
   )
 }
 
@@ -170,7 +215,7 @@ export function SkeletonProjectForm() {
           <SkeletonInput />
         </FormGroup>
         <FormGroup>
-          <label htmlFor="client">Client</label>
+          <label htmlFor="clientId">Client</label>
           <SkeletonInput />
         </FormGroup>
       </div>

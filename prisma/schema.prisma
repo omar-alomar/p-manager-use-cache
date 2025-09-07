@@ -45,6 +45,7 @@ model Project {
   id     Int    @id @default(autoincrement())
   title  String
   client String @default("")
+  clientId Int?
   body   String
   userId Int
   apfo   DateTime?
@@ -54,6 +55,7 @@ model Project {
   createdAt DateTime @default(now())
 
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clientRef Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
   comments Comment[]
   tasks Task[]
 }
@@ -66,4 +68,16 @@ model Comment {
   createdAt DateTime @default(now())
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Client {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String?
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projects Project[]
 }

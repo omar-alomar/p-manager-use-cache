@@ -1,6 +1,7 @@
 import { ProjectForm } from "@/components/ProjectForm"
 import { getProject } from "@/db/projects"
 import { getUsers } from "@/db/users"
+import { getClients } from "@/db/clients"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 
@@ -10,7 +11,7 @@ export default async function EditProjectPage({
   params: Promise<{ projectId: string }>
 }) {
   const { projectId } = await params
-  const [users, project] = await Promise.all([getUsers(), getProject(projectId)])
+  const [users, clients, project] = await Promise.all([getUsers(), getClients(), getProject(projectId)])
 
   if (project == null) return notFound()
 
@@ -100,7 +101,7 @@ export default async function EditProjectPage({
           </div>
           
           <div className="section-content">
-            <ProjectForm users={users} project={project} />
+            <ProjectForm users={users} clients={clients} project={project} />
           </div>
         </div>
       </div>

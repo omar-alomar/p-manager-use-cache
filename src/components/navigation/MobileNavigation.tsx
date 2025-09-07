@@ -103,6 +103,9 @@ export function MobileNavigation() {
                     <Link href="/projects" onClick={closeMenu}>Projects</Link>
                   </li>
                   <li>
+                    <Link href="/clients" onClick={closeMenu}>Clients</Link>
+                  </li>
+                  <li>
                     <Link href="/my-tasks" onClick={closeMenu}>My Tasks</Link>
                   </li>
                   <li>

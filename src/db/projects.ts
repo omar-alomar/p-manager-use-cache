@@ -71,7 +71,7 @@ export async function getProjectsWithUserTasks(userId: string | number) {
 
 export async function createProject({
   title,
-  client,
+  clientId,
   body,
   apfo,
   mbaNumber,
@@ -80,7 +80,7 @@ export async function createProject({
   userId,
 }: {
   title: string
-  client: string
+  clientId: number | null
   body: string
   apfo: Date | null
   mbaNumber: string | null
@@ -89,10 +89,24 @@ export async function createProject({
   userId: number
 }) {
   await wait(500)
+  
+  // Get client name for the client string field
+  let clientName = ""
+  if (clientId) {
+    const client = await prisma.client.findUnique({
+      where: { id: clientId },
+      select: { name: true }
+    })
+    clientName = client?.name || ""
+  }
+  
   const project = await prisma.project.create({
     data: {
       title,
-      client,
+      client: clientName,
+      clientRef: clientId ? {
+        connect: { id: clientId }
+      } : undefined,
       body,
       apfo,
       mbaNumber: mbaNumber || "",
@@ -107,6 +121,10 @@ export async function createProject({
   revalidateTag("projects:all")
   revalidateTag(`projects:id=${project.id}`)
   revalidateTag(`projects:userId=${project.userId}`)
+  revalidateTag("clients:all")
+  if (clientId) {
+    revalidateTag(`clients:id=${clientId}`)
+  }
 
   return project
 }
@@ -155,7 +173,7 @@ export async function updateProject(
   projectId: string | number,
   {
     title,
-    client,
+    clientId,
     body,
     apfo,
     mbaNumber,
@@ -164,7 +182,7 @@ export async function updateProject(
     userId,
   }: {
     title: string
-    client: string
+    clientId: number | null
     body: string
     apfo: Date | null
     mbaNumber: string | null
@@ -174,11 +192,27 @@ export async function updateProject(
   }
 ) {
   await wait(500)
+  
+  // Get client name for the client string field
+  let clientName = ""
+  if (clientId) {
+    const client = await prisma.client.findUnique({
+      where: { id: clientId },
+      select: { name: true }
+    })
+    clientName = client?.name || ""
+  }
+  
   const project = await prisma.project.update({
     where: { id: Number(projectId) },
     data: {
       title,
-      client,
+      client: clientName,
+      clientRef: clientId ? {
+        connect: { id: clientId }
+      } : {
+        disconnect: true
+      },
       body,
       apfo,
       mbaNumber: mbaNumber || "",
@@ -191,6 +225,10 @@ export async function updateProject(
   revalidateTag("projects:all")
   revalidateTag(`projects:id=${project.id}`)
   revalidateTag(`projects:userId=${project.userId}`)
+  revalidateTag("clients:all")
+  if (clientId) {
+    revalidateTag(`clients:id=${clientId}`)
+  }
 
   return project
 }
@@ -203,6 +241,10 @@ export async function deleteProject(projectId: string | number) {
   revalidateTag("projects:all")
   revalidateTag(`projects:id=${project.id}`)
   revalidateTag(`projects:userId=${project.userId}`)
+  revalidateTag("clients:all")
+  if (project.clientId) {
+    revalidateTag(`clients:id=${project.clientId}`)
+  }
 
   return project
 }

@@ -170,3 +170,15 @@ export async function changePassword(unsafeData: z.infer<typeof changePasswordSc
     return "Failed to change password"
   }
 }
+
+export async function clearInvalidSession() {
+  try {
+    console.log("clearInvalidSession: Starting...")
+    await removeUserFromSession(await cookies())
+    console.log("clearInvalidSession: Success")
+    return null
+  } catch (error) {
+    console.error("clearInvalidSession error:", error)
+    return "Failed to clear session"
+  }
+}

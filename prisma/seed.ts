@@ -54,12 +54,30 @@ async function createProjects() {
           id: project.id,
           title: project.title,
           client: project.client,
+          clientId: project.clientId,
           body: project.body,
           userId: project.userId,
           apfo: convertApfoDate(project.apfo),
           mbaNumber: project.mbaNumber,
           coFileNumbers: project.coFileNumbers,
           dldReviewer: project.dldReviewer,
+        },
+      })
+    })
+  )
+}
+
+async function createClients() {
+  await prisma.client.deleteMany()
+  return Promise.all(
+    seedData.clients.map(async client => {
+      return prisma.client.create({
+        data: {
+          id: client.id,
+          name: client.name,
+          email: client.email,
+          phone: client.phone,
+          address: client.address,
         },
       })
     })
@@ -84,6 +102,7 @@ async function createComments() {
 
 async function main() {
   await createUsers()
+  await createClients()
   await createProjects()
   await createTasks()
   await createComments()

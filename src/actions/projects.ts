@@ -127,9 +127,9 @@ export async function getProjectsAction() {
 }
 
 function validateProject(formData: FormData) {
-  const errors: { title?: string; client?: string, body?: string; apfo?: string; mbaNumber?: string; coFileNumbers?: string; dldReviewer?: string; userId?: string } = {}
+  const errors: { title?: string; clientId?: string, body?: string; apfo?: string; mbaNumber?: string; coFileNumbers?: string; dldReviewer?: string; userId?: string } = {}
   const title = formData.get("title") as string
-  const client = formData.get("client") as string
+  const clientId = formData.get("clientId") as string
   const body = formData.get("body") as string
   const apfo = formData.get("apfo") as string
   const mbaNumber = formData.get("mbaNumber") as string
@@ -143,8 +143,8 @@ function validateProject(formData: FormData) {
     isValid = false
   }
 
-  if (client === "") {
-    errors.client = "Required"
+  if (clientId === "" || clientId === null) {
+    errors.clientId = "Required"
     isValid = false
   }
 
@@ -163,5 +163,5 @@ function validateProject(formData: FormData) {
     isValid = false
   }
 
-  return [isValid ? { title, client, body, apfo: apfo ? new Date(apfo) : null, mbaNumber: mbaNumber || "", coFileNumbers, dldReviewer, userId } : undefined, errors] as const
+  return [isValid ? { title, clientId: clientId ? Number(clientId) : null, body, apfo: apfo ? new Date(apfo) : null, mbaNumber: mbaNumber || "", coFileNumbers, dldReviewer, userId } : undefined, errors] as const
 }

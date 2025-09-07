@@ -47,8 +47,17 @@ async function _getCurrentUser({
     console.log("_getCurrentUser: Getting full user from DB...")
     const fullUser = await getUserFromDb(user.id)
     console.log("_getCurrentUser: Got full user:", fullUser ? "found" : "null")
-    // This should never happen
-    if (fullUser == null) throw new Error("User not found in database")
+    
+    // If user exists in session but not in database, clear the session and redirect
+    if (fullUser == null) {
+      console.log("_getCurrentUser: User not found in database, clearing session...")
+      const { clearInvalidSession } = await import("../actions/auth")
+      await clearInvalidSession()
+      
+      if (redirectIfNotFound) return redirect("/login")
+      return null
+    }
+    
     return fullUser
   }
 

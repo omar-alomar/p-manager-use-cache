@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/auth/currentUser"
 import { ProjectForm } from "@/components/ProjectForm"
 import { getUsers } from "@/db/users"
+import { getClients } from "@/db/clients"
 
 export default async function NewProjectPage() {
   // Check if user is authenticated
@@ -11,7 +12,10 @@ export default async function NewProjectPage() {
   if (!user) {
     redirect("/login")
   }
-  const users = await getUsers()
+  const [users, clients] = await Promise.all([
+    getUsers(),
+    getClients()
+  ])
 
   return (
     <>
@@ -21,7 +25,7 @@ export default async function NewProjectPage() {
           <p className="page-subtitle">Create a new project and assign it to a project manager</p>
         </div>
       </div>
-      <ProjectForm users={users} />
+      <ProjectForm users={users} clients={clients} />
     </>
   )
 }
