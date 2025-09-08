@@ -1,7 +1,6 @@
 "use server"
 
 import { createProject, deleteProject, updateProject } from "@/db/projects"
-import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
 import { getProjects } from "@/db/projects"
 
@@ -10,7 +9,7 @@ export async function createProjectAction(prevState: unknown, formData: FormData
 
   if (!data) return errors
 
-  const project = await createProject(data)
+  await createProject(data)
 
   return { success: true, message: 'Project created successfully', redirectTo: `/projects` }
 }

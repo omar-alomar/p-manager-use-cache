@@ -24,12 +24,18 @@ export default async function AdminPage() {
   }
 
   // Fetch all admin data
-  const [stats, users, projects, tasks] = await Promise.all([
+  const [stats, users, projectsData, tasks] = await Promise.all([
     getAdminStatsAction(),
     getAllUsersAction(),
     getAllProjectsAction(),
     getAllTasksAction()
   ])
+
+  // Transform projects data to match AdminProjectManagement component expectations
+  const projects = projectsData.map(project => ({
+    ...project,
+    client: project.clientRef?.name || 'No Client'
+  }))
 
   return (
     <div className="admin-page">

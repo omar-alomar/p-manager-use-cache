@@ -64,7 +64,7 @@ export function AdminProjectManagement({ projects }: AdminProjectManagementProps
                     </div>
                   </td>
                   <td className="client-cell">
-                    <span className="client-name">{project.clientRef?.name || 'N/A'}</span>
+                    <span className="client-name">{project.client || 'N/A'}</span>
                   </td>
                   <td className="manager-cell">
                     <div className="manager-info">

@@ -1,7 +1,6 @@
 "use server"
 
 import { createTask, deleteTask, updateTask, getTask } from "@/db/tasks"
-import { redirect } from "next/navigation"
 import { revalidatePath, revalidateTag } from "next/cache"
 import prisma from "@/db/db"
 
@@ -24,7 +23,7 @@ export async function createTaskAction(prevState: unknown, formData: FormData) {
 
     // Return success state instead of redirecting
     return { success: true, message: 'Task created successfully!', taskId: task.id }
-  } catch (error) {
+  } catch {
     return { success: false, message: 'Failed to create task. Please try again.' }
   }
 }
@@ -52,7 +51,7 @@ export async function editTaskAction(
 
     // Return success state instead of redirecting
     return { success: true, message: 'Task updated successfully!', taskId: task.id }
-  } catch (error) {
+  } catch {
     return { success: false, message: 'Failed to update task. Please try again.' }
   }
 }

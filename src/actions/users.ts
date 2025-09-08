@@ -1,7 +1,6 @@
 "use server"
 
 import { deleteUser, getUsers, updateUserRole } from "@/db/users"
-import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
 import { getCurrentUser } from "@/auth/currentUser"
 

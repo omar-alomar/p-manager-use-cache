@@ -12,15 +12,17 @@ export default async function NewClientPage() {
   }
 
   return (
-    <div className="page-title">
-      <div className="title-content">
-        <h1>New Client</h1>
-        <p className="page-subtitle">Add a new client to your database</p>
+    <>
+      <div className="page-title">
+        <div className="title-content">
+          <h1>New Client</h1>
+          <p className="page-subtitle">Add a new client to your database</p>
+        </div>
       </div>
-    </div>
 
-    <div className="form-container">
-      <ClientForm />
-    </div>
+      <div className="form-container">
+        <ClientForm />
+      </div>
+    </>
   )
 }

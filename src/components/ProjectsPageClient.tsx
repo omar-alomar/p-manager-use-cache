@@ -5,7 +5,6 @@ import Link from "next/link"
 import { EditableComments } from "@/components/EditableComments"
 import { EditableCoFiles } from "@/components/EditableCoFiles"
 import { EditableMbaNumber } from "@/components/EditableMbaNumber"
-import { Skeleton } from "@/components/Skeleton"
 
 // Function to get the nearest APFO date from multiple APFO entries
 function getNearestApfoDate(apfos: { date: Date }[] | undefined, fallbackApfo: Date | null): Date | null {
@@ -49,6 +48,7 @@ interface Project {
   id: number
   title: string
   client: string
+  clientId: number | null
   body: string
   apfo: Date | null
   apfos?: { id: number; date: Date; item: string }[]
@@ -114,7 +114,7 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
         
         return (
           project.title.toLowerCase().includes(searchLower) ||
-          (project.clientRef?.name || '').toLowerCase().includes(searchLower) ||
+          (project.client || '').toLowerCase().includes(searchLower) ||
           project.body.toLowerCase().includes(searchLower) ||
           projectManagerName.toLowerCase().includes(searchLower) ||
           (project.mbaNumber && project.mbaNumber.toLowerCase().includes(searchLower)) ||
@@ -262,7 +262,7 @@ function ProjectRow({ project, userMap }: { project: Project; userMap: Map<numbe
         <Link href={`/projects/${project.id}`} className="project-name-link">
           <div className="project-name-link-content">
             <div className="project-name">{project.title}</div>
-            <div className="project-client">{project.clientRef?.name || 'No client'}</div>
+            <div className="project-client">{project.client || 'No client'}</div>
           </div>
         </Link>
       </td>

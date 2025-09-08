@@ -13,7 +13,7 @@ export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
   const router = useRouter()
-  const { user, checkAuth } = useAuth()
+  const { user } = useAuth()
 
   // Check if user is already authenticated
   useEffect(() => {

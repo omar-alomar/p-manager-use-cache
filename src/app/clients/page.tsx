@@ -33,7 +33,7 @@ export default async function ClientsPage() {
       </div>
 
       <Suspense fallback={<ClientsTableSkeleton />}>
-        <ClientsPageClient clients={clients} currentUser={user} />
+        <ClientsPageClient clients={clients} />
       </Suspense>
     </>
   )

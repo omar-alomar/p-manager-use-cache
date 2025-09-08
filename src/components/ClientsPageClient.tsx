@@ -15,7 +15,6 @@ type ClientWithProjects = Client & {
 
 interface ClientsPageClientProps {
   clients: ClientWithProjects[]
-  currentUser: User
 }
 
 type SortConfig = {
@@ -23,7 +22,7 @@ type SortConfig = {
   direction: 'asc' | 'desc' | 'none'
 }
 
-export function ClientsPageClient({ clients, currentUser }: ClientsPageClientProps) {
+export function ClientsPageClient({ clients }: ClientsPageClientProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'name', direction: 'asc' })
 
@@ -62,8 +61,17 @@ export function ClientsPageClient({ clients, currentUser }: ClientsPageClientPro
           aValue = a.projects.length
           bValue = b.projects.length
         } else {
-          aValue = a[sortConfig.key] || ''
-          bValue = b[sortConfig.key] || ''
+          const aRaw = a[sortConfig.key]
+          const bRaw = b[sortConfig.key]
+          
+          // Handle Date objects
+          if (aRaw instanceof Date && bRaw instanceof Date) {
+            aValue = aRaw.getTime()
+            bValue = bRaw.getTime()
+          } else {
+            aValue = (aRaw instanceof Date ? aRaw.getTime() : aRaw) || ''
+            bValue = (bRaw instanceof Date ? bRaw.getTime() : bRaw) || ''
+          }
         }
 
         if (typeof aValue === 'string' && typeof bValue === 'string') {

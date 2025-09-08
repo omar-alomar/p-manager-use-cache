@@ -33,7 +33,7 @@ export async function editClientAction(
 
   if (!data) return errors
 
-  const client = await updateClient({
+  await updateClient({
     id: clientId,
     ...data,
   })

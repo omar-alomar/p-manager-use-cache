@@ -147,7 +147,7 @@ export function ProjectForm({
           <div className="apfo-entries">
             {apfoEntries.length === 0 ? (
               <div className="apfo-empty-state">
-                <p>No APFO entries added. Click "Add APFO Entry" to add one, or leave empty if not needed.</p>
+                <p>No APFO entries added. Click &quot;Add APFO Entry&quot; to add one, or leave empty if not needed.</p>
               </div>
             ) : (
               apfoEntries.map((entry, index) => (

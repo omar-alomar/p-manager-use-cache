@@ -11,9 +11,16 @@ export default async function EditProjectPage({
   params: Promise<{ projectId: string }>
 }) {
   const { projectId } = await params
-  const [users, clients, project] = await Promise.all([getUsers(), getClients(), getProject(projectId)])
+  const [users, clients, projectData] = await Promise.all([getUsers(), getClients(), getProject(projectId)])
 
-  if (project == null) return notFound()
+  if (projectData == null) return notFound()
+
+  // Transform project data to match ProjectForm expectations
+  const project = {
+    ...projectData,
+    client: projectData.clientRef?.name || 'No Client',
+    clientId: projectData.clientRef?.id || null
+  }
 
   return (
     <div className="project-profile-container">

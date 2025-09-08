@@ -174,7 +174,7 @@ async function ClientHero({ clientId }: { clientId: string }) {
             >
               Edit Client
             </Link>
-            <DeleteClientButton clientId={clientId} />
+            <DeleteClientButton clientId={Number(clientId)} />
           </div>
         </div>
       </div>
@@ -273,7 +273,7 @@ async function ClientProjects({ clientId }: { clientId: string }) {
             </svg>
           </div>
           <h3 className="empty-title">No projects yet</h3>
-          <p className="empty-description">This client doesn't have any associated projects.</p>
+          <p className="empty-description">This client doesn&apos;t have any associated projects.</p>
         </div>
       )
     }
@@ -285,8 +285,8 @@ async function ClientProjects({ clientId }: { clientId: string }) {
             key={project.id}
             id={project.id}
             title={project.title}
-            client={project.clientRef?.name || 'No client specified'}
-            clientId={project.clientRef?.id}
+            client={client.name}
+            clientId={client.id}
             body={project.body}
             apfo={project.apfo}
             apfos={project.apfos}

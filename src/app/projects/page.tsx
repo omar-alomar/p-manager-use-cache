@@ -17,10 +17,17 @@ export default async function ProjectsPage() {
   }
 
   // Fetch data for the client component
-  const [projects, users] = await Promise.all([
+  const [projectsData, users] = await Promise.all([
     getProjects(),
     getUsers()
   ])
+
+  // Transform projects data to match ProjectsPageClient expectations
+  const projects = projectsData.map(project => ({
+    ...project,
+    client: project.clientRef?.name || 'No Client',
+    clientId: project.clientRef?.id || null
+  }))
 
   return (
     <>

@@ -27,7 +27,7 @@ export function ClientModal({ onClose, onClientCreated }: ClientModalProps) {
 
   // Handle successful client creation
   React.useEffect(() => {
-    if (state?.success && state?.client) {
+    if (state?.success && state?.client && typeof state.client === 'object') {
       onClientCreated({
         id: state.client.id,
         name: state.client.name,
@@ -66,8 +66,8 @@ export function ClientModal({ onClose, onClientCreated }: ClientModalProps) {
               className="form-input"
               placeholder="Enter client name"
             />
-            {state?.errors?.name && (
-              <span className="error-message">{state.errors.name}</span>
+            {state && 'name' in state && (
+              <span className="error-message">{state.name}</span>
             )}
           </div>
 
@@ -83,8 +83,8 @@ export function ClientModal({ onClose, onClientCreated }: ClientModalProps) {
               className="form-input"
               placeholder="Enter email address"
             />
-            {state?.errors?.email && (
-              <span className="error-message">{state.errors.email}</span>
+            {state && 'email' in state && (
+              <span className="error-message">{state.email}</span>
             )}
           </div>
 
@@ -99,8 +99,8 @@ export function ClientModal({ onClose, onClientCreated }: ClientModalProps) {
               className="form-input"
               placeholder="Enter phone number"
             />
-            {state?.errors?.phone && (
-              <span className="error-message">{state.errors.phone}</span>
+            {state && 'phone' in state && (
+              <span className="error-message">{state.phone}</span>
             )}
           </div>
 
@@ -115,8 +115,8 @@ export function ClientModal({ onClose, onClientCreated }: ClientModalProps) {
               placeholder="Enter address"
               rows={3}
             />
-            {state?.errors?.address && (
-              <span className="error-message">{state.errors.address}</span>
+            {state && 'address' in state && (
+              <span className="error-message">{state.address}</span>
             )}
           </div>
 

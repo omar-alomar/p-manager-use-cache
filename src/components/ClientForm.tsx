@@ -24,7 +24,7 @@ export function ClientForm({
   const router = useRouter()
   const [state, formAction] = useActionState(
     isEdit && clientId ? 
-      editClientAction.bind(null, clientId, null, redirectTo) :
+      (prevState: unknown, formData: FormData) => editClientAction(clientId, prevState, formData, redirectTo) :
       createClientAction,
     null
   )
@@ -65,11 +65,11 @@ export function ClientForm({
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              className={`form-input ${state?.name ? 'error' : ''}`}
+              className={`form-input ${state && 'name' in state ? 'error' : ''}`}
               placeholder="Enter client name"
               required
             />
-            {state?.name && (
+            {state && 'name' in state && (
               <span className="error-message">{state.name}</span>
             )}
           </div>
@@ -84,11 +84,11 @@ export function ClientForm({
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className={`form-input ${state?.email ? 'error' : ''}`}
+              className={`form-input ${state && 'email' in state ? 'error' : ''}`}
               placeholder="Enter email address"
               required
             />
-            {state?.email && (
+            {state && 'email' in state && (
               <span className="error-message">{state.email}</span>
             )}
           </div>
@@ -103,10 +103,10 @@ export function ClientForm({
               name="phone"
               value={formData.phone}
               onChange={handleInputChange}
-              className={`form-input ${state?.phone ? 'error' : ''}`}
+              className={`form-input ${state && 'phone' in state ? 'error' : ''}`}
               placeholder="Enter phone number"
             />
-            {state?.phone && (
+            {state && 'phone' in state && (
               <span className="error-message">{state.phone}</span>
             )}
           </div>
@@ -120,11 +120,11 @@ export function ClientForm({
               name="address"
               value={formData.address}
               onChange={handleInputChange}
-              className={`form-textarea ${state?.address ? 'error' : ''}`}
+              className={`form-textarea ${state && 'address' in state ? 'error' : ''}`}
               placeholder="Enter full address"
               rows={3}
             />
-            {state?.address && (
+            {state && 'address' in state && (
               <span className="error-message">{state.address}</span>
             )}
           </div>
