@@ -3,6 +3,7 @@
 import { createProject, deleteProject, updateProject } from "@/db/projects"
 import { revalidatePath } from "next/cache"
 import { getProjects } from "@/db/projects"
+import { redirect } from "next/navigation"
 
 export async function createProjectAction(prevState: unknown, formData: FormData) {
   const [data, errors] = validateProject(formData)
@@ -30,7 +31,7 @@ export async function editProjectAction(
 
 export async function deleteProjectAction(projectId: number | string) {
   await deleteProject(projectId)
-  return { success: true, message: 'Project deleted successfully', redirectTo: "/projects" }
+  redirect("/projects")
 }
 
 export async function updateProjectCommentsAction(
