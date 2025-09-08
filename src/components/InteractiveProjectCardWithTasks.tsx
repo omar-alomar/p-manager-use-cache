@@ -37,8 +37,10 @@ interface InteractiveProjectCardWithTasksProps {
   id: number
   title: string
   client: string
+  clientId?: number | null
   body: string
   apfo: Date | null
+  apfos?: { id: number; date: Date; item: string }[]
   userId: number
   showManager?: boolean
   showClient?: boolean
@@ -50,8 +52,10 @@ export function InteractiveProjectCardWithTasks({
   id,
   title,
   client,
+  clientId,
   body,
   apfo,
+  apfos,
   userId,
   showManager = true,
   showClient = true,
@@ -67,11 +71,12 @@ export function InteractiveProjectCardWithTasks({
   ) : []
   
   const [localTasks, setLocalTasks] = useState<Task[]>(validTasks)
+  const [deletedTaskIds, setDeletedTaskIds] = useState<Set<number>>(new Set())
 
   const activeTasks = localTasks.filter(task => !task.completed)
   const completedTasks = localTasks.filter(task => task.completed)
 
-  // Sync local tasks with tasks prop
+  // Sync local tasks with tasks prop, but filter out deleted tasks
   useEffect(() => {
     const validTasks = Array.isArray(tasks) ? tasks.filter(task => 
       task && typeof task === 'object' && 
@@ -80,18 +85,26 @@ export function InteractiveProjectCardWithTasks({
       typeof task.completed === 'boolean'
     ) : []
     
-    setLocalTasks(validTasks)
-  }, [tasks])
+    // Filter out any tasks that we've marked as deleted
+    const filteredTasks = validTasks.filter(task => !deletedTaskIds.has(task.id))
+    setLocalTasks(filteredTasks)
+  }, [tasks, deletedTaskIds])
 
   // Handle task updates from TaskItem component
-  const handleTaskUpdate = (taskId: number, updates: { completed?: boolean; title?: string }) => {
-    setLocalTasks(prev => 
-      prev.map(task => 
-        task.id === taskId 
-          ? { ...task, ...updates }
-          : task
+  const handleTaskUpdate = (taskId: number, updates: { completed?: boolean; title?: string; deleted?: boolean }) => {
+    if (updates.deleted) {
+      // Add the task ID to our deleted set
+      setDeletedTaskIds(prev => new Set([...prev, taskId]))
+    } else {
+      // Update the task in local state
+      setLocalTasks(prev => 
+        prev.map(task => 
+          task.id === taskId 
+            ? { ...task, ...updates }
+            : task
+        )
       )
-    )
+    }
   }
 
   return (
@@ -102,24 +115,51 @@ export function InteractiveProjectCardWithTasks({
           {showClient && (
             <div className="project-client">
               <BriefcaseIcon />
-              <span>{client || 'No client specified'}</span>
+              {client && clientId ? (
+                <Link href={`/clients/${clientId}`} className="client-name-link">
+                  <span className="client-name">{client}</span>
+                </Link>
+              ) : (
+                <span className="client-name-placeholder">No client specified</span>
+              )}
             </div>
           )}
         </div>
         
         <div className="project-meta">
-          {apfo && (
-            <div className={`project-apfo ${getApfoStatus(apfo)}`}>
-              <span className="apfo-label">APFO</span>
-              <span className="apfo-value">
-                {new Date(apfo).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric'
-                })}
-              </span>
-            </div>
-          )}
+          {(() => {
+            // Use nearest APFO date from apfos array if available, otherwise fall back to single apfo
+            const nearestApfo = apfos && apfos.length > 0 
+              ? apfos.reduce((nearest, current) => {
+                  const now = new Date()
+                  const nearestDate = new Date(nearest.date)
+                  const currentDate = new Date(current.date)
+                  
+                  // If current is in the future and nearest is not, or if both are in future and current is closer
+                  if (currentDate >= now && (nearestDate < now || currentDate < nearestDate)) {
+                    return current
+                  }
+                  // If both are in the past, take the most recent
+                  if (currentDate < now && nearestDate < now && currentDate > nearestDate) {
+                    return current
+                  }
+                  return nearest
+                })
+              : apfo ? { date: apfo, item: '' } : null
+
+            return nearestApfo && (
+              <div className={`project-apfo ${getApfoStatus(nearestApfo.date)}`}>
+                <span className="apfo-label">APFO</span>
+                <span className="apfo-value">
+                  {new Date(nearestApfo.date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                  })}
+                </span>
+              </div>
+            )
+          })()}
           {showManager && projectManager && <ProjectManagerInline projectManager={projectManager} />}
         </div>
       </div>
@@ -189,7 +229,9 @@ function ProjectManagerInline({ projectManager }: { projectManager: ProjectManag
   return (
     <div className="project-manager">
       <UserIcon />
-      <span className="manager-name">{projectManager.name}</span>
+      <Link href={`/users/${projectManager.id}`} className="manager-name-link">
+        <span className="manager-name">{projectManager.name}</span>
+      </Link>
     </div>
   )
 }

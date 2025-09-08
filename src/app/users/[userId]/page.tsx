@@ -1,4 +1,4 @@
-import { getUserProjects } from "@/db/projects"
+import { getProjectsWithUserTasks } from "@/db/projects"
 import { getUserTasks } from "@/db/tasks"
 import { getProjectTasks } from "@/db/tasks"
 import { getUser } from "@/db/users"
@@ -63,7 +63,7 @@ export default async function UserPage({
           </div>
           <div className="section-title-group">
             <h2 className="section-title">Projects & Assigned Tasks</h2>
-            <p className="section-subtitle">Active projects with tasks assigned to this user</p>
+            <p className="section-subtitle">Projects where this user is the manager or has tasks assigned</p>
           </div>
         </div>
         
@@ -87,8 +87,8 @@ async function UserHero({ userId }: { userId: string }) {
   const user = await getUser(userId)
   if (user == null) return notFound()
 
-  // Get user stats - only assigned tasks
-  const projects = await getUserProjects(userId)
+  // Get user stats - projects where user is manager or has tasks
+  const projects = await getProjectsWithUserTasks(userId)
   const userTasks = await getUserTasks(userId)
   const completedTasks = userTasks.filter(task => task.completed).length
   const activeTasks = userTasks.filter(task => !task.completed).length
@@ -169,7 +169,7 @@ async function UserHero({ userId }: { userId: string }) {
 }
 
 async function UserProjectsWithTasks({ userId }: { userId: string }) {
-  const projects = await getUserProjects(userId)
+  const projects = await getProjectsWithUserTasks(userId)
 
   if (projects.length === 0) {
     return (
@@ -178,7 +178,7 @@ async function UserProjectsWithTasks({ userId }: { userId: string }) {
           <BriefcaseIcon />
         </div>
         <h3 className="empty-title">No projects yet</h3>
-        <p className="empty-description">This user hasn&apos;t been assigned to any projects.</p>
+        <p className="empty-description">This user isn&apos;t managing any projects or assigned to any tasks.</p>
       </div>
     )
   }
@@ -204,8 +204,10 @@ async function UserProjectsWithTasks({ userId }: { userId: string }) {
             id={project.id}
             title={project.title}
             client={project.clientRef?.name || 'No client specified'}
+            clientId={project.clientRef?.id}
             body={project.body}
             apfo={project.apfo}
+            apfos={project.apfos}
             userId={project.userId}
             showManager={true}
             tasks={projectUserTasks}

@@ -2,8 +2,10 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { logOut } from "@/actions/auth"
 import { useAuth } from "@/components/auth/AuthContext"
+import { SettingsIcon } from "@/components/icons"
 
 export function UserStatus() {
   const { user, loading, logout: contextLogout } = useAuth()
@@ -63,6 +65,10 @@ export function UserStatus() {
   }
 
   const handleProfileClick = () => {
+    router.push(`/users/${user.id}`)
+  }
+
+  const handleSettingsClick = () => {
     router.push("/profile")
   }
 
@@ -78,13 +84,22 @@ export function UserStatus() {
         <span className="user-role">Role: {user.role}</span>
       </div>
 
-      <button 
-        onClick={handleLogout}
-        disabled={isLoggingOut}
-        className="logout-button"
-      >
-        {isLoggingOut ? "Logging out..." : "Log out"}
-      </button>
+      <div className="user-actions">
+        <button 
+          onClick={handleSettingsClick}
+          className="settings-button"
+          title="Profile Settings"
+        >
+          <SettingsIcon size={14} />
+        </button>
+        <button 
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="logout-button"
+        >
+          {isLoggingOut ? "Logging out..." : "Log out"}
+        </button>
+      </div>
     </div>
   )
 }

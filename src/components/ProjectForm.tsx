@@ -26,6 +26,7 @@ export function ProjectForm({
   coFileNumbers: string
   dldReviewer: string
   userId: number
+  apfos?: { id: number; date: Date; item: string }[]
   }
 }) {
   const action =
@@ -33,6 +34,12 @@ export function ProjectForm({
   const [state, formAction, pending] = useActionState(action, {})
   const [showClientModal, setShowClientModal] = useState(false)
   const [clientsList, setClientsList] = useState(clients)
+  const [apfoEntries, setApfoEntries] = useState<{ date: string; item: string }[]>(
+    project?.apfos?.map(apfo => ({
+      date: apfo.date.toISOString().split('T')[0],
+      item: apfo.item
+    })) || []
+  )
   
   // Handle success state for project creation/editing
   React.useEffect(() => {
@@ -56,6 +63,21 @@ export function ProjectForm({
     if (select) {
       select.value = newClient.id.toString()
     }
+  }
+
+  // Handle APFO entry management
+  const addApfoEntry = () => {
+    setApfoEntries(prev => [...prev, { date: '', item: '' }])
+  }
+
+  const removeApfoEntry = (index: number) => {
+    setApfoEntries(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const updateApfoEntry = (index: number, field: 'date' | 'item', value: string) => {
+    setApfoEntries(prev => prev.map((entry, i) => 
+      i === index ? { ...entry, [field]: value } : entry
+    ))
   }
 
   return (
@@ -120,16 +142,69 @@ export function ProjectForm({
             </Suspense>
           </select>
         </FormGroup>
-        <FormGroup errorMessage={'apfo' in state ? state.apfo : undefined}>
-          <label htmlFor="apfo">APFO Date</label>
-          <input
-            required
-            type="date"
-            name="apfo"
-            id="apfo"
-            defaultValue={project?.apfo ? new Date(project.apfo).toISOString().split('T')[0] : ''}
-          />
-        </FormGroup>
+        <div className="apfo-section">
+          <label>APFO Entries (Optional)</label>
+          <div className="apfo-entries">
+            {apfoEntries.length === 0 ? (
+              <div className="apfo-empty-state">
+                <p>No APFO entries added. Click "Add APFO Entry" to add one, or leave empty if not needed.</p>
+              </div>
+            ) : (
+              apfoEntries.map((entry, index) => (
+              <div key={index} className="apfo-entry">
+                <div className="apfo-entry-fields">
+                  <FormGroup>
+                    <label htmlFor={`apfoDate_${index}`}>Date</label>
+                    <input
+                      type="date"
+                      name={`apfoDate_${index}`}
+                      id={`apfoDate_${index}`}
+                      value={entry.date}
+                      onChange={(e) => updateApfoEntry(index, 'date', e.target.value)}
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <label htmlFor={`apfoItem_${index}`}>Item</label>
+                    <input
+                      type="text"
+                      name={`apfoItem_${index}`}
+                      id={`apfoItem_${index}`}
+                      placeholder="e.g., Preliminary Site Plan"
+                      value={entry.item}
+                      onChange={(e) => updateApfoEntry(index, 'item', e.target.value)}
+                    />
+                  </FormGroup>
+                  <button
+                    type="button"
+                    className="btn-remove-apfo"
+                    onClick={() => removeApfoEntry(index)}
+                    title="Remove APFO entry"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <line x1="18" y1="6" x2="6" y2="18"/>
+                      <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              ))
+            )}
+            <button
+              type="button"
+              className="btn-add-apfo"
+              onClick={addApfoEntry}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              Add APFO Entry
+            </button>
+          </div>
+          {'apfo' in state && state.apfo && (
+            <div className="error-message">{state.apfo}</div>
+          )}
+        </div>
       </div>
 
       <div className="form-row">

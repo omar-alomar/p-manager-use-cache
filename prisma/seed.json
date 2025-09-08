@@ -351,6 +351,92 @@
       "projectId": 4
     }
   ],
+  "apfos": [
+    {
+      "id": 1,
+      "projectId": 1,
+      "date": "09/12/2025",
+      "item": "Preliminary Site Plan"
+    },
+    {
+      "id": 2,
+      "projectId": 1,
+      "date": "10/15/2025",
+      "item": "Final Grading Plan"
+    },
+    {
+      "id": 3,
+      "projectId": 2,
+      "date": "10/03/2025",
+      "item": "Roadway Design"
+    },
+    {
+      "id": 4,
+      "projectId": 2,
+      "date": "11/20/2025",
+      "item": "Stormwater Management"
+    },
+    {
+      "id": 5,
+      "projectId": 3,
+      "date": "12/12/2025",
+      "item": "Traffic Impact Study"
+    },
+    {
+      "id": 6,
+      "projectId": 4,
+      "date": "01/02/2026",
+      "item": "Site Preparation"
+    },
+    {
+      "id": 7,
+      "projectId": 4,
+      "date": "02/15/2026",
+      "item": "Utility Connections"
+    },
+    {
+      "id": 8,
+      "projectId": 5,
+      "date": "03/15/2026",
+      "item": "Phase 1 Construction"
+    },
+    {
+      "id": 9,
+      "projectId": 5,
+      "date": "06/30/2026",
+      "item": "Phase 2 Construction"
+    },
+    {
+      "id": 10,
+      "projectId": 6,
+      "date": "05/20/2026",
+      "item": "Playground Installation"
+    },
+    {
+      "id": 11,
+      "projectId": 7,
+      "date": "07/10/2026",
+      "item": "Office Building A"
+    },
+    {
+      "id": 12,
+      "projectId": 7,
+      "date": "09/15/2026",
+      "item": "Office Building B"
+    },
+    {
+      "id": 13,
+      "projectId": 8,
+      "date": "09/05/2026",
+      "item": "Community Center"
+    },
+    {
+      "id": 14,
+      "projectId": 8,
+      "date": "12/01/2026",
+      "item": "Swimming Pool"
+    }
+  ],
   "comments": [
     { 
       "id": 1, 

@@ -4,7 +4,7 @@ import { getCurrentUser } from "@/auth/currentUser"
 import { MyTasksContent } from "@/components/MyTasksContent"
 import { NewTaskButton } from "@/components/NewTaskButton"
 import { getUsers } from "@/db/users"
-import { getProjectsWithUserTasks } from "@/db/projects"
+import { getProjects } from "@/db/projects"
 import TasksLoading from "../tasks/loading"
 
 export default async function MyTasksPage() {
@@ -19,7 +19,7 @@ export default async function MyTasksPage() {
   // Fetch data for the NewTaskButton
   const [users, projects] = await Promise.all([
     getUsers(),
-    getProjectsWithUserTasks(user.id)
+    getProjects()
   ])
 
   return (

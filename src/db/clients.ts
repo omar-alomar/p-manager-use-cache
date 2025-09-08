@@ -49,7 +49,12 @@ export async function getClient(clientId: string | number) {
     include: {
       projects: {
         include: {
-          user: true
+          user: true,
+          apfos: {
+            orderBy: {
+              date: 'asc'
+            }
+          }
         }
       }
     }

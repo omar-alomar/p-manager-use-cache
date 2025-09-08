@@ -136,6 +136,19 @@ function validateProject(formData: FormData) {
   const coFileNumbers = formData.get("coFileNumbers") as string
   const dldReviewer = formData.get("dldReviewer") as string
   const userId = Number(formData.get("userId"))
+  
+  // Parse APFO entries
+  const apfos: { date: Date; item: string }[] = []
+  let apfoIndex = 0
+  while (formData.get(`apfoDate_${apfoIndex}`)) {
+    const date = formData.get(`apfoDate_${apfoIndex}`) as string
+    const item = formData.get(`apfoItem_${apfoIndex}`) as string
+    if (date) {
+      apfos.push({ date: new Date(date), item: item || "" })
+    }
+    apfoIndex++
+  }
+  
   let isValid = true
 
   if (title === "") {
@@ -153,15 +166,22 @@ function validateProject(formData: FormData) {
     isValid = false
   }
 
-  if (apfo === "") {
-    errors.apfo = "Required"
-    isValid = false
-  }
+  // APFO entries are now optional - no validation needed
 
   if (isNaN(userId)) {
     errors.userId = "Required"
     isValid = false
   }
 
-  return [isValid ? { title, clientId: clientId ? Number(clientId) : null, body, apfo: apfo ? new Date(apfo) : null, mbaNumber: mbaNumber || "", coFileNumbers, dldReviewer, userId } : undefined, errors] as const
+  return [isValid ? { 
+    title, 
+    clientId: clientId ? Number(clientId) : null, 
+    body, 
+    apfo: apfo ? new Date(apfo) : null, 
+    mbaNumber: mbaNumber || "", 
+    coFileNumbers, 
+    dldReviewer, 
+    userId,
+    apfos
+  } : undefined, errors] as const
 }

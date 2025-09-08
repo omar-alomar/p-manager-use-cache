@@ -13,7 +13,7 @@ interface TaskItemProps {
   userName?: string
   displayProject?: boolean
   displayUser?: boolean
-  onUpdate?: (taskId: number, updates: { completed?: boolean; title?: string }) => void
+  onUpdate?: (taskId: number, updates: { completed?: boolean; title?: string; deleted?: boolean }) => void
 }
 
 export function TaskItem({ 
@@ -138,12 +138,12 @@ export function TaskItem({
     if (e.key === 'Escape') {
       setEditedTitle(title)
       setIsEditing(false)
-    } else if (e.key === 'Enter' && e.shiftKey) {
+    } else if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       handleSaveTitle()
     }
-    // Allow regular Enter to create new lines - don't prevent default
-    // Save will happen on blur (clicking off) or Shift+Enter
+    // Shift+Enter would create new lines, but this is an input field so it won't work
+    // Save happens on Enter or blur (clicking off)
   }
 
   function handleStartEdit() {
@@ -168,8 +168,18 @@ export function TaskItem({
         return
       }
       
-      // If we get here, the delete was successful and we should be redirected
-      // No need to set isDeleting to false as we're redirecting
+      // If we get here, the delete was successful
+      // Check if we have an onUpdate callback to notify parent component
+      if (onUpdate) {
+        // Notify parent component to remove this task from local state
+        onUpdate(id, { deleted: true })
+      }
+      
+      // If there's a redirectTo in the result, we'll be redirected
+      // Otherwise, we're in a context where we need to handle the UI update locally
+      if (!result?.redirectTo) {
+        setIsDeleting(false)
+      }
     } catch (error) {
       // Check if this is a redirect error (which is expected)
       if (error instanceof Error && error.message.includes('NEXT_REDIRECT')) {
@@ -186,8 +196,8 @@ export function TaskItem({
 
   // Handle clicking on the main task area to toggle completion
   const handleTaskAreaClick = (e: React.MouseEvent) => {
-    // Don't toggle if clicking on action buttons or if currently updating
-    if (isUpdating || isDeleting) return
+    // Don't toggle if clicking on action buttons, if currently updating, or if in edit mode
+    if (isUpdating || isDeleting || isEditing) return
     
     // Check if the click target is an action button or its children
     const target = e.target as HTMLElement
@@ -200,14 +210,14 @@ export function TaskItem({
   }
 
   return (
-    <div className={`task-card ${completed ? 'task-completed' : ''} ${isUpdating ? 'task-updating' : ''}`} key={`${id}-${updateCount}`}>
+    <div className={`task-card ${completed ? 'task-completed' : ''} ${isUpdating ? 'task-updating' : ''} ${isEditing ? 'task-editing' : ''}`} key={`${id}-${updateCount}`}>
       <div className="task-card-content">
         <div className="task-checkbox-wrapper">
           <input
             type="checkbox"
             checked={completed}
             onChange={(e) => handleChange(e.target.checked)}
-            disabled={isUpdating || isDeleting}
+            disabled={isUpdating || isDeleting || isEditing}
             className="task-checkbox"
           />
           {isUpdating && (
@@ -231,7 +241,7 @@ export function TaskItem({
                 className="edit-input"
                 placeholder="Task title..."
               />
-              <div className="edit-hint">Shift+Enter to save, Escape to cancel</div>
+              <div className="edit-hint">Enter to save, Escape to cancel</div>
             </div>
           ) : (
             <>

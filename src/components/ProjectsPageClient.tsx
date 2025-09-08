@@ -7,6 +7,26 @@ import { EditableCoFiles } from "@/components/EditableCoFiles"
 import { EditableMbaNumber } from "@/components/EditableMbaNumber"
 import { Skeleton } from "@/components/Skeleton"
 
+// Function to get the nearest APFO date from multiple APFO entries
+function getNearestApfoDate(apfos: { date: Date }[] | undefined, fallbackApfo: Date | null): Date | null {
+  if (!apfos || apfos.length === 0) return fallbackApfo
+  
+  const now = new Date()
+  const futureApfos = apfos.filter(apfo => new Date(apfo.date) >= now)
+  
+  if (futureApfos.length === 0) {
+    // If no future dates, return the most recent past date
+    return apfos.reduce((nearest, current) => 
+      new Date(current.date) > new Date(nearest.date) ? current : nearest
+    ).date
+  }
+  
+  // Return the nearest future date
+  return futureApfos.reduce((nearest, current) => 
+    new Date(current.date) < new Date(nearest.date) ? current : nearest
+  ).date
+}
+
 // Function to determine APFO color class based on date proximity
 function getApfoColorClass(apfoDate: Date | null): string {
   if (!apfoDate) return 'apfo-neutral'
@@ -31,6 +51,7 @@ interface Project {
   client: string
   body: string
   apfo: Date | null
+  apfos?: { id: number; date: Date; item: string }[]
   mbaNumber: string | null
   coFileNumbers: string
   dldReviewer: string
@@ -112,13 +133,16 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
     // Apply sorting
     if (sortConfig.key === 'apfo' && sortConfig.direction !== 'none') {
       filtered.sort((a, b) => {
-        // Handle null APFO dates - put them at the end
-        if (!a.apfo && !b.apfo) return 0
-        if (!a.apfo) return 1
-        if (!b.apfo) return -1
+        const aNearestApfo = getNearestApfoDate(a.apfos, a.apfo)
+        const bNearestApfo = getNearestApfoDate(b.apfos, b.apfo)
         
-        const aDate = new Date(a.apfo).getTime()
-        const bDate = new Date(b.apfo).getTime()
+        // Handle null APFO dates - put them at the end
+        if (!aNearestApfo && !bNearestApfo) return 0
+        if (!aNearestApfo) return 1
+        if (!bNearestApfo) return -1
+        
+        const aDate = new Date(aNearestApfo).getTime()
+        const bDate = new Date(bNearestApfo).getTime()
         
         if (sortConfig.direction === 'asc') {
           return aDate - bDate
@@ -278,15 +302,45 @@ function ProjectRow({ project, userMap }: { project: Project; userMap: Map<numbe
         )}
       </td>
       <td className="apfo-date">
-        {project.apfo && (
-          <span className={`apfo-highlight ${getApfoColorClass(project.apfo)}`}>
-            {new Date(project.apfo).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric'
-            })}
-          </span>
-        )}
+        {(() => {
+          const nearestApfo = getNearestApfoDate(project.apfos, project.apfo)
+          
+          // If we have multiple APFO entries, show all of them
+          if (project.apfos && project.apfos.length > 0) {
+            return (
+              <div className="apfo-multiple">
+                {project.apfos
+                  .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                  .map((apfo, index) => {
+                    const isNearest = nearestApfo && new Date(apfo.date).getTime() === new Date(nearestApfo).getTime()
+                    return (
+                      <div key={apfo.id || index} className={`apfo-entry ${isNearest ? 'apfo-nearest' : ''}`}>
+                        <span className={`apfo-highlight ${getApfoColorClass(apfo.date)}`}>
+                          {new Date(apfo.date).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          })}
+                        </span>
+                        <span className="apfo-item">{apfo.item}</span>
+                      </div>
+                    )
+                  })}
+              </div>
+            )
+          }
+          
+          // Fallback to single APFO date
+          return nearestApfo && (
+            <span className={`apfo-highlight ${getApfoColorClass(nearestApfo)}`}>
+              {new Date(nearestApfo).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              })}
+            </span>
+          )
+        })()}
       </td>
       <td className="comments">
         <EditableComments

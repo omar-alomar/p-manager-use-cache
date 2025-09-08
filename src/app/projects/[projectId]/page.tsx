@@ -187,22 +187,56 @@ async function ProjectHero({ projectId }: { projectId: string }) {
                   {project.clientRef.name}
                 </Link>
               )}
-              {project.apfo && (
-                <span className="hero-tag apfo">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                    <polyline points="14,2 14,8 20,8"/>
-                    <line x1="16" y1="13" x2="8" y2="13"/>
-                    <line x1="16" y1="17" x2="8" y2="17"/>
-                    <polyline points="10,9 9,9 8,9"/>
-                  </svg>
-                  {new Date(project.apfo).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
-                  })}
-                </span>
-              )}
+              {project.apfos && project.apfos.length > 0 && (() => {
+                const nearestApfo = project.apfos.reduce((nearest, current) => {
+                  const now = new Date()
+                  const nearestDate = new Date(nearest.date)
+                  const currentDate = new Date(current.date)
+                  
+                  // If current is in the future and nearest is not, or if both are in future and current is closer
+                  if (currentDate >= now && (nearestDate < now || currentDate < nearestDate)) {
+                    return current
+                  }
+                  // If both are in the past, take the most recent
+                  if (currentDate < now && nearestDate < now && currentDate > nearestDate) {
+                    return current
+                  }
+                  return nearest
+                })
+                
+                // Calculate APFO color class based on date proximity
+                const getApfoColorClass = (apfoDate: Date) => {
+                  const now = new Date()
+                  const apfo = new Date(apfoDate)
+                  const diffTime = apfo.getTime() - now.getTime()
+                  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+                  
+                  if (diffDays <= 14) {
+                    return 'apfo-urgent' // Red - within 2 weeks
+                  } else if (diffDays <= 30) {
+                    return 'apfo-warning' // Yellow - within a month
+                  } else {
+                    return 'apfo-safe' // Green - more than a month
+                  }
+                }
+                
+                return (
+                  <span className={`hero-tag apfo ${getApfoColorClass(nearestApfo.date)}`}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                      <polyline points="14,2 14,8 20,8"/>
+                      <line x1="16" y1="13" x2="8" y2="13"/>
+                      <line x1="16" y1="17" x2="8" y2="17"/>
+                      <polyline points="10,9 9,9 8,9"/>
+                    </svg>
+                    {new Date(nearestApfo.date).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                    })}
+                  </span>
+                )
+              })()}
             </div>
             
             <div className="hero-comments">
@@ -325,17 +359,46 @@ async function ProjectDetails({ projectId }: { projectId: string }) {
           </div>
         )}
 
-        {project.apfo && (
+        {project.apfos && project.apfos.length > 0 && (
           <div className="detail-item">
             <label className="detail-label">
-              APFO Date
+              APFO Entries
             </label>
             <div className="detail-value">
-              {new Date(project.apfo).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
+              <div className="apfo-details-grid">
+                {project.apfos
+                  .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                  .map((apfo, index) => {
+                    // Calculate APFO color class based on date proximity
+                    const getApfoColorClass = (apfoDate: Date) => {
+                      const now = new Date()
+                      const apfo = new Date(apfoDate)
+                      const diffTime = apfo.getTime() - now.getTime()
+                      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+                      
+                      if (diffDays <= 14) {
+                        return 'apfo-urgent' // Red - within 2 weeks
+                      } else if (diffDays <= 30) {
+                        return 'apfo-warning' // Yellow - within a month
+                      } else {
+                        return 'apfo-safe' // Green - more than a month
+                      }
+                    }
+                    
+                    return (
+                      <div key={apfo.id || index} className={`apfo-detail-card ${getApfoColorClass(apfo.date)}`}>
+                        <div className="apfo-detail-date">
+                          {new Date(apfo.date).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          })}
+                        </div>
+                        <div className="apfo-detail-item">{apfo.item}</div>
+                      </div>
+                    )
+                  })}
+              </div>
             </div>
           </div>
         )}

@@ -27,7 +27,12 @@ export async function getProjects({
   return prisma.project.findMany({ 
     where,
     include: {
-      clientRef: true
+      clientRef: true,
+      apfos: {
+        orderBy: {
+          date: 'asc'
+        }
+      }
     }
   })
 }
@@ -40,7 +45,12 @@ export async function getProject(projectId: string | number) {
   return prisma.project.findUnique({ 
     where: { id: Number(projectId) },
     include: {
-      clientRef: true
+      clientRef: true,
+      apfos: {
+        orderBy: {
+          date: 'asc'
+        }
+      }
     }
   })
 }
@@ -53,7 +63,12 @@ export async function getUserProjects(userId: string | number) {
   return prisma.project.findMany({ 
     where: { userId: Number(userId) },
     include: {
-      clientRef: true
+      clientRef: true,
+      apfos: {
+        orderBy: {
+          date: 'asc'
+        }
+      }
     }
   })
 }
@@ -79,7 +94,12 @@ export async function getProjectsWithUserTasks(userId: string | number) {
       ]
     },
     include: {
-      clientRef: true
+      clientRef: true,
+      apfos: {
+        orderBy: {
+          date: 'asc'
+        }
+      }
     },
     orderBy: {
       title: 'asc'
@@ -96,6 +116,7 @@ export async function createProject({
   coFileNumbers,
   dldReviewer,
   userId,
+  apfos,
 }: {
   title: string
   clientId: number | null
@@ -105,6 +126,7 @@ export async function createProject({
   coFileNumbers: string
   dldReviewer: string
   userId: number
+  apfos?: { date: Date; item: string }[]
 }) {
   await wait(500)
   
@@ -122,6 +144,12 @@ export async function createProject({
       user: {
         connect: { id: userId }
       },
+      apfos: apfos ? {
+        create: apfos.map(apfo => ({
+          date: apfo.date,
+          item: apfo.item
+        }))
+      } : undefined,
     },
   })
 
@@ -181,6 +209,7 @@ export async function updateProject(
     coFileNumbers,
     dldReviewer,
     userId,
+    apfos,
   }: {
     title: string
     clientId: number | null
@@ -190,6 +219,7 @@ export async function updateProject(
     coFileNumbers: string
     dldReviewer: string
     userId: number
+    apfos?: { date: Date; item: string }[]
   }
 ) {
   await wait(500)
@@ -211,6 +241,13 @@ export async function updateProject(
       user: {
         connect: { id: userId }
       },
+      apfos: apfos ? {
+        deleteMany: {},
+        create: apfos.map(apfo => ({
+          date: apfo.date,
+          item: apfo.item
+        }))
+      } : undefined,
     },
   })
 
@@ -239,6 +276,25 @@ export async function deleteProject(projectId: string | number) {
   }
 
   return project
+}
+
+export function getNearestApfoDate(apfos: { date: Date }[]): Date | null {
+  if (!apfos || apfos.length === 0) return null
+  
+  const now = new Date()
+  const futureApfos = apfos.filter(apfo => apfo.date >= now)
+  
+  if (futureApfos.length === 0) {
+    // If no future dates, return the most recent past date
+    return apfos.reduce((nearest, current) => 
+      current.date > nearest.date ? current : nearest
+    ).date
+  }
+  
+  // Return the nearest future date
+  return futureApfos.reduce((nearest, current) => 
+    current.date < nearest.date ? current : nearest
+  ).date
 }
 
 function wait(duration: number) {

@@ -21,8 +21,10 @@ export function ProjectCard({
   id,
   title,
   client,
+  clientId,
   body,
   apfo,
+  apfos,
   userId,
   showManager = true,
   showClient = true
@@ -30,8 +32,10 @@ export function ProjectCard({
   id: number
   title: string
   client: string
+  clientId?: number | null
   body: string
   apfo: Date | null
+  apfos?: { id: number; date: Date; item: string }[]
   userId: number
   showManager?: boolean
   showClient?: boolean
@@ -44,24 +48,51 @@ export function ProjectCard({
           {showClient && (
             <div className="project-client">
               <BriefcaseIcon />
-              <span>{client || 'No client specified'}</span>
+              {client && clientId ? (
+                <Link href={`/clients/${clientId}`} className="client-name-link">
+                  <span className="client-name">{client}</span>
+                </Link>
+              ) : (
+                <span className="client-name-placeholder">No client specified</span>
+              )}
             </div>
           )}
         </div>
         
         <div className="project-meta">
-          {apfo && (
-            <div className={`project-apfo ${getApfoStatus(apfo)}`}>
-              <span className="apfo-label">APFO</span>
-              <span className="apfo-value">
-                {apfo ? new Date(apfo).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric'
-                }) : ''}
-              </span>
-            </div>
-          )}
+          {(() => {
+            // Use nearest APFO date from apfos array if available, otherwise fall back to single apfo
+            const nearestApfo = apfos && apfos.length > 0 
+              ? apfos.reduce((nearest, current) => {
+                  const now = new Date()
+                  const nearestDate = new Date(nearest.date)
+                  const currentDate = new Date(current.date)
+                  
+                  // If current is in the future and nearest is not, or if both are in future and current is closer
+                  if (currentDate >= now && (nearestDate < now || currentDate < nearestDate)) {
+                    return current
+                  }
+                  // If both are in the past, take the most recent
+                  if (currentDate < now && nearestDate < now && currentDate > nearestDate) {
+                    return current
+                  }
+                  return nearest
+                })
+              : apfo ? { date: apfo, item: '' } : null
+
+            return nearestApfo && (
+              <div className={`project-apfo ${getApfoStatus(nearestApfo.date)}`}>
+                <span className="apfo-label">APFO</span>
+                <span className="apfo-value">
+                  {new Date(nearestApfo.date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                  })}
+                </span>
+              </div>
+            )
+          })()}
           {showManager && <ProjectManagerInline userId={userId} />}
         </div>
       </div>
@@ -95,7 +126,9 @@ async function ProjectManagerInline({ userId }: { userId: number }) {
   return (
     <div className="project-manager">
       <UserIcon />
-      <span className="manager-name">{user.name}</span>
+      <Link href={`/users/${user.id}`} className="manager-name-link">
+        <span className="manager-name">{user.name}</span>
+      </Link>
     </div>
   )
 }

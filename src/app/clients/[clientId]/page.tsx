@@ -286,8 +286,10 @@ async function ClientProjects({ clientId }: { clientId: string }) {
             id={project.id}
             title={project.title}
             client={project.clientRef?.name || 'No client specified'}
+            clientId={project.clientRef?.id}
             body={project.body}
             apfo={project.apfo}
+            apfos={project.apfos}
             userId={project.user.id}
             showManager={true}
             showClient={false}

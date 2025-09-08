@@ -99,12 +99,35 @@ async function createComments() {
   )
 }
 
+async function createApfos() {
+  await prisma.apfo.deleteMany()
+  return Promise.all(
+    seedData.apfos.map(async apfo => {
+      // Convert MM/DD/YYYY string to ISO date string
+      const convertApfoDate = (dateStr: string) => {
+        const [month, day, year] = dateStr.split('/')
+        return new Date(parseInt(year), parseInt(month) - 1, parseInt(day)).toISOString()
+      }
+
+      return prisma.apfo.create({
+        data: {
+          id: apfo.id,
+          projectId: apfo.projectId,
+          date: convertApfoDate(apfo.date),
+          item: apfo.item,
+        },
+      })
+    })
+  )
+}
+
 async function main() {
   await createUsers()
   await createClients()
   await createProjects()
   await createTasks()
   await createComments()
+  await createApfos()
 }
 
 main()

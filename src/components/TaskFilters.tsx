@@ -85,47 +85,47 @@ export function TaskFilters({ taskCounts, users, projects, context = 'all-tasks'
         </div>
       </div>
 
-      {users && users.length > 0 && (
-        <div className="filter-group">
-          <div className="filter-controls">
-            <label htmlFor="user-filter">Filter by user:</label>
-            <select
-              id="user-filter"
-              value={userFilter || ''}
-              onChange={(e) => setUserFilter(e.target.value ? Number(e.target.value) : null)}
-              className="filter-select"
-            >
-              <option value="">All Users</option>
-              {users.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-      )}
+      {(users && users.length > 0) || (projects && projects.length > 0) ? (
+        <div className="filter-group filter-group--row">
+          {users && users.length > 0 && (
+            <div className="filter-controls">
+              <label htmlFor="user-filter">Filter by user:</label>
+              <select
+                id="user-filter"
+                value={userFilter || ''}
+                onChange={(e) => setUserFilter(e.target.value ? Number(e.target.value) : null)}
+                className="filter-select"
+              >
+                <option value="">All Users</option>
+                {users.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
-      {projects && projects.length > 0 && (
-        <div className="filter-group">
-          <div className="filter-controls">
-            <label htmlFor="project-filter">Filter by project:</label>
-            <select
-              id="project-filter"
-              value={projectFilter || ''}
-              onChange={(e) => setProjectFilter(e.target.value ? Number(e.target.value) : null)}
-              className="filter-select"
-            >
-              <option value="">All Projects</option>
-              {projects.map((project) => (
-                <option key={project.id} value={project.id}>
-                  {project.title}
-                </option>
-              ))}
-            </select>
-          </div>
+          {projects && projects.length > 0 && (
+            <div className="filter-controls">
+              <label htmlFor="project-filter">Filter by project:</label>
+              <select
+                id="project-filter"
+                value={projectFilter || ''}
+                onChange={(e) => setProjectFilter(e.target.value ? Number(e.target.value) : null)}
+                className="filter-select"
+              >
+                <option value="">All Projects</option>
+                {projects.map((project) => (
+                  <option key={project.id} value={project.id}>
+                    {project.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
-      )}
+      ) : null}
     </div>
   )
 }
