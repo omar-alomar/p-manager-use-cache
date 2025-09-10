@@ -3,6 +3,7 @@ import { Skeleton, SkeletonButton } from "./Skeleton"
 import { getUser } from "@/db/users"
 import { notFound } from "next/navigation"
 import { BriefcaseIcon, UserIcon, CalendarIcon } from "./icons"
+import { formatDate } from "@/utils/dateUtils"
 
 function getApfoStatus(apfo: Date | null): string {
   if (!apfo) return 'normal'
@@ -84,11 +85,7 @@ export function ProjectCard({
               <div className={`project-apfo ${getApfoStatus(nearestApfo.date)}`}>
                 <span className="apfo-label">APFO</span>
                 <span className="apfo-value">
-                  {new Date(nearestApfo.date).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
-                  })}
+                  {formatDate(nearestApfo.date)}
                 </span>
               </div>
             )
@@ -100,9 +97,9 @@ export function ProjectCard({
       <div className="project-card-body">
         <div className="project-description">
           {body ? (
-            <p className="project-text">{body.length > 150 ? `${body.substring(0, 150)}...` : body}</p>
+            <div className="project-text">{body.length > 150 ? `${body.substring(0, 150)}...` : body}</div>
           ) : (
-            <p className="project-text-placeholder">No description available</p>
+            <div className="project-text-placeholder">No description available</div>
           )}
         </div>
       </div>

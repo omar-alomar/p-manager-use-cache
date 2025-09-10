@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import seedData from "./seed.json"
+import { convertToUTCISO } from "../src/utils/dateUtils"
 
 const prisma = new PrismaClient()
 
@@ -42,11 +43,9 @@ async function createProjects() {
   await prisma.project.deleteMany()
   return Promise.all(
     seedData.projects.map(async project => {
-      // Convert MM/DD/YYYY string to ISO date string
+      // Convert MM/DD/YYYY string to ISO date string (UTC)
       const convertApfoDate = (dateStr: string) => {
-        if (!dateStr) return null
-        const [month, day, year] = dateStr.split('/')
-        return new Date(parseInt(year), parseInt(month) - 1, parseInt(day)).toISOString()
+        return convertToUTCISO(dateStr)
       }
 
       return prisma.project.create({

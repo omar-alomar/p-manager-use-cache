@@ -6789,6 +6789,7 @@ td.comments {
   font-size: var(--font-size-base);
   line-height: 1.6;
   margin: 0;
+  white-space: pre-wrap;
 }
 
 .project-text-placeholder {
@@ -6796,6 +6797,7 @@ td.comments {
   font-style: italic;
   font-size: var(--font-size-base);
   margin: 0;
+  white-space: pre-wrap;
 }
 
 /* Project Tasks Section */

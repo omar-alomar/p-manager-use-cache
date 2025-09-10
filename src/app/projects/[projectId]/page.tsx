@@ -8,6 +8,7 @@ import { getCurrentUser } from "@/auth/currentUser"
 import { DeleteButton } from "./_DeleteButton"
 import { getProjectTasks } from "@/db/tasks"
 import { TaskItem } from "@/components/TaskItem"
+import { formatDate } from "@/utils/dateUtils"
 import { EditableComments } from "@/components/EditableComments"
 import { AddTaskToProjectButton } from "@/components/AddTaskToProjectButton"
 import { ProjectEmptyStateActions } from "@/components/ProjectEmptyStateActions"
@@ -229,11 +230,7 @@ async function ProjectHero({ projectId }: { projectId: string }) {
                       <line x1="16" y1="17" x2="8" y2="17"/>
                       <polyline points="10,9 9,9 8,9"/>
                     </svg>
-                    {new Date(nearestApfo.date).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric'
-                    })}
+                    {formatDate(nearestApfo.date)}
                   </span>
                 )
               })()}
@@ -388,11 +385,7 @@ async function ProjectDetails({ projectId }: { projectId: string }) {
                     return (
                       <div key={apfo.id || index} className={`apfo-detail-card ${getApfoColorClass(apfo.date)}`}>
                         <div className="apfo-detail-date">
-                          {new Date(apfo.date).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric'
-                          })}
+                          {formatDate(apfo.date)}
                         </div>
                         <div className="apfo-detail-item">{apfo.item}</div>
                       </div>
@@ -559,7 +552,7 @@ async function Comments({ projectId }: { projectId: string }) {
                     <span className="author-email">{comment.email}</span>
                   </div>
                   <span className="comment-date">
-                    {new Date(comment.createdAt).toLocaleDateString('en-US', {
+                    {formatDate(comment.createdAt, {
                       month: 'short',
                       day: 'numeric',
                       year: 'numeric'

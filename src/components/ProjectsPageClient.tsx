@@ -5,6 +5,7 @@ import Link from "next/link"
 import { EditableComments } from "@/components/EditableComments"
 import { EditableCoFiles } from "@/components/EditableCoFiles"
 import { EditableMbaNumber } from "@/components/EditableMbaNumber"
+import { formatDate } from "@/utils/dateUtils"
 
 // Function to get the nearest APFO date from multiple APFO entries
 function getNearestApfoDate(apfos: { date: Date }[] | undefined, fallbackApfo: Date | null): Date | null {
@@ -316,11 +317,7 @@ function ProjectRow({ project, userMap }: { project: Project; userMap: Map<numbe
                     return (
                       <div key={apfo.id || index} className={`apfo-entry ${isNearest ? 'apfo-nearest' : ''}`}>
                         <span className={`apfo-highlight ${getApfoColorClass(apfo.date)}`}>
-                          {new Date(apfo.date).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric'
-                          })}
+                          {formatDate(apfo.date)}
                         </span>
                         <span className="apfo-item">{apfo.item}</span>
                       </div>
@@ -333,11 +330,7 @@ function ProjectRow({ project, userMap }: { project: Project; userMap: Map<numbe
           // Fallback to single APFO date
           return nearestApfo && (
             <span className={`apfo-highlight ${getApfoColorClass(nearestApfo)}`}>
-              {new Date(nearestApfo).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-              })}
+              {formatDate(nearestApfo)}
             </span>
           )
         })()}
