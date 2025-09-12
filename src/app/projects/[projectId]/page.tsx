@@ -13,6 +13,7 @@ import { EditableComments } from "@/components/EditableComments"
 import { AddTaskToProjectButton } from "@/components/AddTaskToProjectButton"
 import { ProjectEmptyStateActions } from "@/components/ProjectEmptyStateActions"
 import { CommentForm } from "@/components/CommentForm"
+import { ProjectHeroActions } from "@/components/ProjectHeroActions"
 
 export default async function ProjectPage({
   params,
@@ -191,15 +192,19 @@ async function ProjectHero({ projectId }: { projectId: string }) {
               {project.apfos && project.apfos.length > 0 && (() => {
                 const nearestApfo = project.apfos.reduce((nearest, current) => {
                   const now = new Date()
+                  // Normalize to UTC midnight for date-only comparison (APFO dates are stored in UTC)
+                  const todayUTC = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()))
                   const nearestDate = new Date(nearest.date)
+                  const nearestDateUTC = new Date(Date.UTC(nearestDate.getUTCFullYear(), nearestDate.getUTCMonth(), nearestDate.getUTCDate()))
                   const currentDate = new Date(current.date)
+                  const currentDateUTC = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), currentDate.getUTCDate()))
                   
-                  // If current is in the future and nearest is not, or if both are in future and current is closer
-                  if (currentDate >= now && (nearestDate < now || currentDate < nearestDate)) {
+                  // If current is today or in the future and nearest is not, or if both are today/future and current is closer
+                  if (currentDateUTC >= todayUTC && (nearestDateUTC < todayUTC || currentDate < nearestDate)) {
                     return current
                   }
                   // If both are in the past, take the most recent
-                  if (currentDate < now && nearestDate < now && currentDate > nearestDate) {
+                  if (currentDateUTC < todayUTC && nearestDateUTC < todayUTC && currentDate > nearestDate) {
                     return current
                   }
                   return nearest
@@ -298,12 +303,7 @@ async function ProjectHero({ projectId }: { projectId: string }) {
 
           {/* Action Buttons */}
           <div className="hero-actions">
-            <Link 
-              href={`/projects/${projectId}/edit`}
-              className="hero-action-btn primary"
-            >
-              Edit Project
-            </Link>
+            <ProjectHeroActions projectId={projectId} />
             <DeleteButton projectId={projectId} />
           </div>
         </div>
@@ -348,7 +348,7 @@ async function ProjectDetails({ projectId }: { projectId: string }) {
             <div className="detail-value">
               <Link 
                 href={`/clients/${project.clientRef.id}`}
-                className="client-link"
+                className="user-link"
               >
                 {project.clientRef.name}
               </Link>

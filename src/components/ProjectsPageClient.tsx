@@ -7,16 +7,46 @@ import { EditableCoFiles } from "@/components/EditableCoFiles"
 import { EditableMbaNumber } from "@/components/EditableMbaNumber"
 import { formatDate } from "@/utils/dateUtils"
 
+// Helper function to check if a date is more than 7 days past
+function isMoreThan7DaysPast(date: Date): boolean {
+  const now = new Date()
+  const diffTime = now.getTime() - date.getTime()
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  return diffDays > 7
+}
+
+// Helper function to filter out milestones that are more than 7 days past
+function filterRecentMilestones<T extends { date: Date }>(apfos: T[] | undefined): T[] {
+  if (!apfos || apfos.length === 0) return []
+  
+  return apfos.filter(apfo => !isMoreThan7DaysPast(apfo.date))
+}
+
 // Function to get the nearest APFO date from multiple APFO entries
 function getNearestApfoDate(apfos: { date: Date }[] | undefined, fallbackApfo: Date | null): Date | null {
-  if (!apfos || apfos.length === 0) return fallbackApfo
+  // First filter out milestones more than 7 days past
+  const recentApfos = filterRecentMilestones(apfos)
+  
+  if (recentApfos.length === 0) {
+    // If no recent milestones, check if fallback is also too old
+    if (fallbackApfo && isMoreThan7DaysPast(fallbackApfo)) {
+      return null
+    }
+    return fallbackApfo
+  }
   
   const now = new Date()
-  const futureApfos = apfos.filter(apfo => new Date(apfo.date) >= now)
+  // Normalize to UTC midnight for date-only comparison (APFO dates are stored in UTC)
+  const todayUTC = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()))
+  const futureApfos = recentApfos.filter(apfo => {
+    const apfoDate = new Date(apfo.date)
+    const apfoDateUTC = new Date(Date.UTC(apfoDate.getUTCFullYear(), apfoDate.getUTCMonth(), apfoDate.getUTCDate()))
+    return apfoDateUTC >= todayUTC
+  })
   
   if (futureApfos.length === 0) {
-    // If no future dates, return the most recent past date
-    return apfos.reduce((nearest, current) => 
+    // If no future dates, return the most recent past date (within 7 days)
+    return recentApfos.reduce((nearest, current) => 
       new Date(current.date) > new Date(nearest.date) ? current : nearest
     ).date
   }
@@ -306,11 +336,17 @@ function ProjectRow({ project, userMap }: { project: Project; userMap: Map<numbe
         {(() => {
           const nearestApfo = getNearestApfoDate(project.apfos, project.apfo)
           
-          // If we have multiple milestones, show all of them
+          // If we have multiple milestones, show only recent ones (within 7 days)
           if (project.apfos && project.apfos.length > 0) {
+            const recentApfos = filterRecentMilestones(project.apfos)
+            
+            if (recentApfos.length === 0) {
+              return <span className="apfo-neutral">No recent milestones</span>
+            }
+            
             return (
               <div className="apfo-multiple">
-                {project.apfos
+                {recentApfos
                   .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
                   .map((apfo, index) => {
                     const isNearest = nearestApfo && new Date(apfo.date).getTime() === new Date(nearestApfo).getTime()

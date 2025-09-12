@@ -282,7 +282,13 @@ export function getNearestApfoDate(apfos: { date: Date }[]): Date | null {
   if (!apfos || apfos.length === 0) return null
   
   const now = new Date()
-  const futureApfos = apfos.filter(apfo => apfo.date >= now)
+  // Normalize to UTC midnight for date-only comparison (APFO dates are stored in UTC)
+  const todayUTC = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()))
+  const futureApfos = apfos.filter(apfo => {
+    const apfoDate = new Date(apfo.date)
+    const apfoDateUTC = new Date(Date.UTC(apfoDate.getUTCFullYear(), apfoDate.getUTCMonth(), apfoDate.getUTCDate()))
+    return apfoDateUTC >= todayUTC
+  })
   
   if (futureApfos.length === 0) {
     // If no future dates, return the most recent past date
@@ -295,6 +301,26 @@ export function getNearestApfoDate(apfos: { date: Date }[]): Date | null {
   return futureApfos.reduce((nearest, current) => 
     current.date < nearest.date ? current : nearest
   ).date
+}
+
+export async function addMilestone(
+  projectId: number,
+  milestone: { date: Date; item: string }
+) {
+  await wait(500)
+  
+  const apfo = await prisma.apfo.create({
+    data: {
+      projectId,
+      date: milestone.date,
+      item: milestone.item
+    }
+  })
+
+  revalidateTag(`projects:id=${projectId}`)
+  revalidateTag("projects:all")
+
+  return apfo
 }
 
 function wait(duration: number) {

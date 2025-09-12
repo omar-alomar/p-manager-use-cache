@@ -544,6 +544,39 @@ h6 { font-size: var(--heading-6); font-weight: 500; line-height: 1.4; margin: 0 
   border-color: var(--primary-800);
 }
 
+.btn-secondary {
+  background: var(--neutral-100);
+  color: var(--neutral-700);
+  border: 1px solid var(--neutral-300);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-secondary:hover {
+  background: var(--neutral-200);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--neutral-400);
+}
+
+/* Base button styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  text-decoration: none;
+  transition: all var(--transition-normal);
+  font-size: var(--font-size-sm);
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  box-sizing: border-box;
+  min-width: 100px;
+  height: 40px;
+}
+
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -3231,25 +3264,31 @@ input[type="checkbox"]:checked::after {
 
 
 .hero-action-btn.danger {
-  background: var(--error-600);
-  color: var(--neutral-50);
-  border: 1px solid var(--error-700);
+  background: var(--danger-500);
+  color: var(--surface-0);
+  border: 1px solid var(--danger-600);
+  box-shadow: var(--shadow-sm);
 }
 
 .hero-action-btn.danger:hover {
-  background: var(--error-700);
-  border-color: var(--error-800);
+  background: var(--danger-600);
+  border-color: var(--danger-700);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 .hero-action-btn.secondary {
-  background: var(--neutral-100);
+  background: var(--surface-0);
   color: var(--neutral-700);
-  border: 1px solid var(--neutral-300);
+  border: 1px solid var(--surface-300);
+  box-shadow: var(--shadow-sm);
 }
 
 .hero-action-btn.secondary:hover {
-  background: var(--neutral-200);
-  border-color: var(--neutral-400);
+  background: var(--surface-50);
+  border-color: var(--surface-400);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 /* Empty State */
@@ -5385,9 +5424,10 @@ td.comments {
 /* Hero Actions */
 .project-hero .hero-actions {
   display: flex;
-  gap: var(--space-4);
+  gap: var(--space-3);
   justify-content: flex-end;
-  margin-top: var(--space-4);
+  align-items: stretch;
+  margin-top: var(--space-6);
 }
 
 .project-hero .btn-hero {
@@ -7466,28 +7506,32 @@ td.comments {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-md);
-  font-weight: 500;
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-lg);
+  font-weight: 600;
   text-decoration: none;
   transition: all var(--transition-normal);
   font-size: var(--font-size-sm);
-  border: none;
+  border: 1px solid transparent;
   cursor: pointer;
   font-family: inherit;
   box-sizing: border-box;
-  min-width: 100px;
-  height: 40px;
+  min-width: 120px;
+  height: 44px;
+  gap: var(--space-2);
+  vertical-align: top;
 }
 
 .hero-action-btn.primary {
   background: var(--primary-500);
   color: var(--surface-0);
+  border: 1px solid var(--primary-600);
   box-shadow: var(--shadow-sm);
 }
 
 .hero-action-btn.primary:hover {
   background: var(--primary-600);
+  border-color: var(--primary-700);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
@@ -7495,11 +7539,13 @@ td.comments {
 .hero-action-btn.danger {
   background: var(--danger-500);
   color: var(--surface-0);
+  border: 1px solid var(--danger-600);
   box-shadow: var(--shadow-sm);
 }
 
 .hero-action-btn.danger:hover {
   background: var(--danger-600);
+  border-color: var(--danger-700);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
@@ -10100,15 +10146,17 @@ td.comments {
     flex-direction: column;
     gap: var(--space-3);
     width: 100%;
+    margin-top: var(--space-4);
   }
   
   .hero-action-btn {
     width: 100%;
     padding: var(--space-3) var(--space-4);
     font-size: var(--font-size-base);
-    min-height: 44px;
+    min-height: 48px;
     border-radius: var(--radius-lg);
     font-weight: 600;
+    min-width: auto;
   }
   
   .hero-action-btn.primary {
@@ -10123,14 +10171,14 @@ td.comments {
   }
   
   .hero-action-btn.danger {
-    background: var(--error-600);
-    color: var(--neutral-50);
-    border: 1px solid var(--error-700);
+    background: var(--danger-500);
+    color: var(--surface-0);
+    border: 1px solid var(--danger-600);
   }
   
   .hero-action-btn.danger:hover {
-    background: var(--error-700);
-    border-color: var(--error-800);
+    background: var(--danger-600);
+    border-color: var(--danger-700);
   }
   
   /* Project Content Grid */

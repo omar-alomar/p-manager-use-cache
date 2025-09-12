@@ -118,15 +118,15 @@ export async function updateClient({
   return client
 }
 
-export async function deleteClient(clientId: number) {
+export async function deleteClient(clientId: string | number) {
   await wait(500)
   
   const client = await prisma.client.delete({
-    where: { id: clientId },
+    where: { id: Number(clientId) },
   })
 
   revalidateTag("clients:all")
-  revalidateTag(`clients:id=${clientId}`)
+  revalidateTag(`clients:id=${Number(clientId)}`)
 
   return client
 }

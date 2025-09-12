@@ -1,6 +1,6 @@
 "use server"
 
-import { createProject, deleteProject, updateProject } from "@/db/projects"
+import { createProject, deleteProject, updateProject, addMilestone } from "@/db/projects"
 import { revalidatePath } from "next/cache"
 import { getProjects } from "@/db/projects"
 import { redirect } from "next/navigation"
@@ -184,4 +184,46 @@ function validateProject(formData: FormData) {
     userId,
     apfos
   } : undefined, errors] as const
+}
+
+export async function addMilestoneAction(
+  projectId: number,
+  prevState: unknown,
+  formData: FormData
+) {
+  const date = formData.get("date") as string
+  const item = formData.get("item") as string
+
+  const errors: { date?: string; item?: string } = {}
+  let isValid = true
+
+  if (!date) {
+    errors.date = "Date is required"
+    isValid = false
+  }
+
+  if (!item || item.trim() === "") {
+    errors.item = "Milestone description is required"
+    isValid = false
+  }
+
+  if (!isValid) {
+    return { errors }
+  }
+
+  try {
+    await addMilestone(projectId, {
+      date: new Date(date),
+      item: item.trim()
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error("Error adding milestone:", error)
+    return { 
+      errors: { 
+        general: "Failed to add milestone. Please try again." 
+      } 
+    }
+  }
 }

@@ -133,15 +133,19 @@ export function InteractiveProjectCardWithTasks({
             const nearestApfo = apfos && apfos.length > 0 
               ? apfos.reduce((nearest, current) => {
                   const now = new Date()
+                  // Normalize to UTC midnight for date-only comparison (APFO dates are stored in UTC)
+                  const todayUTC = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()))
                   const nearestDate = new Date(nearest.date)
+                  const nearestDateUTC = new Date(Date.UTC(nearestDate.getUTCFullYear(), nearestDate.getUTCMonth(), nearestDate.getUTCDate()))
                   const currentDate = new Date(current.date)
+                  const currentDateUTC = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), currentDate.getUTCDate()))
                   
-                  // If current is in the future and nearest is not, or if both are in future and current is closer
-                  if (currentDate >= now && (nearestDate < now || currentDate < nearestDate)) {
+                  // If current is today or in the future and nearest is not, or if both are today/future and current is closer
+                  if (currentDateUTC >= todayUTC && (nearestDateUTC < todayUTC || currentDate < nearestDate)) {
                     return current
                   }
                   // If both are in the past, take the most recent
-                  if (currentDate < now && nearestDate < now && currentDate > nearestDate) {
+                  if (currentDateUTC < todayUTC && nearestDateUTC < todayUTC && currentDate > nearestDate) {
                     return current
                   }
                   return nearest
