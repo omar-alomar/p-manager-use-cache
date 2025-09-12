@@ -104,13 +104,26 @@ export function EditableCoFiles({
     )
   }
 
+  // Split co-file numbers by comma and display them vertically
+  const coFileNumbers = coFiles ? coFiles.split(',').map(num => num.trim()).filter(num => num) : []
+  
   return (
     <div 
       className="co-files-text editable-co-files"
       onClick={() => setIsEditing(true)}
       title="Click to edit"
     >
-      {coFiles || <span className="co-files-placeholder">Click to add Co File #&apos;s</span>}
+      {coFiles ? (
+        <div className="co-files-list">
+          {coFileNumbers.map((fileNum, index) => (
+            <div key={index} className="co-file-item">
+              {fileNum}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <span className="co-files-placeholder">Click to add Co File #&apos;s</span>
+      )}
     </div>
   )
 }

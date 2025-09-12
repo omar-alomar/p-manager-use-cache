@@ -19,7 +19,8 @@ interface QuickAddTaskModalProps {
   projects?: { id: number; title: string }[]
 }
 
-export function QuickAddTaskModal({ 
+// Wrapper component to provide fresh useActionState for each modal instance
+function QuickAddTaskModalContent({ 
   isOpen, 
   onClose, 
   presetUserId, 
@@ -82,8 +83,8 @@ export function QuickAddTaskModal({
   if (!isOpen || !isMounted) return null
 
   const modalTitle = presetUserName 
-    ? `Quick Add Task for ${presetUserName}`
-    : "Quick Add Task"
+    ? `New Task... for ${presetUserName}`
+    : "New Task..."
 
   const modalContent = (
     <>
@@ -219,4 +220,11 @@ export function QuickAddTaskModal({
   )
 
   return createPortal(modalContent, document.body)
+}
+
+// Main component that conditionally renders the modal content
+export function QuickAddTaskModal(props: QuickAddTaskModalProps) {
+  if (!props.isOpen) return null
+  
+  return <QuickAddTaskModalContent {...props} />
 }

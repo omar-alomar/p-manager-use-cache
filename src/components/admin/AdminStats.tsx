@@ -5,6 +5,7 @@ interface AdminStatsProps {
     totalUsers: number
     totalProjects: number
     totalTasks: number
+    totalClients: number
     completedTasks: number
     pendingTasks: number
     adminUsers: number
@@ -41,6 +42,18 @@ export function AdminStats({ stats }: AdminStatsProps) {
             <div className="stat-detail">
               {stats.adminUsers} admin{stats.adminUsers !== 1 ? 's' : ''}, {stats.regularUsers} user{stats.regularUsers !== 1 ? 's' : ''}
             </div>
+          </div>
+        </div>
+
+        <div 
+          className="stat-card stat-card-clickable" 
+          onClick={() => scrollToSection('client-management')}
+        >
+          <div className="stat-icon">🏢</div>
+          <div className="stat-content">
+            <div className="stat-value">{stats.totalClients}</div>
+            <div className="stat-label">Total Clients</div>
+            <div className="stat-detail">Registered clients</div>
           </div>
         </div>
 

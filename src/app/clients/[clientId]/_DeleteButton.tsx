@@ -1,58 +1,32 @@
 "use client"
 
-import { useState } from "react"
 import { deleteClientAction } from "@/actions/clients"
+import { useTransition } from "react"
 
 interface DeleteClientButtonProps {
   clientId: number
 }
 
 export function DeleteClientButton({ clientId }: DeleteClientButtonProps) {
-  const [isDeleting, setIsDeleting] = useState(false)
-  const [showConfirm, setShowConfirm] = useState(false)
+  const [isPending, startTransition] = useTransition()
 
-  const handleDelete = async () => {
-    setIsDeleting(true)
-    try {
-      await deleteClientAction(clientId)
-    } catch (error) {
-      console.error('Error deleting client:', error)
-      setIsDeleting(false)
+  const handleDelete = () => {
+    if (!confirm("Are you sure you want to delete this client? This action cannot be undone.")) {
+      return
     }
-  }
 
-  if (showConfirm) {
-    return (
-      <div className="delete-confirmation">
-        <p className="delete-confirmation-text">
-          Are you sure you want to delete this client? This action cannot be undone.
-        </p>
-        <div className="delete-confirmation-actions">
-          <button
-            onClick={handleDelete}
-            disabled={isDeleting}
-            className="hero-action-btn danger"
-          >
-            {isDeleting ? "Deleting..." : "Yes, Delete"}
-          </button>
-          <button
-            onClick={() => setShowConfirm(false)}
-            disabled={isDeleting}
-            className="hero-action-btn secondary"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    )
+    startTransition(async () => {
+      await deleteClientAction(clientId)
+    })
   }
 
   return (
     <button
-      onClick={() => setShowConfirm(true)}
+      disabled={isPending}
       className="hero-action-btn danger"
+      onClick={handleDelete}
     >
-      Delete Client
+      {isPending ? "Deleting..." : "Delete Client"}
     </button>
   )
 }

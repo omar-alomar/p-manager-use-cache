@@ -359,7 +359,7 @@ async function ProjectDetails({ projectId }: { projectId: string }) {
         {project.apfos && project.apfos.length > 0 && (
           <div className="detail-item">
             <label className="detail-label">
-              APFO Entries
+              Milestones
             </label>
             <div className="detail-value">
               <div className="apfo-details-grid">

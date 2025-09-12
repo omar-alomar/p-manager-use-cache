@@ -5,7 +5,7 @@ import { useTransition } from "react"
 interface AdminDeleteButtonProps {
   itemId: number
   itemName: string
-  itemType: 'user' | 'project' | 'task'
+  itemType: 'user' | 'project' | 'task' | 'client'
   onDelete: (id: number) => Promise<void>
 }
 

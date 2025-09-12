@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/auth/currentUser"
 import { getProjects } from "@/db/projects"
 import { getUsers } from "@/db/users"
 import { ProjectsPageClient } from "@/components/ProjectsPageClient"
+import { NewTaskButton } from "@/components/NewTaskButton"
 import { Skeleton } from "@/components/Skeleton"
 
 export default async function ProjectsPage() {
@@ -37,9 +38,10 @@ export default async function ProjectsPage() {
           <p className="page-subtitle">Manage and track project progress</p>
         </div>
         <div className="title-btns">
-          <Link className="btn" href="/projects/new">
+          <Link className="btn btn-primary" href="/projects/new">
             New Project
           </Link>
+          <NewTaskButton users={users} projects={projects} />
         </div>
       </div>
 

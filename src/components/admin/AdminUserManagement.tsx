@@ -3,6 +3,8 @@
 import Link from "next/link"
 import { UserRoleButton } from "./UserRoleButton"
 import { AdminDeleteButton } from "./AdminDeleteButton"
+import { EditableEmail } from "./EditableEmail"
+import { EditablePassword } from "./EditablePassword"
 import { deleteUserAction } from "@/actions/users"
 
 interface User {
@@ -29,6 +31,7 @@ export function AdminUserManagement({ users }: AdminUserManagementProps) {
             <tr>
               <th>User</th>
               <th>Email</th>
+              <th>Password</th>
               <th>Role</th>
               <th>Projects</th>
               <th>Tasks</th>
@@ -39,7 +42,7 @@ export function AdminUserManagement({ users }: AdminUserManagementProps) {
           <tbody>
             {users.length === 0 ? (
               <tr>
-                <td colSpan={7} className="empty-state">
+                <td colSpan={8} className="empty-state">
                   <div className="empty-content">
                     <p>No users found</p>
                   </div>
@@ -53,7 +56,19 @@ export function AdminUserManagement({ users }: AdminUserManagementProps) {
                       <div className="user-name">{user.name}</div>
                     </Link>
                   </td>
-                  <td className="email-cell">{user.email}</td>
+                  <td className="email-cell">
+                    <EditableEmail 
+                      userId={user.id} 
+                      initialEmail={user.email} 
+                      userName={user.name} 
+                    />
+                  </td>
+                  <td className="password-cell">
+                    <EditablePassword 
+                      userId={user.id} 
+                      userName={user.name} 
+                    />
+                  </td>
                   <td className="role-cell">
                     <UserRoleButton userId={user.id} currentRole={user.role} userName={user.name} />
                   </td>

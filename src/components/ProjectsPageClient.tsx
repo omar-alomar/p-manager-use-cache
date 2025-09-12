@@ -233,7 +233,7 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
                 onClick={() => handleSort('apfo')}
                 style={{ cursor: 'pointer', userSelect: 'none' }}
               >
-                APFO<br />DATE
+                MILESTONES
                 {sortConfig.key === 'apfo' && sortConfig.direction !== 'none' && (
                   <span style={{ marginLeft: '4px' }}>
                     {sortConfig.direction === 'asc' ? '↑' : '↓'}
@@ -306,7 +306,7 @@ function ProjectRow({ project, userMap }: { project: Project; userMap: Map<numbe
         {(() => {
           const nearestApfo = getNearestApfoDate(project.apfos, project.apfo)
           
-          // If we have multiple APFO entries, show all of them
+          // If we have multiple milestones, show all of them
           if (project.apfos && project.apfos.length > 0) {
             return (
               <div className="apfo-multiple">

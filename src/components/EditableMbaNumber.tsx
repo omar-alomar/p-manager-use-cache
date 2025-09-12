@@ -104,13 +104,26 @@ export function EditableMbaNumber({
     )
   }
 
+  // Split MBA numbers by comma and display them vertically
+  const mbaNumbers = mbaNumber ? mbaNumber.split(',').map(num => num.trim()).filter(num => num) : []
+  
   return (
     <div 
       className="mba-number-text editable-mba-number"
       onClick={() => setIsEditing(true)}
       title="Click to edit"
     >
-      {mbaNumber || <span className="mba-number-placeholder">Click to add MBA #</span>}
+      {mbaNumber ? (
+        <div className="mba-number-list">
+          {mbaNumbers.map((mbaNum, index) => (
+            <div key={index} className="mba-number-item">
+              {mbaNum}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <span className="mba-number-placeholder">Click to add MBA #</span>
+      )}
     </div>
   )
 }

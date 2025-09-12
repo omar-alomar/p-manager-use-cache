@@ -3,11 +3,12 @@
 
 import { getCurrentUser } from "@/auth/currentUser"
 import { redirect } from "next/navigation"
-import { getAdminStatsAction, getAllUsersAction, getAllProjectsAction, getAllTasksAction } from "@/actions/admin"
+import { getAdminStatsAction, getAllUsersAction, getAllProjectsAction, getAllTasksAction, getAllClientsAction } from "@/actions/admin"
 import { AdminStats } from "@/components/admin/AdminStats"
 import { AdminUserManagement } from "@/components/admin/AdminUserManagement"
 import { AdminProjectManagement } from "@/components/admin/AdminProjectManagement"
 import { AdminTaskManagement } from "@/components/admin/AdminTaskManagement"
+import { AdminClientManagement } from "@/components/admin/AdminClientManagement"
 
 export default async function AdminPage() {
   // Check if user is authenticated
@@ -24,11 +25,12 @@ export default async function AdminPage() {
   }
 
   // Fetch all admin data
-  const [stats, users, projectsData, tasks] = await Promise.all([
+  const [stats, users, projectsData, tasks, clients] = await Promise.all([
     getAdminStatsAction(),
     getAllUsersAction(),
     getAllProjectsAction(),
-    getAllTasksAction()
+    getAllTasksAction(),
+    getAllClientsAction()
   ])
 
   // Transform projects data to match AdminProjectManagement component expectations
@@ -52,6 +54,11 @@ export default async function AdminPage() {
       {/* User Management */}
       <div id="user-management">
         <AdminUserManagement users={users} />
+      </div>
+
+      {/* Client Management */}
+      <div id="client-management">
+        <AdminClientManagement clients={clients} />
       </div>
 
       {/* Project Management */}

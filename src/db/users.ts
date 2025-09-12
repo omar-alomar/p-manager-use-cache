@@ -85,6 +85,37 @@ export async function updateUserRole(userId: string | number, newRole: string) {
   return user
 }
 
+export async function updateUserEmail(userId: string | number, newEmail: string) {
+  await wait(500)
+
+  const user = await prisma.user.update({
+    where: { id: Number(userId) },
+    data: { email: newEmail }
+  })
+
+  revalidateTag("users:all")
+  revalidateTag(`users:id=${user.id}`)
+
+  return user
+}
+
+export async function updateUserPassword(userId: string | number, hashedPassword: string, salt: string) {
+  await wait(500)
+
+  const user = await prisma.user.update({
+    where: { id: Number(userId) },
+    data: { 
+      password: hashedPassword,
+      salt: salt
+    }
+  })
+
+  revalidateTag("users:all")
+  revalidateTag(`users:id=${user.id}`)
+
+  return user
+}
+
 function wait(duration: number) {
   return new Promise(resolve => {
     setTimeout(resolve, duration)
