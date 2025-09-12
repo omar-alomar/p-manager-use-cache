@@ -13,6 +13,7 @@ import { EditableComments } from "@/components/EditableComments"
 import { AddTaskToProjectButton } from "@/components/AddTaskToProjectButton"
 import { ProjectEmptyStateActions } from "@/components/ProjectEmptyStateActions"
 import { CommentForm } from "@/components/CommentForm"
+import { CommentItem } from "@/components/CommentItem"
 import { ProjectHeroActions } from "@/components/ProjectHeroActions"
 
 export default async function ProjectPage({
@@ -542,27 +543,7 @@ async function Comments({ projectId }: { projectId: string }) {
         <div className="external-comments">
           <div className="comments-list">
             {comments.map(comment => (
-              <div key={comment.id} className="comment-item">
-                <div className="comment-header">
-                  <div className="comment-author">
-                    <div className="author-avatar">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
-                      </svg>
-                    </div>
-                    <span className="author-email">{comment.email}</span>
-                  </div>
-                  <span className="comment-date">
-                    {formatDate(comment.createdAt, {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric'
-                    })}
-                  </span>
-                </div>
-                <div className="comment-body">{comment.body}</div>
-              </div>
+              <CommentItem key={comment.id} comment={comment} />
             ))}
           </div>
         </div>

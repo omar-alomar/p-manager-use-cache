@@ -2762,8 +2762,8 @@ input[type="checkbox"]:checked::after {
 }
 
 .address-text {
-  font-size: var(--font-size-sm);
-  line-height: 1.4;
+  font-size: var(--font-size-base);
+  line-height: 1.5;
   word-wrap: break-word;
 }
 
@@ -7737,15 +7737,17 @@ td.comments {
 
 .comment-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   margin-bottom: var(--space-3);
+  gap: var(--space-3);
 }
 
 .comment-author {
   display: flex;
   align-items: center;
   gap: var(--space-3);
+  flex: 1;
 }
 
 .author-avatar {
@@ -7765,14 +7767,64 @@ td.comments {
   height: 16px;
 }
 
+.author-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.author-name {
+  font-weight: 600;
+  color: var(--neutral-800);
+  font-size: var(--font-size-sm);
+}
+
 .author-email {
-  font-weight: 500;
-  color: var(--neutral-900);
+  font-weight: 400;
+  color: var(--neutral-600);
+  font-size: var(--font-size-xs);
+}
+
+.comment-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
 }
 
 .comment-date {
-  font-size: var(--font-size-sm);
-  color: var(--neutral-600);
+  font-size: var(--font-size-xs);
+  color: var(--neutral-500);
+}
+
+.comment-delete-btn {
+  background: none;
+  border: none;
+  color: var(--neutral-400);
+  cursor: pointer;
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  width: 28px;
+  height: 28px;
+}
+
+.comment-delete-btn:hover {
+  color: var(--error-600);
+  background: var(--error-50);
+}
+
+.comment-delete-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.comment-delete-btn:disabled:hover {
+  color: var(--neutral-400);
+  background: none;
 }
 
 .comment-body {
@@ -8297,7 +8349,7 @@ td.comments {
 
 .address-text {
   color: var(--neutral-600);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-base);
 }
 
 .project-list {
@@ -11423,6 +11475,106 @@ td.comments {
   .card {
     border-width: 0.5px;
   }
+}
+
+/* Inline Editable Field Styles - Match Project Table */
+.inline-edit-display {
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+  min-height: 20px;
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--neutral-700);
+}
+
+.inline-edit-display:hover {
+  background-color: var(--primary-50);
+  border: 1px solid var(--primary-200);
+}
+
+.inline-edit-display.empty {
+  color: var(--neutral-400);
+  font-style: italic;
+}
+
+.inline-edit-input {
+  border: 1px solid var(--primary-300);
+  border-radius: 3px;
+  padding: 2px 4px;
+  font-size: var(--font-size-sm);
+  font-family: inherit;
+  background: var(--surface-0);
+  outline: none;
+  color: var(--neutral-700);
+  width: 100%;
+}
+
+.inline-edit-input:focus {
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 2px var(--primary-100);
+}
+
+.inline-edit-input.loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.inline-edit-input::placeholder {
+  color: var(--neutral-400);
+  font-style: italic;
+}
+
+/* Table cell specific styles for inline editing */
+.client-company .inline-edit-display,
+.client-address .inline-edit-display {
+  width: 100%;
+  min-height: 20px;
+}
+
+.client-address .inline-edit-input {
+  min-height: 40px;
+  resize: vertical;
+}
+
+/* Inline Edit Hints */
+.inline-edit-container {
+  position: relative;
+  width: 100%;
+}
+
+.inline-edit-hints {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+  z-index: 10;
+}
+
+.hint-text {
+  font-size: var(--font-size-xs);
+  color: var(--neutral-500);
+  margin-top: 2px;
+  text-align: left;
+  line-height: 1.2;
+  font-style: italic;
+}
+
+/* Hero Company Display */
+.hero-company {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  color: var(--neutral-600);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.hero-company svg {
+  color: var(--primary-500);
+  flex-shrink: 0;
 }
 
 /* ===== ENHANCED PROJECT CARD WITH TASKS ===== */

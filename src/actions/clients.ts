@@ -1,6 +1,6 @@
 "use server"
 
-import { createClient, deleteClient, updateClient, validateClient } from "@/db/clients"
+import { createClient, deleteClient, updateClient, updateClientField, validateClient } from "@/db/clients"
 import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
 
@@ -45,4 +45,17 @@ export async function deleteClientAction(clientId: number) {
   await deleteClient(clientId)
   revalidatePath("/clients")
   redirect("/clients")
+}
+
+export async function updateClientFieldAction(
+  clientId: number,
+  field: 'companyName' | 'address',
+  value: string
+) {
+  try {
+    await updateClientField(clientId, field, value || null)
+    return { success: true, message: `${field} updated successfully` }
+  } catch {
+    return { success: false, message: 'Failed to update field' }
+  }
 }

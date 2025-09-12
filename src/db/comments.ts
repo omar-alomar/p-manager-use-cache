@@ -6,19 +6,37 @@ export async function getProjectComments(projectId: string | number) {
   await wait(500)
   return prisma.comment.findMany({ 
     where: { projectId: Number(projectId) },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          role: true
+        }
+      }
+    },
     orderBy: { createdAt: 'desc' }
   })
 }
 
-export async function createComment(projectId: string | number, email: string, body: string) {
+export async function createComment(projectId: string | number, email: string, body: string, userId: number) {
   await wait(500)
   
   return prisma.comment.create({
     data: {
       projectId: Number(projectId),
       email,
-      body
+      body,
+      userId
     }
+  })
+}
+
+export async function deleteComment(commentId: number) {
+  await wait(500)
+  
+  return prisma.comment.delete({
+    where: { id: commentId }
   })
 }
 

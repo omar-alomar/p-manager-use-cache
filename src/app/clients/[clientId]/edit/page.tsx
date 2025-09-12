@@ -43,6 +43,7 @@ export default async function EditClientPage({
         <ClientForm 
           initialData={{
             name: client.name,
+            companyName: client.companyName || undefined,
             email: client.email,
             phone: client.phone || undefined,
             address: client.address || undefined,

@@ -92,6 +92,7 @@ async function createComments() {
           email: comment.email,
           body: comment.body,
           projectId: comment.projectId,
+          userId: 1, // Assign to first user
         },
       })
     })

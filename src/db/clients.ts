@@ -63,11 +63,13 @@ export async function getClient(clientId: string | number) {
 
 export async function createClient({
   name,
+  companyName,
   email,
   phone,
   address,
 }: {
   name: string
+  companyName?: string
   email: string
   phone?: string
   address?: string
@@ -76,6 +78,7 @@ export async function createClient({
   const client = await prisma.client.create({
     data: {
       name,
+      companyName: companyName || null,
       email,
       phone: phone || null,
       address: address || null,
@@ -91,12 +94,14 @@ export async function createClient({
 export async function updateClient({
   id,
   name,
+  companyName,
   email,
   phone,
   address,
 }: {
   id: number
   name: string
+  companyName?: string
   email: string
   phone?: string
   address?: string
@@ -106,9 +111,25 @@ export async function updateClient({
     where: { id },
     data: {
       name,
+      companyName: companyName || null,
       email,
       phone: phone || null,
       address: address || null,
+    },
+  })
+
+  revalidateTag("clients:all")
+  revalidateTag(`clients:id=${client.id}`)
+
+  return client
+}
+
+export async function updateClientField(clientId: number, field: 'companyName' | 'address', value: string | null) {
+  await wait(500)
+  const client = await prisma.client.update({
+    where: { id: clientId },
+    data: {
+      [field]: value,
     },
   })
 
@@ -134,6 +155,7 @@ export async function deleteClient(clientId: string | number) {
 function validateClient(formData: FormData) {
   const errors: Record<string, string> = {}
   const name = formData.get("name") as string
+  const companyName = formData.get("companyName") as string
   const email = formData.get("email") as string
   const phone = formData.get("phone") as string
   const address = formData.get("address") as string
@@ -159,6 +181,7 @@ function validateClient(formData: FormData) {
   return [
     {
       name: name.trim(),
+      companyName: companyName?.trim() || undefined,
       email: email.trim(),
       phone: phone?.trim() || undefined,
       address: address?.trim() || undefined,

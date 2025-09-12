@@ -39,6 +39,7 @@ model User {
   
   projects Project[]
   tasks    Task[]
+  comments Comment[]
 }
 
 model Project {
@@ -75,19 +76,22 @@ model Comment {
   email  String
   body   String
   projectId Int
+  userId Int
   createdAt DateTime @default(now())
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Client {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String
-  phone     String?
-  address   String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  name        String
+  companyName String?
+  email       String
+  phone       String?
+  address     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   projects Project[]
 }

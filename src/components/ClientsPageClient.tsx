@@ -4,6 +4,7 @@ import { useState, useMemo } from "react"
 import Link from "next/link"
 import { Client } from "@prisma/client"
 import { User } from "@prisma/client"
+import { InlineEditableField } from "@/components/InlineEditableField"
 
 type ClientWithProjects = Client & {
   projects: Array<{
@@ -45,6 +46,7 @@ export function ClientsPageClient({ clients }: ClientsPageClientProps) {
       const query = searchQuery.toLowerCase()
       filtered = clients.filter(client => 
         client.name.toLowerCase().includes(query) ||
+        (client.companyName && client.companyName.toLowerCase().includes(query)) ||
         client.email.toLowerCase().includes(query) ||
         (client.phone && client.phone.toLowerCase().includes(query)) ||
         (client.address && client.address.toLowerCase().includes(query))
@@ -138,6 +140,18 @@ export function ClientsPageClient({ clients }: ClientsPageClientProps) {
               </th>
               <th 
                 className="sortable-header" 
+                onClick={() => handleSort('companyName')}
+                style={{ cursor: 'pointer', userSelect: 'none' }}
+              >
+                COMPANY
+                {sortConfig.key === 'companyName' && sortConfig.direction !== 'none' && (
+                  <span style={{ marginLeft: '4px' }}>
+                    {sortConfig.direction === 'asc' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header" 
                 onClick={() => handleSort('email')}
                 style={{ cursor: 'pointer', userSelect: 'none' }}
               >
@@ -149,7 +163,18 @@ export function ClientsPageClient({ clients }: ClientsPageClientProps) {
                 )}
               </th>
               <th>PHONE</th>
-              <th>ADDRESS</th>
+              <th 
+                className="sortable-header" 
+                onClick={() => handleSort('address')}
+                style={{ cursor: 'pointer', userSelect: 'none' }}
+              >
+                ADDRESS
+                {sortConfig.key === 'address' && sortConfig.direction !== 'none' && (
+                  <span style={{ marginLeft: '4px' }}>
+                    {sortConfig.direction === 'asc' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
               <th 
                 className="sortable-header" 
                 onClick={() => handleSort('projectCount')}
@@ -187,6 +212,15 @@ function ClientRow({ client }: { client: ClientWithProjects }) {
           </div>
         </Link>
       </td>
+      <td className="client-company">
+        <InlineEditableField
+          clientId={client.id}
+          field="companyName"
+          value={client.companyName}
+          placeholder="Add company name"
+          className="company-name"
+        />
+      </td>
       <td className="client-email">
         <a href={`mailto:${client.email}`} className="email-link">
           {client.email}
@@ -202,11 +236,14 @@ function ClientRow({ client }: { client: ClientWithProjects }) {
         )}
       </td>
       <td className="client-address">
-        {client.address ? (
-          <span className="address-text">{client.address}</span>
-        ) : (
-          <span className="no-data">-</span>
-        )}
+        <InlineEditableField
+          clientId={client.id}
+          field="address"
+          value={client.address}
+          placeholder="Add address"
+          className="company-name"
+          multiline={true}
+        />
       </td>
       <td className="client-projects">
         <div className="project-count">

@@ -129,6 +129,16 @@ async function ClientHero({ clientId }: { clientId: string }) {
           
           <div className="hero-basic-info">
             <h1 className="hero-name">{client.name}</h1>
+            {client.companyName && (
+              <div className="hero-company">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M3 21h18"/>
+                  <path d="M5 21V7l8-4v18"/>
+                  <path d="M19 21V11l-6-4"/>
+                </svg>
+                {client.companyName}
+              </div>
+            )}
             <div className="hero-tags">
               <span className="hero-tag client">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -210,6 +220,17 @@ async function ClientDetails({ clientId }: { clientId: string }) {
           </div>
         </div>
 
+        {client.companyName && (
+          <div className="detail-item">
+            <label className="detail-label">
+              Company Name
+            </label>
+            <div className="detail-value">
+              {client.companyName}
+            </div>
+          </div>
+        )}
+
         {client.phone && (
           <div className="detail-item">
             <label className="detail-label">
@@ -228,7 +249,7 @@ async function ClientDetails({ clientId }: { clientId: string }) {
             <label className="detail-label">
               Address
             </label>
-            <div className="detail-value address-text">
+            <div className="detail-value">
               {client.address}
             </div>
           </div>

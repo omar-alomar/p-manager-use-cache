@@ -1,20 +1,29 @@
 "use server"
 
-import { createComment } from "@/db/comments"
+import { createComment, deleteComment } from "@/db/comments"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
+import prisma from "@/db/db"
 
 const addCommentSchema = z.object({
   projectId: z.string().or(z.number()),
   email: z.string().email("Please enter a valid email address"),
-  body: z.string().min(1, "Comment cannot be empty").max(1000, "Comment is too long")
+  body: z.string().min(1, "Comment cannot be empty").max(1000, "Comment is too long"),
+  userId: z.string().transform(val => Number(val)).pipe(z.number())
+})
+
+const deleteCommentSchema = z.object({
+  commentId: z.string().transform(val => Number(val)).pipe(z.number()),
+  userId: z.string().transform(val => Number(val)).pipe(z.number()),
+  userRole: z.string()
 })
 
 export async function addCommentAction(formData: FormData) {
   const rawData = {
     projectId: formData.get("projectId"),
     email: formData.get("email"),
-    body: formData.get("body")
+    body: formData.get("body"),
+    userId: formData.get("userId")
   }
 
   const { success, data, error } = addCommentSchema.safeParse(rawData)
@@ -27,7 +36,7 @@ export async function addCommentAction(formData: FormData) {
   }
 
   try {
-    await createComment(data.projectId, data.email, data.body)
+    await createComment(data.projectId, data.email, data.body, data.userId)
     
     // Revalidate the project page to show the new comment
     revalidatePath(`/projects/${data.projectId}`)
@@ -41,6 +50,62 @@ export async function addCommentAction(formData: FormData) {
     return {
       success: false,
       message: "Failed to add comment. Please try again."
+    }
+  }
+}
+
+export async function deleteCommentAction(formData: FormData) {
+  const rawData = {
+    commentId: formData.get("commentId"),
+    userId: formData.get("userId"),
+    userRole: formData.get("userRole")
+  }
+
+  const { success, data, error } = deleteCommentSchema.safeParse(rawData)
+
+  if (!success) {
+    return {
+      success: false,
+      message: error.issues[0]?.message || "Invalid input"
+    }
+  }
+
+  try {
+    // Get the comment to check permissions
+    const comment = await prisma.comment.findUnique({
+      where: { id: data.commentId },
+      select: { userId: true, projectId: true }
+    })
+
+    if (!comment) {
+      return {
+        success: false,
+        message: "Comment not found"
+      }
+    }
+
+    // Check permissions: user can delete their own comments, admins can delete all
+    if (data.userRole !== 'admin' && comment.userId !== data.userId) {
+      return {
+        success: false,
+        message: "You can only delete your own comments"
+      }
+    }
+
+    await deleteComment(data.commentId)
+    
+    // Revalidate the project page to remove the deleted comment
+    revalidatePath(`/projects/${comment.projectId}`)
+    
+    return {
+      success: true,
+      message: "Comment deleted successfully"
+    }
+  } catch (error) {
+    console.error("Error deleting comment:", error)
+    return {
+      success: false,
+      message: "Failed to delete comment. Please try again."
     }
   }
 }

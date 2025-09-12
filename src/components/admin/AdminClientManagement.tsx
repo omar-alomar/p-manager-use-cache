@@ -7,6 +7,7 @@ import { adminDeleteClientAction } from "@/actions/admin"
 interface Client {
   id: number
   name: string
+  companyName: string | null
   email: string
   phone: string | null
   address: string | null
@@ -31,6 +32,7 @@ export function AdminClientManagement({ clients }: AdminClientManagementProps) {
           <thead>
             <tr>
               <th>Client Name</th>
+              <th>Company</th>
               <th>Email</th>
               <th>Phone</th>
               <th>Address</th>
@@ -42,7 +44,7 @@ export function AdminClientManagement({ clients }: AdminClientManagementProps) {
           <tbody>
             {clients.length === 0 ? (
               <tr>
-                <td colSpan={7} className="empty-state">
+                <td colSpan={8} className="empty-state">
                   <div className="empty-content">
                     <p>No clients found</p>
                   </div>
@@ -55,6 +57,13 @@ export function AdminClientManagement({ clients }: AdminClientManagementProps) {
                     <Link href={`/clients/${client.id}`} className="client-link">
                       <div className="client-name">{client.name}</div>
                     </Link>
+                  </td>
+                  <td className="company-cell">
+                    {client.companyName ? (
+                      <span className="company-name">{client.companyName}</span>
+                    ) : (
+                      <span className="no-company">-</span>
+                    )}
                   </td>
                   <td className="email-cell">
                     <a 

@@ -32,6 +32,7 @@ export function CommentForm({ projectId }: CommentFormProps) {
       formData.append("projectId", projectId.toString())
       formData.append("email", user.email)
       formData.append("body", body)
+      formData.append("userId", user.id.toString())
 
       const result = await addCommentAction(formData)
       

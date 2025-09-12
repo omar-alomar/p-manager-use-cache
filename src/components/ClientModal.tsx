@@ -12,6 +12,7 @@ export function ClientModal({ onClose, onClientCreated }: ClientModalProps) {
   const [state, formAction, pending] = useActionState(createClientAction, null)
   const [formData, setFormData] = useState({
     name: "",
+    companyName: "",
     email: "",
     phone: "",
     address: "",
@@ -68,6 +69,22 @@ export function ClientModal({ onClose, onClientCreated }: ClientModalProps) {
             />
             {state && 'name' in state && (
               <span className="error-message">{state.name}</span>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="companyName">Company Name</label>
+            <input
+              type="text"
+              id="companyName"
+              name="companyName"
+              value={formData.companyName}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="Enter company name"
+            />
+            {state && 'companyName' in state && (
+              <span className="error-message">{state.companyName}</span>
             )}
           </div>
 

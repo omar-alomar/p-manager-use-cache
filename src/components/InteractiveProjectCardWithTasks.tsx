@@ -25,6 +25,7 @@ interface Task {
   completed: boolean
   userId: number
   projectId: number
+  createdAt: Date
   User?: { name: string }
   Project?: { title: string }
 }

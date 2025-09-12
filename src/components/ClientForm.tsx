@@ -13,6 +13,7 @@ export function ClientForm({
 }: { 
   initialData?: {
     name: string
+    companyName?: string
     email: string
     phone?: string
     address?: string
@@ -31,6 +32,7 @@ export function ClientForm({
 
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
+    companyName: initialData?.companyName || "",
     email: initialData?.email || "",
     phone: initialData?.phone || "",
     address: initialData?.address || "",
@@ -71,6 +73,24 @@ export function ClientForm({
             />
             {state && 'name' in state && (
               <span className="error-message">{state.name}</span>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="companyName" className="form-label">
+              Company Name
+            </label>
+            <input
+              type="text"
+              id="companyName"
+              name="companyName"
+              value={formData.companyName}
+              onChange={handleInputChange}
+              className={`form-input ${state && 'companyName' in state ? 'error' : ''}`}
+              placeholder="Enter company name"
+            />
+            {state && 'companyName' in state && (
+              <span className="error-message">{state.companyName}</span>
             )}
           </div>
 
