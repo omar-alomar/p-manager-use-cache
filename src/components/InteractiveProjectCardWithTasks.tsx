@@ -194,8 +194,10 @@ export function InteractiveProjectCardWithTasks({
                   projectTitle={task.Project?.title || title}
                   userId={task.userId}
                   userName={task.User?.name || ''}
+                  createdAt={task.createdAt}
                   displayProject={false}
                   displayUser={false}
+                  displayCreatedAt={false}
                   onUpdate={handleTaskUpdate}
                 />
               ))}

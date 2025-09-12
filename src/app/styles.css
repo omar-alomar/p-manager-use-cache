@@ -1670,7 +1670,8 @@ h6 { font-size: var(--heading-6); font-weight: 500; line-height: 1.4; margin: 0 
 }
 
 .task-project,
-.task-user {
+.task-user,
+.task-created {
   display: flex;
   align-items: center;
   gap: var(--space-1);
@@ -1679,6 +1680,12 @@ h6 { font-size: var(--heading-6); font-weight: 500; line-height: 1.4; margin: 0 
   background: var(--surface-100);
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-sm);
+}
+
+.task-created-label {
+  font-weight: 500;
+  color: var(--neutral-500);
+  font-size: var(--font-size-xs);
 }
 
 .task-actions {
@@ -9881,12 +9888,19 @@ td.comments {
   }
   
   .task-project,
-  .task-user {
+  .task-user,
+  .task-created {
     display: flex;
     align-items: center;
     gap: var(--space-1);
     font-size: var(--font-size-sm);
     color: var(--neutral-600);
+  }
+  
+  .task-created-label {
+    font-weight: 500;
+    color: var(--neutral-500);
+    font-size: var(--font-size-sm);
   }
   
   .task-actions {

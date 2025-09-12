@@ -220,8 +220,10 @@ async function TaskDetails({ taskId }: { taskId: string }) {
           projectTitle={project?.title || ""}
           userId={task.userId}
           userName={user?.name}
+          createdAt={task.createdAt}
           displayProject={false}
           displayUser={false}
+          displayCreatedAt={true}
         />
       </div>
     </div>

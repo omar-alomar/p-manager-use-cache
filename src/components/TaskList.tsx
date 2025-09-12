@@ -74,8 +74,10 @@ export function TaskList({
             projectTitle={task.Project.title}
             userId={task.userId}
             userName={task.User.name}
+            createdAt={task.createdAt}
             displayProject={showProject}
             displayUser={showUser}
+            displayCreatedAt={true}
           />
         ))}
       </div>

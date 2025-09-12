@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { updateTaskCompletionAction, verifyTaskUpdate, deleteTaskAction } from "@/actions/tasks"
+import { formatDate } from "@/utils/dateUtils"
 
 interface TaskItemProps {
   id: number
@@ -11,8 +12,10 @@ interface TaskItemProps {
   projectTitle: string
   userId: number
   userName?: string
+  createdAt: Date
   displayProject?: boolean
   displayUser?: boolean
+  displayCreatedAt?: boolean
   onUpdate?: (taskId: number, updates: { completed?: boolean; title?: string; deleted?: boolean }) => void
 }
 
@@ -24,8 +27,10 @@ export function TaskItem({
   projectTitle, 
   userId,
   userName,
+  createdAt,
   displayProject = true,
   displayUser = false,
+  displayCreatedAt = true,
   onUpdate
 }: TaskItemProps) {
   const [completed, setCompleted] = useState(initialCompleted)
@@ -278,6 +283,16 @@ export function TaskItem({
                     </span>
                   )}
                   
+                  {displayCreatedAt && (
+                    <span className="task-created" title={`Created on ${formatDate(createdAt)}`}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12,6 12,12 16,14"/>
+                      </svg>
+                      <span className="task-created-label">Created</span>
+                      {formatDate(createdAt)}
+                    </span>
+                  )}
 
                 </div>
               </div>
