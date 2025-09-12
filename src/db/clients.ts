@@ -87,6 +87,7 @@ export async function createClient({
 
   revalidateTag("clients:all")
   revalidateTag(`clients:id=${client.id}`)
+  revalidateTag("projects:all")
 
   return client
 }
@@ -120,6 +121,7 @@ export async function updateClient({
 
   revalidateTag("clients:all")
   revalidateTag(`clients:id=${client.id}`)
+  revalidateTag("projects:all")
 
   return client
 }
@@ -135,6 +137,7 @@ export async function updateClientField(clientId: number, field: 'companyName' |
 
   revalidateTag("clients:all")
   revalidateTag(`clients:id=${client.id}`)
+  revalidateTag("projects:all")
 
   return client
 }
