@@ -24,7 +24,25 @@ export function getRedis(): Redis | null {
       const host = process.env.REDIS_HOST || "redis";
       const port = Number(process.env.REDIS_PORT || 6379);
       const password = process.env.REDIS_PASSWORD;
-      client = new Redis({ host, port, password, maxRetriesPerRequest: 0, enableReadyCheck: false });
+      
+      // Use environment-specific Redis database to prevent collisions
+      const getRedisDb = () => {
+        const env = process.env.NODE_ENV || 'development';
+        // Handle custom environment names like 'staging'
+        if (env === 'production') return 0;
+        if (env.includes('staging')) return 1;
+        if (env === 'development') return 2;
+        return 2; // default fallback
+      };
+      
+      client = new Redis({ 
+        host, 
+        port, 
+        password, 
+        db: getRedisDb(), // Environment-specific database
+        maxRetriesPerRequest: 0, 
+        enableReadyCheck: false 
+      });
     }
   }
   return client;
