@@ -10,15 +10,19 @@ const SESSION_EXPIRATION_SECONDS = 60 * 60 * 24 * 7;
 // Environment-specific cookie naming to prevent collisions between prod/staging
 const getCookieSessionKey = () => {
   const env = process.env.NODE_ENV || 'development';
-  const envPrefix = env === 'production' ? 'prod' : env === 'staging' ? 'staging' : 'dev';
-  return `${envPrefix}-session-id`;
+  // Handle custom environment names like 'staging' that aren't in NODE_ENV types
+  if (env === 'production') return 'prod-session-id';
+  if (env.includes('staging')) return 'staging-session-id';
+  return 'dev-session-id';
 };
 
 // Environment-specific Redis key prefix to prevent collisions between prod/staging
 const getRedisKeyPrefix = () => {
   const env = process.env.NODE_ENV || 'development';
-  const envPrefix = env === 'production' ? 'prod' : env === 'staging' ? 'staging' : 'dev';
-  return `${envPrefix}:session`;
+  // Handle custom environment names like 'staging' that aren't in NODE_ENV types
+  if (env === 'production') return 'prod:session';
+  if (env.includes('staging')) return 'staging:session';
+  return 'dev:session';
 };
 
 const COOKIE_SESSION_KEY = getCookieSessionKey();
@@ -111,7 +115,7 @@ function setCookie(sessionId: string, cookies: Pick<Cookies, "set">) {
   const getCookieDomain = () => {
     const env = process.env.NODE_ENV || 'development';
     // In production/staging, scope cookies to the specific subdomain
-    if (env === 'production' || env === 'staging') {
+    if (env === 'production' || env.includes('staging')) {
       // Use the current hostname to ensure subdomain-specific cookies
       return process.env.COOKIE_DOMAIN || undefined; // Let the browser handle domain scoping
     }
