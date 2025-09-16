@@ -141,14 +141,25 @@ export function InlineEditableField({
     }
   }
 
+  // Process the value to ensure proper line breaks for display
+  const displayValue = multiline && value ? 
+    value.replace(/\r\n/g, '\n').replace(/\r/g, '\n') : value
+
   return (
     <span 
       className={`inline-edit-display ${className} ${!value ? 'empty' : ''}`}
       onClick={handleClick}
-      title="Click to edit"
-      style={{ cursor: 'pointer', minHeight: '20px', display: 'block' }}
+      title={multiline && value ? value : "Click to edit"}
+      style={{ 
+        cursor: 'pointer', 
+        minHeight: '20px', 
+        display: 'block',
+        whiteSpace: multiline ? 'pre-line' : 'normal',
+        wordWrap: 'break-word',
+        overflowWrap: 'break-word'
+      }}
     >
-      {value || (
+      {displayValue || (
         <span style={{ color: '#999', fontStyle: 'italic' }}>
           {placeholder}
         </span>

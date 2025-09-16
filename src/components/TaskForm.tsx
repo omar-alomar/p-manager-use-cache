@@ -1,11 +1,12 @@
 "use client"
 
-import React from "react"
+import React, { useState } from "react"
 import { FormGroup } from "./FormGroup"
 import { Suspense, useActionState } from "react"
 import Link from "next/link"
 import { SkeletonInput } from "./Skeleton"
 import { createTaskAction, editTaskAction } from "@/actions/tasks"
+import { SearchableSelect } from "./SearchableSelect"
 
 export function TaskForm({
   users,
@@ -25,6 +26,8 @@ export function TaskForm({
   const action =
     task == null ? createTaskAction : editTaskAction.bind(null, task.id)
   const [state, formAction, pending] = useActionState(action, {})
+  const [selectedUserId, setSelectedUserId] = useState<number | undefined>(task?.userId)
+  const [selectedProjectId, setSelectedProjectId] = useState<number | undefined>(task?.projectId)
   
   // Handle success state for task creation/editing
   React.useEffect(() => {
@@ -91,40 +94,30 @@ export function TaskForm({
       <div className="form-row">
         <FormGroup errorMessage={errors.projectId}>
           <label htmlFor="projectId">Project</label>
-          <select
-            required
+          <SearchableSelect
+            options={projects.map(project => ({ value: project.id, label: project.title }))}
+            value={selectedProjectId}
+            onChange={(value) => setSelectedProjectId(typeof value === 'string' ? Number(value) : value)}
+            placeholder="Select a project"
             name="projectId"
             id="projectId"
-            defaultValue={task?.projectId}
-          >
-            <option value="">Select a project</option>
-            <Suspense fallback={<option value="">Loading...</option>}>
-              {projects.map(project => (
-                <option key={project.id} value={project.id}>
-                  {project.title}
-                </option>
-              ))}
-            </Suspense>
-          </select>
+            required
+            noResultsText="No projects found"
+          />
         </FormGroup>
         
         <FormGroup errorMessage={errors.userId}>
           <label htmlFor="userId">Assigned To</label>
-          <select
-            required
+          <SearchableSelect
+            options={users.map(user => ({ value: user.id, label: user.name }))}
+            value={selectedUserId}
+            onChange={(value) => setSelectedUserId(typeof value === 'string' ? Number(value) : value)}
+            placeholder="Select a user"
             name="userId"
             id="userId"
-            defaultValue={task?.userId}
-          >
-            <option value="">Select a user</option>
-            <Suspense fallback={<option value="">Loading...</option>}>
-              {users.map(user => (
-                <option key={user.id} value={user.id}>
-                  {user.name}
-                </option>
-              ))}
-            </Suspense>
-          </select>
+            required
+            noResultsText="No users found"
+          />
         </FormGroup>
       </div>
       

@@ -80,6 +80,7 @@ interface Project {
   title: string
   client: string
   clientId: number | null
+  clientCompany: string | null
   body: string
   apfo: Date | null
   apfos?: { id: number; date: Date; item: string }[]
@@ -104,7 +105,7 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
   const [search, setSearch] = useState("")
   const [projectManagerFilter, setProjectManagerFilter] = useState<number | null>(null)
   const [sortConfig, setSortConfig] = useState<{
-    key: 'apfo' | null
+    key: 'title' | 'mbaNumber' | 'userId' | 'apfo' | null
     direction: 'asc' | 'desc' | 'none'
   }>({ key: null, direction: 'none' })
 
@@ -116,7 +117,7 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
   }, [users])
 
   // Handle sorting
-  const handleSort = (key: 'apfo') => {
+  const handleSort = (key: 'title' | 'mbaNumber' | 'userId' | 'apfo') => {
     setSortConfig(prevConfig => {
       if (prevConfig.key === key) {
         // If clicking the same column, cycle through: asc -> desc -> none -> asc
@@ -146,6 +147,7 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
         return (
           project.title.toLowerCase().includes(searchLower) ||
           (project.client || '').toLowerCase().includes(searchLower) ||
+          (project.clientCompany || '').toLowerCase().includes(searchLower) ||
           project.body.toLowerCase().includes(searchLower) ||
           projectManagerName.toLowerCase().includes(searchLower) ||
           (project.mbaNumber && project.mbaNumber.toLowerCase().includes(searchLower)) ||
@@ -162,7 +164,48 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
     }
 
     // Apply sorting
-    if (sortConfig.key === 'apfo' && sortConfig.direction !== 'none') {
+    if (sortConfig.key === 'title' && sortConfig.direction !== 'none') {
+      filtered.sort((a, b) => {
+        const aTitle = a.title.toLowerCase()
+        const bTitle = b.title.toLowerCase()
+        
+        if (sortConfig.direction === 'asc') {
+          return aTitle.localeCompare(bTitle)
+        } else {
+          return bTitle.localeCompare(aTitle)
+        }
+      })
+    } else if (sortConfig.key === 'mbaNumber' && sortConfig.direction !== 'none') {
+      filtered.sort((a, b) => {
+        const aMba = a.mbaNumber || ''
+        const bMba = b.mbaNumber || ''
+        
+        // Handle empty/null MBA numbers - put them at the end
+        if (!aMba && !bMba) return 0
+        if (!aMba) return 1
+        if (!bMba) return -1
+        
+        if (sortConfig.direction === 'asc') {
+          return aMba.localeCompare(bMba)
+        } else {
+          return bMba.localeCompare(aMba)
+        }
+      })
+    } else if (sortConfig.key === 'userId' && sortConfig.direction !== 'none') {
+      filtered.sort((a, b) => {
+        const aManager = userMap.get(a.userId)
+        const bManager = userMap.get(b.userId)
+        
+        const aName = aManager?.name || 'Unknown'
+        const bName = bManager?.name || 'Unknown'
+        
+        if (sortConfig.direction === 'asc') {
+          return aName.localeCompare(bName)
+        } else {
+          return bName.localeCompare(aName)
+        }
+      })
+    } else if (sortConfig.key === 'apfo' && sortConfig.direction !== 'none') {
       filtered.sort((a, b) => {
         const aNearestApfo = getNearestApfoDate(a.apfos, a.apfo)
         const bNearestApfo = getNearestApfoDate(b.apfos, b.apfo)
@@ -219,7 +262,7 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
             </svg>
             <input
               type="text"
-              placeholder="Search projects, clients, managers, MBA #, Co Files..."
+              placeholder="Search projects, clients, companies, managers, MBA #, Co Files..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="search-input"
@@ -254,10 +297,43 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
         <table className="projects-table">
           <thead>
             <tr>
-              <th>PROJECT NAME</th>
-              <th>MBA #</th>
+              <th 
+                className="sortable-header" 
+                onClick={() => handleSort('title')}
+                style={{ cursor: 'pointer', userSelect: 'none' }}
+              >
+                PROJECT NAME
+                {sortConfig.key === 'title' && sortConfig.direction !== 'none' && (
+                  <span style={{ marginLeft: '4px' }}>
+                    {sortConfig.direction === 'asc' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header" 
+                onClick={() => handleSort('mbaNumber')}
+                style={{ cursor: 'pointer', userSelect: 'none' }}
+              >
+                MBA #
+                {sortConfig.key === 'mbaNumber' && sortConfig.direction !== 'none' && (
+                  <span style={{ marginLeft: '4px' }}>
+                    {sortConfig.direction === 'asc' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
               <th>Co File #&apos;s</th>
-              <th>P<br />MGR</th>
+              <th 
+                className="sortable-header" 
+                onClick={() => handleSort('userId')}
+                style={{ cursor: 'pointer', userSelect: 'none' }}
+              >
+                P<br />MGR
+                {sortConfig.key === 'userId' && sortConfig.direction !== 'none' && (
+                  <span style={{ marginLeft: '4px' }}>
+                    {sortConfig.direction === 'asc' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
               <th 
                 className="sortable-header" 
                 onClick={() => handleSort('apfo')}

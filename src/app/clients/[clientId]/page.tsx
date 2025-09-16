@@ -249,8 +249,8 @@ async function ClientDetails({ clientId }: { clientId: string }) {
             <label className="detail-label">
               Address
             </label>
-            <div className="detail-value">
-              {client.address}
+            <div className="detail-value" style={{ whiteSpace: 'pre-line' }}>
+              {client.address.replace(/\r\n/g, '\n').replace(/\r/g, '\n')}
             </div>
           </div>
         )}

@@ -7,6 +7,7 @@ import { createTaskAction } from "@/actions/tasks"
 import { getProjectsAction } from "@/actions/projects"
 import { getUsersAction } from "@/actions/users"
 import { FormGroup } from "./FormGroup"
+import { SearchableSelect } from "./SearchableSelect"
 
 interface QuickAddTaskModalProps {
   isOpen: boolean
@@ -35,6 +36,8 @@ function QuickAddTaskModalContent({
   const [isLoadingProjects, setIsLoadingProjects] = useState(false)
   const [isLoadingUsers, setIsLoadingUsers] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
+  const [selectedUserId, setSelectedUserId] = useState<number | undefined>(presetUserId)
+  const [selectedProjectId, setSelectedProjectId] = useState<number | undefined>(presetProjectId)
   const [errors, formAction, pending] = useActionState(createTaskAction, {})
 
   // Set mounted state on client side
@@ -140,24 +143,17 @@ function QuickAddTaskModalContent({
             <div className="form-group">
               <FormGroup errorMessage={'userId' in errors ? errors.userId : undefined}>
                 <label htmlFor="task-user">Assigned To</label>
-                <select
-                  required
+                <SearchableSelect
+                  options={users.map(user => ({ value: user.id, label: user.name }))}
+                  value={selectedUserId}
+                  onChange={(value) => setSelectedUserId(typeof value === 'number' ? value : undefined)}
+                  placeholder="Select a team member"
+                  disabled={isLoadingUsers}
                   name="userId"
                   id="task-user"
-                  className="form-select"
-                  disabled={isLoadingUsers}
-                >
-                  <option value="">Select a team member</option>
-                  {isLoadingUsers ? (
-                    <option value="" disabled>Loading team members...</option>
-                  ) : (
-                    users.map(user => (
-                      <option key={user.id} value={user.id}>
-                        {user.name}
-                      </option>
-                    ))
-                  )}
-                </select>
+                  required
+                  noResultsText="No team members found"
+                />
               </FormGroup>
             </div>
           )}
@@ -166,24 +162,17 @@ function QuickAddTaskModalContent({
             <div className="form-group">
               <FormGroup errorMessage={'projectId' in errors ? errors.projectId : undefined}>
                 <label htmlFor="task-project">Project</label>
-                <select
-                  required
+                <SearchableSelect
+                  options={projects.map(project => ({ value: project.id, label: project.title }))}
+                  value={selectedProjectId}
+                  onChange={(value) => setSelectedProjectId(typeof value === 'number' ? value : undefined)}
+                  placeholder="Select a project"
+                  disabled={isLoadingProjects}
                   name="projectId"
                   id="task-project"
-                  className="form-select"
-                  disabled={isLoadingProjects}
-                >
-                  <option value="">Select a project</option>
-                  {isLoadingProjects ? (
-                    <option value="" disabled>Loading projects...</option>
-                  ) : (
-                    projects.map(project => (
-                      <option key={project.id} value={project.id}>
-                        {project.title}
-                      </option>
-                    ))
-                  )}
-                </select>
+                  required
+                  noResultsText="No projects found"
+                />
               </FormGroup>
             </div>
           )}

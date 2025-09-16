@@ -7,6 +7,7 @@ import Link from "next/link"
 import { SkeletonInput } from "./Skeleton"
 import { createProjectAction, editProjectAction } from "@/actions/projects"
 import { ClientModal } from "./ClientModal"
+import { SearchableSelect } from "./SearchableSelect"
 
 export function ProjectForm({
   users,
@@ -34,6 +35,8 @@ export function ProjectForm({
   const [state, formAction, pending] = useActionState(action, {})
   const [showClientModal, setShowClientModal] = useState(false)
   const [clientsList, setClientsList] = useState(clients)
+  const [selectedClientId, setSelectedClientId] = useState<number | undefined>(project?.clientId || undefined)
+  const [selectedUserId, setSelectedUserId] = useState<number | undefined>(project?.userId)
   const [apfoEntries, setApfoEntries] = useState<{ date: string; item: string }[]>(
     project?.apfos?.map(apfo => ({
       date: apfo.date.toISOString().split('T')[0],
@@ -57,12 +60,8 @@ export function ProjectForm({
   // Handle new client creation
   const handleClientCreated = (newClient: { id: number; name: string; email: string }) => {
     setClientsList(prev => [...prev, newClient])
+    setSelectedClientId(newClient.id)
     setShowClientModal(false)
-    // Optionally select the new client
-    const select = document.getElementById('clientId') as HTMLSelectElement
-    if (select) {
-      select.value = newClient.id.toString()
-    }
   }
 
   // Handle APFO entry management
@@ -97,19 +96,16 @@ export function ProjectForm({
         <FormGroup errorMessage={'clientId' in state ? state.clientId : undefined}>
           <label htmlFor="clientId">Client</label>
           <div className="client-select-container">
-            <select
-              required
+            <SearchableSelect
+              options={clientsList.map(client => ({ value: client.id, label: client.name }))}
+              value={selectedClientId}
+              onChange={(value) => setSelectedClientId(typeof value === 'string' ? Number(value) : value)}
+              placeholder="Select a client..."
               name="clientId"
               id="clientId"
-              defaultValue={project?.clientId || ""}
-            >
-              <option value="">Select a client...</option>
-              {clientsList.map(client => (
-                <option key={client.id} value={client.id}>
-                  {client.name}
-                </option>
-              ))}
-            </select>
+              required
+              noResultsText="No clients found"
+            />
             <button
               type="button"
               className="client-add-btn"
@@ -127,20 +123,16 @@ export function ProjectForm({
       <div className="form-row">
         <FormGroup errorMessage={'userId' in state ? state.userId : undefined}>
           <label htmlFor="userId">Project Manager</label>
-          <select
-            required
+          <SearchableSelect
+            options={users.map(user => ({ value: user.id, label: user.name }))}
+            value={selectedUserId}
+            onChange={(value) => setSelectedUserId(typeof value === 'string' ? Number(value) : value)}
+            placeholder="Select a project manager..."
             name="userId"
             id="userId"
-            defaultValue={project?.userId}
-          >
-            <Suspense fallback={<option value="">Loading...</option>}>
-              {users.map(user => (
-                <option key={user.id} value={user.id}>
-                  {user.name}
-                </option>
-              ))}
-            </Suspense>
-          </select>
+            required
+            noResultsText="No project managers found"
+          />
         </FormGroup>
         <div className="apfo-section">
           <label>Milestones (Optional)</label>

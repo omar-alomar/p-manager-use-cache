@@ -27,7 +27,8 @@ export default async function ProjectsPage() {
   const projects = projectsData.map(project => ({
     ...project,
     client: project.clientRef?.name || 'No Client',
-    clientId: project.clientRef?.id || null
+    clientId: project.clientRef?.id || null,
+    clientCompany: project.clientRef?.companyName || null
   }))
 
   return (

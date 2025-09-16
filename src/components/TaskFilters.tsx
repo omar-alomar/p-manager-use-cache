@@ -1,6 +1,7 @@
 "use client"
 
 import { useTaskFilter } from "@/contexts/TaskFilterContext"
+import { SearchableSelect } from "./SearchableSelect"
 
 type FilterType = 'all' | 'in_progress' | 'completed'
 type SortType = 'created' | 'title'
@@ -90,38 +91,34 @@ export function TaskFilters({ taskCounts, users, projects, context = 'all-tasks'
           {users && users.length > 0 && (
             <div className="filter-controls">
               <label htmlFor="user-filter">Filter by user:</label>
-              <select
-                id="user-filter"
+              <SearchableSelect
+                options={[
+                  { value: '', label: 'All Users' },
+                  ...users.map(user => ({ value: user.id, label: user.name }))
+                ]}
                 value={userFilter || ''}
-                onChange={(e) => setUserFilter(e.target.value ? Number(e.target.value) : null)}
-                className="filter-select"
-              >
-                <option value="">All Users</option>
-                {users.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.name}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setUserFilter(value ? Number(value) : null)}
+                placeholder="All Users"
+                id="user-filter"
+                noResultsText="No users found"
+              />
             </div>
           )}
 
           {projects && projects.length > 0 && (
             <div className="filter-controls">
               <label htmlFor="project-filter">Filter by project:</label>
-              <select
-                id="project-filter"
+              <SearchableSelect
+                options={[
+                  { value: '', label: 'All Projects' },
+                  ...projects.map(project => ({ value: project.id, label: project.title }))
+                ]}
                 value={projectFilter || ''}
-                onChange={(e) => setProjectFilter(e.target.value ? Number(e.target.value) : null)}
-                className="filter-select"
-              >
-                <option value="">All Projects</option>
-                {projects.map((project) => (
-                  <option key={project.id} value={project.id}>
-                    {project.title}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setProjectFilter(value ? Number(value) : null)}
+                placeholder="All Projects"
+                id="project-filter"
+                noResultsText="No projects found"
+              />
             </div>
           )}
         </div>

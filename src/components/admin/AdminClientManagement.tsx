@@ -89,11 +89,17 @@ export function AdminClientManagement({ clients }: AdminClientManagementProps) {
                   </td>
                   <td className="address-cell">
                     {client.address ? (
-                      <span className="address-text" title={client.address}>
-                        {client.address.length > 30 
-                          ? `${client.address.substring(0, 30)}...` 
-                          : client.address
-                        }
+                      <span 
+                        className="address-text" 
+                        title={client.address.replace(/\r\n/g, '\n').replace(/\r/g, '\n')}
+                        style={{ whiteSpace: 'pre-line' }}
+                      >
+                        {(() => {
+                          const normalizedAddress = client.address.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+                          return normalizedAddress.length > 30 
+                            ? `${normalizedAddress.substring(0, 30)}...` 
+                            : normalizedAddress
+                        })()}
                       </span>
                     ) : (
                       <span className="no-address">-</span>
