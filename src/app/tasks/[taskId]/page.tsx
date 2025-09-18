@@ -1,12 +1,15 @@
 import { getTask } from "@/db/tasks"
 import { getUser } from "@/db/users"
 import { getProject } from "@/db/projects"
+import { getUsers } from "@/db/users"
+import { getProjects } from "@/db/projects"
 import { Skeleton } from "@/components/Skeleton"
 import Link from "next/link"
 import { Suspense } from "react"
 import { notFound } from "next/navigation"
 import { TaskItem } from "@/components/TaskItem"
 import { TaskActions } from "./_TaskActions"
+import { EditableTaskDetails } from "@/components/EditableTaskDetails"
 
 export default async function TaskPage({
   params,
@@ -105,7 +108,7 @@ async function TaskHero({ taskId }: { taskId: string }) {
   }
 
   const user = await getUser(task.userId)
-  const project = await getProject(task.projectId)
+  const project = task.projectId ? await getProject(task.projectId) : null
 
   return (
     <div className="task-hero">
@@ -164,50 +167,22 @@ async function TaskDetails({ taskId }: { taskId: string }) {
     notFound()
   }
 
-  const user = await getUser(task.userId)
-  const project = await getProject(task.projectId)
+  const [user, project, users, projects] = await Promise.all([
+    getUser(task.userId),
+    task.projectId ? getProject(task.projectId) : null,
+    getUsers(),
+    getProjects()
+  ])
 
   return (
     <div className="task-details">
-      <div className="detail-grid">
-        <div className="detail-item">
-          <div className="detail-label">Status</div>
-          <div className="detail-value">
-            <span className={`status-badge ${task.completed ? 'completed' : 'pending'}`}>
-              {task.completed ? 'Completed' : 'Pending'}
-            </span>
-          </div>
-        </div>
-        
-        <div className="detail-item">
-          <div className="detail-label">Assigned To</div>
-          <div className="detail-value">
-            <Link href={`/users/${task.userId}`} className="user-link">
-              {user?.name}
-            </Link>
-          </div>
-        </div>
-        
-        <div className="detail-item">
-          <div className="detail-label">Project</div>
-          <div className="detail-value">
-            {project ? (
-              <Link href={`/projects/${task.projectId}`} className="project-link">
-                {project.title}
-              </Link>
-            ) : (
-              <span className="no-project">No project assigned</span>
-            )}
-          </div>
-        </div>
-        
-        <div className="detail-item">
-          <div className="detail-label">Created</div>
-          <div className="detail-value">
-            {task.createdAt.toLocaleDateString()} at {task.createdAt.toLocaleTimeString()}
-          </div>
-        </div>
-      </div>
+      <EditableTaskDetails
+        task={task}
+        users={users}
+        projects={projects}
+        initialUser={user}
+        initialProject={project}
+      />
       
       {/* Interactive Task Item */}
       <div className="task-interactive">

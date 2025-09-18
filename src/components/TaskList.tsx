@@ -5,11 +5,11 @@ interface Task {
   title: string
   completed: boolean
   userId: number
-  projectId: number
+  projectId: number | null
   createdAt: Date
   updatedAt: Date
   User: { id: number; name: string }
-  Project: { id: number; title: string }
+  Project?: { id: number; title: string } | null
 }
 
 interface TaskListProps {
@@ -71,13 +71,15 @@ export function TaskList({
             initialCompleted={task.completed}
             title={task.title}
             projectId={task.projectId}
-            projectTitle={task.Project.title}
+            projectTitle={task.Project?.title || "No Project"}
             userId={task.userId}
             userName={task.User.name}
             createdAt={task.createdAt}
             displayProject={showProject}
             displayUser={showUser}
             displayCreatedAt={true}
+            users={users}
+            projects={projects}
           />
         ))}
       </div>

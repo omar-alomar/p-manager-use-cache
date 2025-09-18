@@ -188,7 +188,18 @@ async function UserProjectsWithTasks({ userId }: { userId: string }) {
       {projects.map(async (project) => {
         // Get only tasks assigned to this specific user for this project
         const userTasks = await getUserTasks(userId)
-        const projectUserTasks = userTasks.filter(task => task.projectId === project.id)
+        const projectUserTasks = userTasks
+          .filter(task => task.projectId === project.id)
+          .map(task => ({
+            id: task.id,
+            title: task.title,
+            completed: task.completed,
+            userId: task.userId,
+            projectId: task.projectId,
+            createdAt: task.createdAt,
+            User: task.User ? { name: task.User.name } : undefined,
+            Project: task.Project ? { title: task.Project.title } : undefined
+          }))
         
         let projectManager = null
         

@@ -81,7 +81,7 @@ export async function createTask({
   title: string
   completed: boolean
   userId: number
-  projectId: number
+  projectId?: number
 }) {
   // Use a transaction to ensure consistency
   const task = await prisma.$transaction(async (tx) => {
@@ -90,7 +90,7 @@ export async function createTask({
         title,
         completed,
         userId,
-        projectId,
+        projectId: projectId || null,
       },
     })
   })
@@ -109,7 +109,7 @@ export async function updateTask(
      title: string,
      completed: boolean,
      userId: number,
-     projectId: number
+     projectId?: number
   }) {
   console.log('updateTask called with:', { taskId, title, completed, userId, projectId })
   
@@ -121,7 +121,7 @@ export async function updateTask(
         title,
         completed,
         userId,
-        projectId,
+        projectId: projectId || null,
         updatedAt: new Date()
       },
     })

@@ -14,7 +14,9 @@ export async function createTaskAction(prevState: unknown, formData: FormData) {
     const task = await createTask(data)
     
     // Revalidate paths
-    revalidatePath(`/projects/${data.projectId}`)
+    if (data.projectId && data.projectId > 0) {
+      revalidatePath(`/projects/${data.projectId}`)
+    }
     revalidatePath('/projects')
     revalidatePath('/tasks')
     revalidatePath('/my-tasks')
@@ -23,7 +25,8 @@ export async function createTaskAction(prevState: unknown, formData: FormData) {
 
     // Return success state instead of redirecting
     return { success: true, message: 'Task created successfully!', taskId: task.id }
-  } catch {
+  } catch (error) {
+    console.error('Failed to create task:', error)
     return { success: false, message: 'Failed to create task. Please try again.' }
   }
 }
@@ -41,7 +44,9 @@ export async function editTaskAction(
     const task = await updateTask(taskId, data)
     
     // Revalidate paths
-    revalidatePath(`/projects/${data.projectId}`)
+    if (data.projectId && data.projectId > 0) {
+      revalidatePath(`/projects/${data.projectId}`)
+    }
     revalidatePath('/projects')
     revalidatePath('/tasks')
     revalidatePath('/my-tasks')
@@ -96,7 +101,8 @@ function validateTask(formData: FormData) {
   const title = formData.get("title") as string
   const completed = formData.get("completed") === "on"
   const userId = Number(formData.get("userId"))
-  const projectId = Number(formData.get("projectId"))
+  const projectIdRaw = formData.get("projectId")
+  const projectId = projectIdRaw && Number(projectIdRaw) > 0 ? Number(projectIdRaw) : undefined
   
   let isValid = true
 
@@ -110,8 +116,9 @@ function validateTask(formData: FormData) {
     isValid = false
   }
 
-  if (isNaN(projectId)) {
-    errors.projectId = "Required"
+  // projectId is optional - if provided, it must be valid
+  if (projectIdRaw && projectId === undefined) {
+    errors.projectId = "Invalid project selection"
     isValid = false
   }
 
@@ -130,7 +137,7 @@ export async function updateTaskCompletionAction(
     title: string
     completed: boolean
     userId: number
-    projectId: number
+    projectId?: number
   }
 ) {
   console.log('Server action called with:', { taskId, data })

@@ -10,11 +10,11 @@ interface Task {
   title: string
   completed: boolean
   userId: number
-  projectId: number
+  projectId: number | null
   createdAt: Date
   updatedAt: Date
   User: { id: number; name: string }
-  Project: { id: number; title: string }
+  Project: { id: number; title: string } | null
 }
 
 interface MyTasksClientProps {
@@ -36,7 +36,7 @@ export function MyTasksClient({ myTasks, users, projects }: MyTasksClientProps) 
       const searchLower = search.toLowerCase()
       return (
         task.title.toLowerCase().includes(searchLower) ||
-        task.Project.title.toLowerCase().includes(searchLower)
+        (task.Project?.title.toLowerCase().includes(searchLower) ?? false)
       )
     }
     

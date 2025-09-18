@@ -3,12 +3,13 @@
 import { useState, useEffect, useRef } from "react"
 import { updateTaskCompletionAction, verifyTaskUpdate, deleteTaskAction } from "@/actions/tasks"
 import { formatDate } from "@/utils/dateUtils"
+import { SearchableSelect } from "./SearchableSelect"
 
 interface TaskItemProps {
   id: number
   initialCompleted: boolean
   title: string
-  projectId: number
+  projectId?: number | null
   projectTitle: string
   userId: number
   userName?: string
@@ -16,6 +17,8 @@ interface TaskItemProps {
   displayProject?: boolean
   displayUser?: boolean
   displayCreatedAt?: boolean
+  users?: { id: number; name: string }[]
+  projects?: { id: number; title: string }[]
   onUpdate?: (taskId: number, updates: { completed?: boolean; title?: string; deleted?: boolean }) => void
 }
 
@@ -31,6 +34,8 @@ export function TaskItem({
   displayProject = true,
   displayUser = false,
   displayCreatedAt = true,
+  users = [],
+  projects = [],
   onUpdate
 }: TaskItemProps) {
   const [completed, setCompleted] = useState(initialCompleted)
@@ -41,12 +46,22 @@ export function TaskItem({
   const [updateCount, setUpdateCount] = useState(0)
   const [isEditing, setIsEditing] = useState(false)
   const [editedTitle, setEditedTitle] = useState(title)
+  const [currentTitle, setCurrentTitle] = useState(title)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [selectedUserId, setSelectedUserId] = useState<number | undefined>(userId)
+  const [selectedProjectId, setSelectedProjectId] = useState<number | undefined>(projectId ?? undefined)
   const inputRef = useRef<HTMLInputElement>(null)
+  const taskCardRef = useRef<HTMLDivElement>(null)
+
 
   useEffect(() => {
     setCompleted(initialCompleted)
   }, [initialCompleted])
+
+  useEffect(() => {
+    setCurrentTitle(title)
+    setEditedTitle(title)
+  }, [title])
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -54,6 +69,42 @@ export function TaskItem({
       inputRef.current.select()
     }
   }, [isEditing])
+
+  // Simple click outside handler
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!isEditing) return
+      
+      const target = event.target as Node
+      
+      // Don't exit if clicking inside the task card
+      if (taskCardRef.current && taskCardRef.current.contains(target)) {
+        return
+      }
+      
+      // Don't exit if clicking on SearchableSelect elements (they're rendered via portal)
+      if (target instanceof Element) {
+        const isSearchableSelect = target.closest('.searchable-select__dropdown') || 
+                                 target.closest('.searchable-select__trigger') ||
+                                 target.closest('.searchable-select')
+        if (isSearchableSelect) {
+          return
+        }
+      }
+      
+      // Click is outside both task card and dropdowns, save and exit
+      handleSaveTitle()
+    }
+
+    if (isEditing) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isEditing])
+
 
   async function handleChange(newCompleted: boolean) {
     console.log(`Task ${id}: Changing from ${completed} to ${newCompleted}`)
@@ -66,7 +117,7 @@ export function TaskItem({
         title: editedTitle,
         completed: newCompleted,
         userId,
-        projectId
+        projectId: projectId || undefined
       })
       
       await new Promise(resolve => setTimeout(resolve, 100))
@@ -95,12 +146,12 @@ export function TaskItem({
 
   async function handleSaveTitle() {
     if (editedTitle.trim() === '') {
-      setEditedTitle(title)
+      setEditedTitle(currentTitle)
       setIsEditing(false)
       return
     }
 
-    if (editedTitle === title) {
+    if (editedTitle === currentTitle) {
       setIsEditing(false)
       return
     }
@@ -112,7 +163,7 @@ export function TaskItem({
         title: editedTitle,
         completed,
         userId,
-        projectId
+        projectId: projectId || undefined
       })
       
       await new Promise(resolve => setTimeout(resolve, 100))
@@ -121,17 +172,19 @@ export function TaskItem({
       
       if (verifiedTask?.title !== editedTitle) {
         console.error(`Task ${id}: Title update failed! Reverting...`)
-        setEditedTitle(title)
+        setEditedTitle(currentTitle)
         alert('Update failed! Please try again.')
       } else {
         setUpdateCount(c => c + 1)
+        // Update local title state to reflect the change
+        setCurrentTitle(editedTitle)
         // Notify parent component of the update
         onUpdate?.(id, { title: editedTitle })
       }
       
     } catch (error) {
       console.error('Failed to update task title:', error)
-      setEditedTitle(title)
+      setEditedTitle(currentTitle)
       alert('Update failed! Please try again.')
     } finally {
       setIsUpdating(false)
@@ -141,7 +194,7 @@ export function TaskItem({
 
   function handleKeyDown(e: React.KeyboardEvent) {
     if (e.key === 'Escape') {
-      setEditedTitle(title)
+      setEditedTitle(currentTitle)
       setIsEditing(false)
     } else if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
@@ -152,8 +205,52 @@ export function TaskItem({
   }
 
   function handleStartEdit() {
-    setEditedTitle(title)
+    setEditedTitle(currentTitle)
     setIsEditing(true)
+  }
+
+  async function handleUserChange(value: string | number | undefined) {
+    const newUserId = typeof value === 'string' ? parseInt(value) : value
+    if (newUserId === selectedUserId || isUpdating) return
+    
+    setIsUpdating(true)
+    try {
+      await updateTaskCompletionAction(id, {
+        title: editedTitle,
+        completed,
+        userId: newUserId!,
+        projectId: selectedProjectId
+      })
+      setSelectedUserId(newUserId)
+      setUpdateCount(c => c + 1)
+    } catch (error) {
+      console.error('Failed to update user assignment:', error)
+      alert('Failed to update user assignment. Please try again.')
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
+  async function handleProjectChange(value: string | number | undefined) {
+    const newProjectId = typeof value === 'string' ? parseInt(value) : value
+    if (newProjectId === selectedProjectId || isUpdating) return
+    
+    setIsUpdating(true)
+    try {
+      await updateTaskCompletionAction(id, {
+        title: editedTitle,
+        completed,
+        userId: selectedUserId!,
+        projectId: newProjectId
+      })
+      setSelectedProjectId(newProjectId)
+      setUpdateCount(c => c + 1)
+    } catch (error) {
+      console.error('Failed to update project assignment:', error)
+      alert('Failed to update project assignment. Please try again.')
+    } finally {
+      setIsUpdating(false)
+    }
   }
 
   async function handleDelete() {
@@ -214,8 +311,9 @@ export function TaskItem({
     handleChange(!completed)
   }
 
+
   return (
-    <div className={`task-card ${completed ? 'task-completed' : ''} ${isUpdating ? 'task-updating' : ''} ${isEditing ? 'task-editing' : ''}`} key={`${id}-${updateCount}`}>
+    <div ref={taskCardRef} className={`task-card ${completed ? 'task-completed' : ''} ${isUpdating ? 'task-updating' : ''} ${isEditing ? 'task-editing' : ''}`} key={`${id}-${updateCount}`}>
       <div className="task-card-content">
         <div className="task-checkbox-wrapper">
           <input
@@ -234,26 +332,53 @@ export function TaskItem({
         
         <div className="task-main-content" onClick={handleTaskAreaClick}>
           {isEditing ? (
-            <div className="task-edit-input">
-              <input
-                ref={inputRef}
-                type="text"
-                value={editedTitle}
-                onChange={(e) => setEditedTitle(e.target.value)}
-                onBlur={handleSaveTitle}
-                onKeyDown={handleKeyDown}
-                disabled={isUpdating}
-                className="edit-input"
-                placeholder="Task title..."
-              />
-              <div className="edit-hint">Enter to save, Escape to cancel</div>
+            <div className="task-edit-container">
+              <div className="task-edit-input">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={editedTitle}
+                  onChange={(e) => setEditedTitle(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  disabled={isUpdating}
+                  className="edit-input"
+                  placeholder="Task title..."
+                />
+                <div className="edit-hint">Enter to save, Escape to cancel</div>
+              </div>
+              
+              <div className="task-edit-fields">
+                <div className="task-edit-field">
+                  <label className="task-edit-label">Project:</label>
+                  <SearchableSelect
+                    options={[{ value: 0, label: "No Project" }, ...projects.map(project => ({ value: project.id, label: project.title }))]}
+                    value={selectedProjectId ?? 0}
+                    onChange={handleProjectChange}
+                    placeholder="Select project"
+                    disabled={isUpdating}
+                    className="task-edit-select"
+                  />
+                </div>
+                
+                <div className="task-edit-field">
+                  <label className="task-edit-label">Assigned To:</label>
+                  <SearchableSelect
+                    options={users.map(user => ({ value: user.id, label: user.name }))}
+                    value={selectedUserId}
+                    onChange={handleUserChange}
+                    placeholder="Select user"
+                    disabled={isUpdating}
+                    className="task-edit-select"
+                  />
+                </div>
+              </div>
             </div>
           ) : (
             <>
               <div className="task-title-wrapper">
                 <div className="task-header">
                   <h4 className={`task-title ${completed ? 'completed' : ''}`}>
-                    {editedTitle}
+                    {currentTitle}
                   </h4>
                   <div className="task-badges">
                     <span className={`status-badge status-${currentStatus.toLowerCase().replace('_', '-')}`}>
@@ -293,7 +418,6 @@ export function TaskItem({
                       {formatDate(createdAt)}
                     </span>
                   )}
-
                 </div>
               </div>
               

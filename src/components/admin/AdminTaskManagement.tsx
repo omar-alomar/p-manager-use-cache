@@ -9,7 +9,7 @@ interface Task {
   title: string
   completed: boolean
   userId: number
-  projectId: number
+  projectId: number | null
   createdAt: Date
   updatedAt: Date
   User: {
@@ -19,7 +19,7 @@ interface Task {
   Project: {
     id: number
     title: string
-  }
+  } | null
 }
 
 interface AdminTaskManagementProps {
@@ -67,9 +67,13 @@ export function AdminTaskManagement({ tasks }: AdminTaskManagementProps) {
                     </div>
                   </td>
                   <td className="project-cell">
-                    <Link href={`/projects/${task.projectId}`} className="project-link">
-                      <span className="project-name">{task.Project?.title || 'Unknown Project'}</span>
-                    </Link>
+                    {task.projectId ? (
+                      <Link href={`/projects/${task.projectId}`} className="project-link">
+                        <span className="project-name">{task.Project?.title || 'Unknown Project'}</span>
+                      </Link>
+                    ) : (
+                      <span className="project-name no-project">No Project</span>
+                    )}
                   </td>
                   <td className="assignee-cell">
                     <div className="assignee-info">

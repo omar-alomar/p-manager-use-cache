@@ -163,14 +163,13 @@ function QuickAddTaskModalContent({
               <FormGroup errorMessage={'projectId' in errors ? errors.projectId : undefined}>
                 <label htmlFor="task-project">Project</label>
                 <SearchableSelect
-                  options={projects.map(project => ({ value: project.id, label: project.title }))}
-                  value={selectedProjectId}
-                  onChange={(value) => setSelectedProjectId(typeof value === 'number' ? value : undefined)}
-                  placeholder="Select a project"
+                  options={[{ value: 0, label: "No Project" }, ...projects.map(project => ({ value: project.id, label: project.title }))]}
+                  value={selectedProjectId ?? 0}
+                  onChange={(value) => setSelectedProjectId(typeof value === 'number' ? value : 0)}
+                  placeholder="Select a project (optional)"
                   disabled={isLoadingProjects}
                   name="projectId"
                   id="task-project"
-                  required
                   noResultsText="No projects found"
                 />
               </FormGroup>

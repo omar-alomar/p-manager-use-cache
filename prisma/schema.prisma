@@ -15,12 +15,12 @@ model Task {
   title       String
   completed   Boolean  @default(false)
   userId      Int
-  projectId   Int      @default(0)
+  projectId   Int?     @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   User User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  Project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  Project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
 } 
 
 enum Role {

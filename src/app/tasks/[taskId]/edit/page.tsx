@@ -73,7 +73,7 @@ async function EditTaskForm({ taskId }: { taskId: string }) {
           title: task.title,
           completed: task.completed,
           userId: task.userId,
-          projectId: task.projectId
+          projectId: task.projectId || undefined
         }} 
       />
     </div>

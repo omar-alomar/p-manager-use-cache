@@ -45,7 +45,6 @@ export function SearchableSelect({
   const triggerRef = useRef<HTMLDivElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLUListElement>(null)
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Get the selected option
   const selectedOption = options.find(option => option.value === value)
@@ -227,23 +226,13 @@ export function SearchableSelect({
     }
   }
 
-  // Clear search term after a delay when not typing
+  // Clear search term when dropdown closes
   useEffect(() => {
-    if (isTyping) {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current)
-      }
-      searchTimeoutRef.current = setTimeout(() => {
-        setIsTyping(false)
-        setSearchTerm("")
-      }, 1000)
+    if (!isOpen) {
+      setSearchTerm("")
+      setIsTyping(false)
     }
-    return () => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current)
-      }
-    }
-  }, [isTyping, searchTerm])
+  }, [isOpen])
 
   // Handle clicking outside to close and window resize
   useEffect(() => {
@@ -344,7 +333,7 @@ export function SearchableSelect({
             top: dropdownPosition.top,
             left: dropdownPosition.left,
             width: dropdownPosition.width,
-            zIndex: 9999
+            zIndex: 10003
           }}
           onClick={(e) => e.stopPropagation()}
         >

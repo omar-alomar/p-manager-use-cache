@@ -1,6 +1,7 @@
 import { getProjectComments } from "@/db/comments"
 import { getProject } from "@/db/projects"
-import { getUser } from "@/db/users"
+import { getUser, getUsers } from "@/db/users"
+import { getProjects } from "@/db/projects"
 import Link from "next/link"
 import { Suspense } from "react"
 import { notFound, redirect } from "next/navigation"
@@ -468,8 +469,12 @@ async function UserDetails({ userId }: { userId: number }) {
 
 async function Tasks({ projectId }: { projectId: string }) {
   try {
-    const tasks = await getProjectTasks(projectId)
-    const project = await getProject(projectId)
+    const [tasks, project, users, projects] = await Promise.all([
+      getProjectTasks(projectId),
+      getProject(projectId),
+      getUsers(),
+      getProjects()
+    ])
     
     if (tasks.length === 0) {
       return (
@@ -503,6 +508,8 @@ async function Tasks({ projectId }: { projectId: string }) {
             displayProject={false}
             displayUser={true}
             displayCreatedAt={true}
+            users={users}
+            projects={projects}
           />
         ))}
       </div>

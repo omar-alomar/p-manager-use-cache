@@ -24,7 +24,7 @@ interface Task {
   title: string
   completed: boolean
   userId: number
-  projectId: number
+  projectId: number | null
   createdAt: Date
   User?: { name: string }
   Project?: { title: string }

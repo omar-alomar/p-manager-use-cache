@@ -20,7 +20,7 @@ export function TaskForm({
     title: string
     completed: boolean
     userId: number
-    projectId: number
+    projectId?: number
   }
 }) {
   const action =
@@ -95,13 +95,12 @@ export function TaskForm({
         <FormGroup errorMessage={errors.projectId}>
           <label htmlFor="projectId">Project</label>
           <SearchableSelect
-            options={projects.map(project => ({ value: project.id, label: project.title }))}
-            value={selectedProjectId}
+            options={[{ value: 0, label: "No Project" }, ...projects.map(project => ({ value: project.id, label: project.title }))]}
+            value={selectedProjectId ?? 0}
             onChange={(value) => setSelectedProjectId(typeof value === 'string' ? Number(value) : value)}
-            placeholder="Select a project"
+            placeholder="Select a project (optional)"
             name="projectId"
             id="projectId"
-            required
             noResultsText="No projects found"
           />
         </FormGroup>
