@@ -21,9 +21,10 @@ interface MyTasksClientProps {
   myTasks: Task[]
   users: { id: number; name: string }[]
   projects: { id: number; title: string }[]
+  allProjects: { id: number; title: string }[]
 }
 
-export function MyTasksClient({ myTasks, users, projects }: MyTasksClientProps) {
+export function MyTasksClient({ myTasks, users, projects, allProjects }: MyTasksClientProps) {
   const { sort, search, projectFilter } = useTaskFilter()
 
   // Filter tasks based on search and project filter only (no status filtering)
@@ -81,7 +82,7 @@ export function MyTasksClient({ myTasks, users, projects }: MyTasksClientProps) 
             title="In Progress" 
             tasks={inProgressTasks} 
             users={users} 
-            projects={projects}
+            projects={allProjects}
             showProject={true}
             showUser={false}
           />
@@ -90,7 +91,7 @@ export function MyTasksClient({ myTasks, users, projects }: MyTasksClientProps) 
             title="Completed" 
             tasks={completedTasks} 
             users={users} 
-            projects={projects}
+            projects={allProjects}
             showProject={true}
             showUser={false}
           />
