@@ -15,11 +15,13 @@ model Task {
   title       String
   completed   Boolean  @default(false)
   userId      Int
+  assignedById Int?    // Who assigned this task
   projectId   Int?     @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  AssignedBy User? @relation("TaskAssignedBy", fields: [assignedById], references: [id], onDelete: SetNull)
   Project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
 } 
 
@@ -39,6 +41,7 @@ model User {
   
   projects Project[]
   tasks    Task[]
+  assignedTasks Task[] @relation("TaskAssignedBy")
   comments Comment[]
 }
 

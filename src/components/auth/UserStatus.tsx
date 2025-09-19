@@ -6,6 +6,7 @@ import Link from "next/link"
 import { logOut } from "@/actions/auth"
 import { useAuth } from "@/components/auth/AuthContext"
 import { SettingsIcon } from "@/components/icons"
+import { NotificationCenter } from "@/components/NotificationCenter"
 
 export function UserStatus() {
   const { user, loading, logout: contextLogout } = useAuth()
@@ -85,6 +86,7 @@ export function UserStatus() {
       </div>
 
       <div className="user-actions">
+        <NotificationCenter userId={user.id} />
         <button 
           onClick={handleSettingsClick}
           className="settings-button"

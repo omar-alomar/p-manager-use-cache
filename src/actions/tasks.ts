@@ -3,6 +3,8 @@
 import { createTask, deleteTask, updateTask, getTask } from "@/db/tasks"
 import { revalidatePath, revalidateTag } from "next/cache"
 import prisma from "@/db/db"
+import { notificationService } from "@/services/notificationService"
+import { getCurrentUser } from "@/auth/currentUser"
 
 
 export async function createTaskAction(prevState: unknown, formData: FormData) {
@@ -11,7 +13,32 @@ export async function createTaskAction(prevState: unknown, formData: FormData) {
   if (!data) return errors
 
   try {
-    const task = await createTask(data)
+    const currentUser = await getCurrentUser()
+    const task = await createTask({
+      ...data,
+      assignedById: currentUser?.id
+    })
+    
+    // Get user and project details for notification
+    const [assignedUser, project, assignerUser] = await Promise.all([
+      prisma.user.findUnique({ where: { id: data.userId } }),
+      data.projectId ? prisma.project.findUnique({ where: { id: data.projectId } }) : null,
+      currentUser ? prisma.user.findUnique({ where: { id: currentUser.id } }) : null,
+    ])
+
+    // Send notification for task assignment
+    if (assignedUser && assignerUser) {
+      await notificationService.notifyTaskAssigned({
+        taskId: task.id,
+        taskTitle: task.title,
+        assignedUserId: assignedUser.id,
+        assignedUserName: assignedUser.name,
+        assignerUserId: assignerUser.id,
+        assignerUserName: assignerUser.name,
+        projectId: project?.id,
+        projectTitle: project?.title,
+      })
+    }
     
     // Revalidate paths
     if (data.projectId && data.projectId > 0) {
@@ -143,9 +170,44 @@ export async function updateTaskCompletionAction(
   console.log('Server action called with:', { taskId, data })
   
   try {
+    // Get the original task to check if completion status changed and get the original assigner
+    const originalTask = await prisma.task.findUnique({
+      where: { id: taskId },
+      include: { User: true, Project: true }
+    })
+
     // Update the task
     const result = await updateTask(taskId, data)
     console.log('Update result:', result)
+
+    // Send notification if task was just completed
+    if (data.completed && originalTask && !originalTask.completed) {
+      const currentUser = await getCurrentUser()
+      
+      if (!currentUser) {
+        console.warn('No current user found, skipping notification')
+        return { success: true, message: 'Task updated successfully!', taskId: result.id }
+      }
+      
+      const [completedByUser, project, originalAssigner] = await Promise.all([
+        prisma.user.findUnique({ where: { id: currentUser.id } }),
+        data.projectId ? prisma.project.findUnique({ where: { id: data.projectId } }) : null,
+        originalTask.assignedById ? prisma.user.findUnique({ where: { id: originalTask.assignedById } }) : null,
+      ])
+
+      if (completedByUser && originalAssigner) {
+        await notificationService.notifyTaskCompleted({
+          taskId: taskId,
+          taskTitle: data.title,
+          completedByUserId: completedByUser.id,
+          completedByUserName: completedByUser.name,
+          assignerUserId: originalAssigner.id,
+          assignerUserName: originalAssigner.name,
+          projectId: project?.id,
+          projectTitle: project?.title,
+        })
+      }
+    }
     
     // AGGRESSIVE cache invalidation
     // 1. Revalidate specific paths

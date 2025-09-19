@@ -30,6 +30,23 @@ export function AddMilestoneModal({ isOpen, onClose, projectId }: AddMilestoneMo
     return () => setMounted(false)
   }, [])
 
+  // Handle escape key to close modal
+  React.useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isOpen) {
+        onClose()
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape)
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [isOpen, onClose])
+
   if (!isOpen || !mounted) return null
 
   const modalContent = (

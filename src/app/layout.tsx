@@ -5,6 +5,7 @@ import { UserStatus } from "@/components/auth/UserStatus"
 import { Navigation } from "@/components/navigation/Navigation"
 import { MobileNavigation } from "@/components/navigation/MobileNavigation"
 import { AuthProvider } from "@/components/auth/AuthContext"
+import { NotificationProvider } from "@/contexts/NotificationContext"
 
 export const metadata: Metadata = {
   title: "Mildenberg Project Platform",
@@ -33,22 +34,24 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AuthProvider>
-          <nav className="top-nav">
-            <div className="nav-text-large">
-              <Link href="/projects" className="nav-title-link">
-                <div>Mildenberg Project Platform</div>
-                <div className="nav-subtitle">Alpha Version 1.0</div>
-              </Link>
-            </div>
-            <div className="nav-center">
-              <Navigation />
-            </div>
-            <div className="user-status-container">
-              <UserStatus />
-              <MobileNavigation />
-            </div>
-          </nav>
-          <div className="container">{children}</div>
+          <NotificationProvider>
+            <nav className="top-nav">
+              <div className="nav-text-large">
+                <Link href="/projects" className="nav-title-link">
+                  <div>Mildenberg Project Platform</div>
+                  <div className="nav-subtitle">Alpha Version 1.0</div>
+                </Link>
+              </div>
+              <div className="nav-center">
+                <Navigation />
+              </div>
+              <div className="user-status-container">
+                <UserStatus />
+                <MobileNavigation />
+              </div>
+            </nav>
+            <div className="container">{children}</div>
+          </NotificationProvider>
         </AuthProvider>
       </body>
     </html>

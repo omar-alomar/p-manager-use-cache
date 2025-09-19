@@ -97,9 +97,13 @@ export function SearchableSelect({
     )
   }, [options, searchTerm])
 
-  // Reset highlighted index when filtered options change
+  // Reset highlighted index when filtered options change and set first option as default
   useEffect(() => {
-    setHighlightedIndex(-1)
+    if (filteredOptions.length > 0) {
+      setHighlightedIndex(0) // Highlight first option by default
+    } else {
+      setHighlightedIndex(-1)
+    }
   }, [filteredOptions])
 
   // Handle opening/closing dropdown
@@ -144,7 +148,8 @@ export function SearchableSelect({
         e.preventDefault()
         if (highlightedIndex >= 0 && filteredOptions[highlightedIndex]) {
           selectOption(filteredOptions[highlightedIndex])
-        } else if (filteredOptions.length === 1) {
+        } else if (filteredOptions.length > 0) {
+          // Select the first option if available
           selectOption(filteredOptions[0])
         }
         return
@@ -206,6 +211,9 @@ export function SearchableSelect({
         e.preventDefault()
         if (highlightedIndex >= 0 && filteredOptions[highlightedIndex]) {
           selectOption(filteredOptions[highlightedIndex])
+        } else if (filteredOptions.length > 0) {
+          // If no option is highlighted but there are options, select the first one
+          selectOption(filteredOptions[0])
         }
         break
       case 'Escape':
