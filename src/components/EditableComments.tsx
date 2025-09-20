@@ -9,7 +9,7 @@ interface EditableCommentsProps {
   title: string
   clientId: number | null
   body: string
-  apfo: Date | null
+  milestone: Date | null
   mbaNumber: string
   coFileNumbers: string
   dldReviewer: string
@@ -22,7 +22,7 @@ export function EditableComments({
   title,
   clientId,
   body,
-  apfo,
+  milestone,
   mbaNumber,
   coFileNumbers,
   dldReviewer,
@@ -56,7 +56,7 @@ export function EditableComments({
         title,
         clientId,
         body: comments,
-        apfo,
+        milestone,
         mbaNumber,
         coFileNumbers,
         dldReviewer,

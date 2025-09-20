@@ -16,6 +16,7 @@ import { ProjectEmptyStateActions } from "@/components/ProjectEmptyStateActions"
 import { CommentForm } from "@/components/CommentForm"
 import { CommentItem } from "@/components/CommentItem"
 import { ProjectHeroActions } from "@/components/ProjectHeroActions"
+import { MilestoneItem } from "@/components/MilestoneItem"
 
 export default async function ProjectPage({
   params,
@@ -191,10 +192,15 @@ async function ProjectHero({ projectId }: { projectId: string }) {
                   {project.clientRef.name}
                 </Link>
               )}
-              {project.apfos && project.apfos.length > 0 && (() => {
-                const nearestApfo = project.apfos.reduce((nearest, current) => {
+              {project.milestones && project.milestones.length > 0 && (() => {
+                // Filter out completed milestones
+                const activeMilestones = project.milestones.filter(milestone => !milestone.completed)
+                
+                if (activeMilestones.length === 0) return null
+                
+                const nearestMilestone = activeMilestones.reduce((nearest, current) => {
                   const now = new Date()
-                  // Normalize to UTC midnight for date-only comparison (APFO dates are stored in UTC)
+                  // Normalize to UTC midnight for date-only comparison (milestone dates are stored in UTC)
                   const todayUTC = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()))
                   const nearestDate = new Date(nearest.date)
                   const nearestDateUTC = new Date(Date.UTC(nearestDate.getUTCFullYear(), nearestDate.getUTCMonth(), nearestDate.getUTCDate()))
@@ -212,24 +218,24 @@ async function ProjectHero({ projectId }: { projectId: string }) {
                   return nearest
                 })
                 
-                // Calculate APFO color class based on date proximity
-                const getApfoColorClass = (apfoDate: Date) => {
+                // Calculate milestone color class based on date proximity
+                const getMilestoneColorClass = (milestoneDate: Date) => {
                   const now = new Date()
-                  const apfo = new Date(apfoDate)
-                  const diffTime = apfo.getTime() - now.getTime()
+                  const milestone = new Date(milestoneDate)
+                  const diffTime = milestone.getTime() - now.getTime()
                   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
                   
                   if (diffDays <= 14) {
-                    return 'apfo-urgent' // Red - within 2 weeks
+                    return 'milestone-urgent' // Red - within 2 weeks
                   } else if (diffDays <= 30) {
-                    return 'apfo-warning' // Yellow - within a month
+                    return 'milestone-warning' // Yellow - within a month
                   } else {
-                    return 'apfo-safe' // Green - more than a month
+                    return 'milestone-safe' // Green - more than a month
                   }
                 }
                 
                 return (
-                  <span className={`hero-tag apfo ${getApfoColorClass(nearestApfo.date)}`}>
+                  <span className={`hero-tag milestone ${getMilestoneColorClass(nearestMilestone.date)}`}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                       <polyline points="14,2 14,8 20,8"/>
@@ -237,7 +243,7 @@ async function ProjectHero({ projectId }: { projectId: string }) {
                       <line x1="16" y1="17" x2="8" y2="17"/>
                       <polyline points="10,9 9,9 8,9"/>
                     </svg>
-                    {formatDate(nearestApfo.date)}
+                    {formatDate(nearestMilestone.date)}
                   </span>
                 )
               })()}
@@ -250,7 +256,7 @@ async function ProjectHero({ projectId }: { projectId: string }) {
                 title={project.title}
                 clientId={project.clientId}
                 body={project.body}
-                apfo={project.apfo}
+                milestone={project.milestone}
                 mbaNumber={project.mbaNumber || ""}
                 coFileNumbers={project.coFileNumbers || ""}
                 dldReviewer={project.dldReviewer || ""}
@@ -358,41 +364,25 @@ async function ProjectDetails({ projectId }: { projectId: string }) {
           </div>
         )}
 
-        {project.apfos && project.apfos.length > 0 && (
+        {project.milestones && project.milestones.length > 0 && (
           <div className="detail-item">
             <label className="detail-label">
               Milestones
             </label>
             <div className="detail-value">
-              <div className="apfo-details-grid">
-                {project.apfos
+              <div className="milestone-details-grid">
+                {project.milestones
                   .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                  .map((apfo, index) => {
-                    // Calculate APFO color class based on date proximity
-                    const getApfoColorClass = (apfoDate: Date) => {
-                      const now = new Date()
-                      const apfo = new Date(apfoDate)
-                      const diffTime = apfo.getTime() - now.getTime()
-                      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-                      
-                      if (diffDays <= 14) {
-                        return 'apfo-urgent' // Red - within 2 weeks
-                      } else if (diffDays <= 30) {
-                        return 'apfo-warning' // Yellow - within a month
-                      } else {
-                        return 'apfo-safe' // Green - more than a month
-                      }
-                    }
-                    
-                    return (
-                      <div key={apfo.id || index} className={`apfo-detail-card ${getApfoColorClass(apfo.date)}`}>
-                        <div className="apfo-detail-date">
-                          {formatDate(apfo.date)}
-                        </div>
-                        <div className="apfo-detail-item">{apfo.item}</div>
-                      </div>
-                    )
-                  })}
+                  .map((milestone, index) => (
+                    <MilestoneItem
+                      key={milestone.id || index}
+                      id={milestone.id}
+                      date={milestone.date}
+                      item={milestone.item}
+                      completed={milestone.completed || false}
+                      projectId={project.id}
+                    />
+                  ))}
               </div>
             </div>
           </div>

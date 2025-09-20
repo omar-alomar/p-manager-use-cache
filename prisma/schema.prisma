@@ -51,7 +51,7 @@ model Project {
   clientId Int?
   body   String
   userId Int
-  apfo   DateTime?
+  milestone   DateTime?
   mbaNumber String @default("")
   coFileNumbers String @default("")
   dldReviewer String @default("")
@@ -61,13 +61,14 @@ model Project {
   clientRef Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
   comments Comment[]
   tasks Task[]
-  apfos Apfo[]
+  milestones Milestone[]
 }
 
-model Apfo {
+model Milestone {
   id        Int      @id @default(autoincrement())
   date      DateTime
   item      String
+  completed Boolean  @default(false)
   projectId Int
   createdAt DateTime @default(now())
 

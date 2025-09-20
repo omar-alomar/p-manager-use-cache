@@ -64,7 +64,7 @@ function ProjectsTableSkeleton() {
             <th>MBA #</th>
             <th>Co File #&apos;s</th>
             <th>P<br />MGR</th>
-            <th>APFO<br />DATE</th>
+            <th>MILESTONE<br />DATE</th>
             <th>OVERVIEW</th>
           </tr>
         </thead>

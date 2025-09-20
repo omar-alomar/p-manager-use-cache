@@ -217,8 +217,8 @@ async function UserProjectsWithTasks({ userId }: { userId: string }) {
             client={project.clientRef?.name || 'No client specified'}
             clientId={project.clientRef?.id}
             body={project.body}
-            apfo={project.apfo}
-            apfos={project.apfos}
+            milestone={project.milestone}
+            milestones={project.milestones}
             userId={project.userId}
             showManager={true}
             tasks={projectUserTasks}

@@ -44,7 +44,7 @@ async function createProjects() {
   return Promise.all(
     seedData.projects.map(async project => {
       // Convert MM/DD/YYYY string to ISO date string (UTC)
-      const convertApfoDate = (dateStr: string) => {
+      const convertMilestoneDate = (dateStr: string) => {
         return convertToUTCISO(dateStr)
       }
 
@@ -55,7 +55,7 @@ async function createProjects() {
           clientId: project.clientId,
           body: project.body,
           userId: project.userId,
-          apfo: convertApfoDate(project.apfo),
+          milestone: convertMilestoneDate(project.milestone),
           mbaNumber: project.mbaNumber,
           coFileNumbers: project.coFileNumbers,
           dldReviewer: project.dldReviewer,
@@ -99,22 +99,22 @@ async function createComments() {
   )
 }
 
-async function createApfos() {
-  await prisma.apfo.deleteMany()
+async function createMilestones() {
+  await prisma.milestone.deleteMany()
   return Promise.all(
-    seedData.apfos.map(async apfo => {
+    seedData.milestones.map(async milestone => {
       // Convert MM/DD/YYYY string to ISO date string
-      const convertApfoDate = (dateStr: string) => {
+      const convertMilestoneDate = (dateStr: string) => {
         const [month, day, year] = dateStr.split('/')
         return new Date(parseInt(year), parseInt(month) - 1, parseInt(day)).toISOString()
       }
 
-      return prisma.apfo.create({
+      return prisma.milestone.create({
         data: {
-          id: apfo.id,
-          projectId: apfo.projectId,
-          date: convertApfoDate(apfo.date),
-          item: apfo.item,
+          id: milestone.id,
+          projectId: milestone.projectId,
+          date: convertMilestoneDate(milestone.date),
+          item: milestone.item,
         },
       })
     })
@@ -127,7 +127,7 @@ async function main() {
   await createProjects()
   await createTasks()
   await createComments()
-  await createApfos()
+  await createMilestones()
 }
 
 main()

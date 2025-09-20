@@ -95,7 +95,7 @@ Production deployment instructions including:
 Comprehensive feature descriptions including:
 - Core features overview
 - Project management
-- Milestone tracking (APFO system)
+- Milestone tracking (Milestone system)
 - Task management
 - Client management
 - Team management
@@ -148,7 +148,7 @@ src/
 - **Project** - Project information and management
 - **Task** - Task assignments and tracking
 - **Client** - Client information and management
-- **Apfo** - Milestone tracking
+- **Milestone** - Milestone tracking
 - **Comment** - Project comments and communication
 
 ## 🔒 Security

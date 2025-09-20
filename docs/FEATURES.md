@@ -43,13 +43,13 @@ Individual project pages provide detailed views with:
 - Milestone tracking
 - File attachments (future feature)
 
-### 2. Milestone Tracking (APFO System)
+### 2. Milestone Tracking (Milestone System)
 
 #### Smart Milestone Management
 The platform features an intelligent milestone tracking system that handles multiple milestones per project with smart date logic.
 
 **Features:**
-- **Multiple Milestones**: Support for multiple APFO entries per project
+- **Multiple Milestones**: Support for multiple milestone entries per project
 - **Smart Date Filtering**: Automatically filters out milestones older than 7 days
 - **Color-coded Urgency**:
   - 🔴 Red: Within 2 weeks (urgent)

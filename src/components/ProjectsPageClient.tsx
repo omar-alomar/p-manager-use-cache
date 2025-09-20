@@ -15,63 +15,63 @@ function isMoreThan7DaysPast(date: Date): boolean {
   return diffDays > 7
 }
 
-// Helper function to filter out milestones that are more than 7 days past
-function filterRecentMilestones<T extends { date: Date }>(apfos: T[] | undefined): T[] {
-  if (!apfos || apfos.length === 0) return []
+// Helper function to filter out milestones that are more than 7 days past or completed
+function filterRecentMilestones<T extends { date: Date; completed?: boolean }>(milestones: T[] | undefined): T[] {
+  if (!milestones || milestones.length === 0) return []
   
-  return apfos.filter(apfo => !isMoreThan7DaysPast(apfo.date))
+  return milestones.filter(milestone => !isMoreThan7DaysPast(milestone.date) && !milestone.completed)
 }
 
-// Function to get the nearest APFO date from multiple APFO entries
-function getNearestApfoDate(apfos: { date: Date }[] | undefined, fallbackApfo: Date | null): Date | null {
-  // First filter out milestones more than 7 days past
-  const recentApfos = filterRecentMilestones(apfos)
+// Function to get the nearest milestone date from multiple milestone entries
+function getNearestMilestoneDate(milestones: { date: Date; completed?: boolean }[] | undefined, fallbackMilestone: Date | null): Date | null {
+  // First filter out milestones more than 7 days past or completed
+  const recentMilestones = filterRecentMilestones(milestones)
   
-  if (recentApfos.length === 0) {
+  if (recentMilestones.length === 0) {
     // If no recent milestones, check if fallback is also too old
-    if (fallbackApfo && isMoreThan7DaysPast(fallbackApfo)) {
+    if (fallbackMilestone && isMoreThan7DaysPast(fallbackMilestone)) {
       return null
     }
-    return fallbackApfo
+    return fallbackMilestone
   }
   
   const now = new Date()
-  // Normalize to UTC midnight for date-only comparison (APFO dates are stored in UTC)
+  // Normalize to UTC midnight for date-only comparison (milestone dates are stored in UTC)
   const todayUTC = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()))
-  const futureApfos = recentApfos.filter(apfo => {
-    const apfoDate = new Date(apfo.date)
-    const apfoDateUTC = new Date(Date.UTC(apfoDate.getUTCFullYear(), apfoDate.getUTCMonth(), apfoDate.getUTCDate()))
-    return apfoDateUTC >= todayUTC
+  const futureMilestones = recentMilestones.filter(milestone => {
+    const milestoneDate = new Date(milestone.date)
+    const milestoneDateUTC = new Date(Date.UTC(milestoneDate.getUTCFullYear(), milestoneDate.getUTCMonth(), milestoneDate.getUTCDate()))
+    return milestoneDateUTC >= todayUTC
   })
   
-  if (futureApfos.length === 0) {
+  if (futureMilestones.length === 0) {
     // If no future dates, return the most recent past date (within 7 days)
-    return recentApfos.reduce((nearest, current) => 
+    return recentMilestones.reduce((nearest, current) => 
       new Date(current.date) > new Date(nearest.date) ? current : nearest
     ).date
   }
   
   // Return the nearest future date
-  return futureApfos.reduce((nearest, current) => 
+  return futureMilestones.reduce((nearest, current) => 
     new Date(current.date) < new Date(nearest.date) ? current : nearest
   ).date
 }
 
-// Function to determine APFO color class based on date proximity
-function getApfoColorClass(apfoDate: Date | null): string {
-  if (!apfoDate) return 'apfo-neutral'
+// Function to determine milestone color class based on date proximity
+function getMilestoneColorClass(milestoneDate: Date | null): string {
+  if (!milestoneDate) return 'milestone-neutral'
   
   const now = new Date()
-  const apfo = new Date(apfoDate)
-  const diffTime = apfo.getTime() - now.getTime()
+  const milestone = new Date(milestoneDate)
+  const diffTime = milestone.getTime() - now.getTime()
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
   
   if (diffDays <= 14) {
-    return 'apfo-urgent' // Red - within 2 weeks
+    return 'milestone-urgent' // Red - within 2 weeks
   } else if (diffDays <= 30) {
-    return 'apfo-warning' // Yellow - within a month
+    return 'milestone-warning' // Yellow - within a month
   } else {
-    return 'apfo-safe' // Green - more than a month
+    return 'milestone-safe' // Green - more than a month
   }
 }
 
@@ -82,8 +82,8 @@ interface Project {
   clientId: number | null
   clientCompany: string | null
   body: string
-  apfo: Date | null
-  apfos?: { id: number; date: Date; item: string }[]
+  milestone: Date | null
+  milestones?: { id: number; date: Date; item: string; completed?: boolean }[]
   mbaNumber: string | null
   coFileNumbers: string
   dldReviewer: string
@@ -105,7 +105,7 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
   const [search, setSearch] = useState("")
   const [projectManagerFilter, setProjectManagerFilter] = useState<number | null>(null)
   const [sortConfig, setSortConfig] = useState<{
-    key: 'title' | 'mbaNumber' | 'userId' | 'apfo' | null
+    key: 'title' | 'mbaNumber' | 'userId' | 'milestone' | null
     direction: 'asc' | 'desc' | 'none'
   }>({ key: null, direction: 'none' })
 
@@ -117,7 +117,7 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
   }, [users])
 
   // Handle sorting
-  const handleSort = (key: 'title' | 'mbaNumber' | 'userId' | 'apfo') => {
+  const handleSort = (key: 'title' | 'mbaNumber' | 'userId' | 'milestone') => {
     setSortConfig(prevConfig => {
       if (prevConfig.key === key) {
         // If clicking the same column, cycle through: asc -> desc -> none -> asc
@@ -205,18 +205,18 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
           return bName.localeCompare(aName)
         }
       })
-    } else if (sortConfig.key === 'apfo' && sortConfig.direction !== 'none') {
+    } else if (sortConfig.key === 'milestone' && sortConfig.direction !== 'none') {
       filtered.sort((a, b) => {
-        const aNearestApfo = getNearestApfoDate(a.apfos, a.apfo)
-        const bNearestApfo = getNearestApfoDate(b.apfos, b.apfo)
+        const aNearestMilestone = getNearestMilestoneDate(a.milestones, a.milestone)
+        const bNearestMilestone = getNearestMilestoneDate(b.milestones, b.milestone)
         
-        // Handle null APFO dates - put them at the end
-        if (!aNearestApfo && !bNearestApfo) return 0
-        if (!aNearestApfo) return 1
-        if (!bNearestApfo) return -1
+        // Handle null milestone dates - put them at the end
+        if (!aNearestMilestone && !bNearestMilestone) return 0
+        if (!aNearestMilestone) return 1
+        if (!bNearestMilestone) return -1
         
-        const aDate = new Date(aNearestApfo).getTime()
-        const bDate = new Date(bNearestApfo).getTime()
+        const aDate = new Date(aNearestMilestone).getTime()
+        const bDate = new Date(bNearestMilestone).getTime()
         
         if (sortConfig.direction === 'asc') {
           return aDate - bDate
@@ -336,11 +336,11 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
               </th>
               <th 
                 className="sortable-header" 
-                onClick={() => handleSort('apfo')}
+                onClick={() => handleSort('milestone')}
                 style={{ cursor: 'pointer', userSelect: 'none' }}
               >
                 MILESTONES
-                {sortConfig.key === 'apfo' && sortConfig.direction !== 'none' && (
+                {sortConfig.key === 'milestone' && sortConfig.direction !== 'none' && (
                   <span style={{ marginLeft: '4px' }}>
                     {sortConfig.direction === 'asc' ? '↑' : '↓'}
                   </span>
@@ -380,7 +380,7 @@ function ProjectRow({ project, userMap }: { project: Project; userMap: Map<numbe
           title={project.title}
           clientId={project.clientId}
           body={project.body}
-          apfo={project.apfo}
+          milestone={project.milestone}
           coFileNumbers={project.coFileNumbers || ""}
           dldReviewer={project.dldReviewer || ""}
           userId={project.userId}
@@ -393,7 +393,7 @@ function ProjectRow({ project, userMap }: { project: Project; userMap: Map<numbe
           title={project.title}
           clientId={project.clientId}
           body={project.body}
-          apfo={project.apfo}
+          milestone={project.milestone}
           mbaNumber={project.mbaNumber || ""}
           dldReviewer={project.dldReviewer || ""}
           userId={project.userId}
@@ -408,30 +408,30 @@ function ProjectRow({ project, userMap }: { project: Project; userMap: Map<numbe
           <span className="pmgr-placeholder">-</span>
         )}
       </td>
-      <td className="apfo-date">
+      <td className="milestone-date">
         {(() => {
-          const nearestApfo = getNearestApfoDate(project.apfos, project.apfo)
+          const nearestMilestone = getNearestMilestoneDate(project.milestones, project.milestone)
           
           // If we have multiple milestones, show only recent ones (within 7 days)
-          if (project.apfos && project.apfos.length > 0) {
-            const recentApfos = filterRecentMilestones(project.apfos)
+          if (project.milestones && project.milestones.length > 0) {
+            const recentMilestones = filterRecentMilestones(project.milestones)
             
-            if (recentApfos.length === 0) {
-              return <span className="apfo-neutral">No recent milestones</span>
+            if (recentMilestones.length === 0) {
+              return <span className="milestone-neutral">No recent milestones</span>
             }
             
             return (
-              <div className="apfo-multiple">
-                {recentApfos
+              <div className="milestone-multiple">
+                {recentMilestones
                   .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                  .map((apfo, index) => {
-                    const isNearest = nearestApfo && new Date(apfo.date).getTime() === new Date(nearestApfo).getTime()
+                  .map((milestone, index) => {
+                    const isNearest = nearestMilestone && new Date(milestone.date).getTime() === new Date(nearestMilestone).getTime()
                     return (
-                      <div key={apfo.id || index} className={`apfo-entry ${isNearest ? 'apfo-nearest' : ''}`}>
-                        <span className={`apfo-highlight ${getApfoColorClass(apfo.date)}`}>
-                          {formatDate(apfo.date)}
+                      <div key={milestone.id || index} className={`milestone-entry ${isNearest ? 'milestone-nearest' : ''}`}>
+                        <span className={`milestone-highlight ${getMilestoneColorClass(milestone.date)}`}>
+                          {formatDate(milestone.date)}
                         </span>
-                        <span className="apfo-item">{apfo.item}</span>
+                        <span className="milestone-item">{milestone.item}</span>
                       </div>
                     )
                   })}
@@ -439,10 +439,10 @@ function ProjectRow({ project, userMap }: { project: Project; userMap: Map<numbe
             )
           }
           
-          // Fallback to single APFO date
-          return nearestApfo && (
-            <span className={`apfo-highlight ${getApfoColorClass(nearestApfo)}`}>
-              {formatDate(nearestApfo)}
+          // Fallback to single milestone date
+          return nearestMilestone && (
+            <span className={`milestone-highlight ${getMilestoneColorClass(nearestMilestone)}`}>
+              {formatDate(nearestMilestone)}
             </span>
           )
         })()}
@@ -454,7 +454,7 @@ function ProjectRow({ project, userMap }: { project: Project; userMap: Map<numbe
           title={project.title}
           clientId={project.clientId}
           body={project.body}
-          apfo={project.apfo}
+          milestone={project.milestone}
           mbaNumber={project.mbaNumber || ""}
           coFileNumbers={project.coFileNumbers || ""}
           dldReviewer={project.dldReviewer || ""}

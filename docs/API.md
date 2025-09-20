@@ -84,7 +84,7 @@ Get all projects for the current user.
 **Query Parameters:**
 - `search` (optional): Search term for filtering
 - `manager` (optional): Filter by project manager ID
-- `sort` (optional): Sort field (apfo, title, etc.)
+- `sort` (optional): Sort field (milestone, title, etc.)
 - `order` (optional): Sort order (asc, desc)
 
 **Response:**
@@ -96,8 +96,8 @@ Get all projects for the current user.
     "client": "Client Name",
     "clientId": 1,
     "body": "Project description",
-    "apfo": "2024-12-31T00:00:00.000Z",
-    "apfos": [
+    "milestone": "2024-12-31T00:00:00.000Z",
+    "milestones": [
       {
         "id": 1,
         "date": "2024-12-31T00:00:00.000Z",
@@ -124,8 +124,8 @@ Get a specific project by ID.
   "client": "Client Name",
   "clientId": 1,
   "body": "Project description",
-  "apfo": "2024-12-31T00:00:00.000Z",
-  "apfos": [...],
+  "milestone": "2024-12-31T00:00:00.000Z",
+  "milestones": [...],
   "mbaNumber": "MBA-001",
   "coFileNumbers": "CO-001, CO-002",
   "dldReviewer": "Reviewer Name",
@@ -143,7 +143,7 @@ Create a new project.
   "title": "New Project",
   "clientId": 1,
   "body": "Project description",
-  "apfo": "2024-12-31T00:00:00.000Z",
+  "milestone": "2024-12-31T00:00:00.000Z",
   "mbaNumber": "MBA-002",
   "coFileNumbers": "CO-003",
   "dldReviewer": "Reviewer Name"

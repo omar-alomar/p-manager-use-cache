@@ -40,7 +40,7 @@ export async function updateProjectCommentsAction(
     title: string
     clientId: number | null
     body: string  // This is the comments field
-    apfo: Date | null
+    milestone: Date | null
     mbaNumber: string | null
     coFileNumbers: string
     dldReviewer: string
@@ -62,7 +62,7 @@ export async function updateProjectCoFilesAction(
     title: string
     clientId: number | null
     body: string
-    apfo: Date | null
+    milestone: Date | null
     mbaNumber: string | null
     coFileNumbers: string
     dldReviewer: string
@@ -84,7 +84,7 @@ export async function updateProjectDldReviewerAction(
     title: string
     clientId: number | null
     body: string
-    apfo: Date | null
+    milestone: Date | null
     mbaNumber: string | null
     coFileNumbers: string
     dldReviewer: string
@@ -106,7 +106,7 @@ export async function updateProjectMbaNumberAction(
     title: string
     clientId: number | null
     body: string
-    apfo: Date | null
+    milestone: Date | null
     mbaNumber: string | null
     coFileNumbers: string
     dldReviewer: string
@@ -127,26 +127,26 @@ export async function getProjectsAction() {
 }
 
 function validateProject(formData: FormData) {
-  const errors: { title?: string; clientId?: string, body?: string; apfo?: string; mbaNumber?: string; coFileNumbers?: string; dldReviewer?: string; userId?: string } = {}
+  const errors: { title?: string; clientId?: string, body?: string; milestone?: string; mbaNumber?: string; coFileNumbers?: string; dldReviewer?: string; userId?: string } = {}
   const title = formData.get("title") as string
   const clientId = formData.get("clientId") as string
   const body = formData.get("body") as string
-  const apfo = formData.get("apfo") as string
+  const milestone = formData.get("milestone") as string
   const mbaNumber = formData.get("mbaNumber") as string
   const coFileNumbers = formData.get("coFileNumbers") as string
   const dldReviewer = formData.get("dldReviewer") as string
   const userId = Number(formData.get("userId"))
   
   // Parse milestone entries
-  const apfos: { date: Date; item: string }[] = []
-  let apfoIndex = 0
-  while (formData.get(`apfoDate_${apfoIndex}`)) {
-    const date = formData.get(`apfoDate_${apfoIndex}`) as string
-    const item = formData.get(`apfoItem_${apfoIndex}`) as string
+  const milestones: { date: Date; item: string }[] = []
+  let milestoneIndex = 0
+  while (formData.get(`milestoneDate_${milestoneIndex}`)) {
+    const date = formData.get(`milestoneDate_${milestoneIndex}`) as string
+    const item = formData.get(`milestoneItem_${milestoneIndex}`) as string
     if (date) {
-      apfos.push({ date: new Date(date), item: item || "" })
+      milestones.push({ date: new Date(date), item: item || "" })
     }
-    apfoIndex++
+    milestoneIndex++
   }
   
   let isValid = true
@@ -177,12 +177,12 @@ function validateProject(formData: FormData) {
     title, 
     clientId: clientId ? Number(clientId) : null, 
     body, 
-    apfo: apfo ? new Date(apfo) : null, 
+    milestone: milestone ? new Date(milestone) : null, 
     mbaNumber: mbaNumber || "", 
     coFileNumbers, 
     dldReviewer, 
     userId,
-    apfos
+    milestones
   } : undefined, errors] as const
 }
 

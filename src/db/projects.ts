@@ -28,7 +28,7 @@ export async function getProjects({
     where,
     include: {
       clientRef: true,
-      apfos: {
+      milestones: {
         orderBy: {
           date: 'asc'
         }
@@ -46,7 +46,7 @@ export async function getProject(projectId: string | number) {
     where: { id: Number(projectId) },
     include: {
       clientRef: true,
-      apfos: {
+      milestones: {
         orderBy: {
           date: 'asc'
         }
@@ -64,7 +64,7 @@ export async function getUserProjects(userId: string | number) {
     where: { userId: Number(userId) },
     include: {
       clientRef: true,
-      apfos: {
+      milestones: {
         orderBy: {
           date: 'asc'
         }
@@ -95,7 +95,7 @@ export async function getProjectsWithUserTasks(userId: string | number) {
     },
     include: {
       clientRef: true,
-      apfos: {
+      milestones: {
         orderBy: {
           date: 'asc'
         }
@@ -111,22 +111,22 @@ export async function createProject({
   title,
   clientId,
   body,
-  apfo,
+  milestone,
   mbaNumber,
   coFileNumbers,
   dldReviewer,
   userId,
-  apfos,
+  milestones,
 }: {
   title: string
   clientId: number | null
   body: string
-  apfo: Date | null
+  milestone: Date | null
   mbaNumber: string | null
   coFileNumbers: string
   dldReviewer: string
   userId: number
-  apfos?: { date: Date; item: string }[]
+  milestones?: { date: Date; item: string }[]
 }) {
   await wait(500)
   
@@ -137,17 +137,17 @@ export async function createProject({
         connect: { id: clientId }
       } : undefined,
       body,
-      apfo,
+      milestone,
       mbaNumber: mbaNumber || "",
       coFileNumbers,
       dldReviewer,
       user: {
         connect: { id: userId }
       },
-      apfos: apfos ? {
-        create: apfos.map(apfo => ({
-          date: apfo.date,
-          item: apfo.item
+      milestones: milestones ? {
+        create: milestones.map(milestone => ({
+          date: milestone.date,
+          item: milestone.item
         }))
       } : undefined,
     },
@@ -165,10 +165,10 @@ export async function createProject({
 }
 
 function validateProject(formData: FormData) {
-  const errors: { title?: string; body?: string; apfo?: string; mbaNumber?: string; coFileNumbers?: string; dldReviewer?: string; userId?: string } = {}
+  const errors: { title?: string; body?: string; milestone?: string; mbaNumber?: string; coFileNumbers?: string; dldReviewer?: string; userId?: string } = {}
   const title = formData.get("title") as string
   const body = formData.get("body") as string
-  const apfo = formData.get("apfo") as string
+  const milestone = formData.get("milestone") as string
   const mbaNumber = formData.get("mbaNumber") as string
   const coFileNumbers = formData.get("coFileNumbers") as string
   const dldReviewer = formData.get("dldReviewer") as string
@@ -185,8 +185,8 @@ function validateProject(formData: FormData) {
     isValid = false
   }
 
-  if (apfo === "") {
-    errors.apfo = "Required"
+  if (milestone === "") {
+    errors.milestone = "Required"
     isValid = false
   }
 
@@ -195,7 +195,7 @@ function validateProject(formData: FormData) {
     isValid = false
   }
 
-  return [isValid ? { title, body, apfo: apfo ? new Date(apfo) : null, mbaNumber: mbaNumber || "", coFileNumbers, dldReviewer, userId } : undefined, errors] as const
+  return [isValid ? { title, body, milestone: milestone ? new Date(milestone) : null, mbaNumber: mbaNumber || "", coFileNumbers, dldReviewer, userId } : undefined, errors] as const
 }
 
 export async function updateProject(
@@ -204,22 +204,22 @@ export async function updateProject(
     title,
     clientId,
     body,
-    apfo,
+    milestone,
     mbaNumber,
     coFileNumbers,
     dldReviewer,
     userId,
-    apfos,
+    milestones,
   }: {
     title: string
     clientId: number | null
     body: string
-    apfo: Date | null
+    milestone: Date | null
     mbaNumber: string | null
     coFileNumbers: string
     dldReviewer: string
     userId: number
-    apfos?: { date: Date; item: string }[]
+    milestones?: { date: Date; item: string }[]
   }
 ) {
   await wait(500)
@@ -234,18 +234,18 @@ export async function updateProject(
         disconnect: true
       },
       body,
-      apfo,
+      milestone,
       mbaNumber: mbaNumber || "",
       coFileNumbers,
       dldReviewer,
       user: {
         connect: { id: userId }
       },
-      apfos: apfos ? {
+      milestones: milestones ? {
         deleteMany: {},
-        create: apfos.map(apfo => ({
-          date: apfo.date,
-          item: apfo.item
+        create: milestones.map(milestone => ({
+          date: milestone.date,
+          item: milestone.item
         }))
       } : undefined,
     },
@@ -278,49 +278,53 @@ export async function deleteProject(projectId: string | number) {
   return project
 }
 
-export function getNearestApfoDate(apfos: { date: Date }[]): Date | null {
-  if (!apfos || apfos.length === 0) return null
+export function getNearestMilestoneDate(milestones: { date: Date; completed?: boolean }[]): Date | null {
+  if (!milestones || milestones.length === 0) return null
+  
+  // Filter out completed milestones
+  const activeMilestones = milestones.filter(milestone => !milestone.completed)
+  if (activeMilestones.length === 0) return null
   
   const now = new Date()
-  // Normalize to UTC midnight for date-only comparison (APFO dates are stored in UTC)
+  // Normalize to UTC midnight for date-only comparison (milestone dates are stored in UTC)
   const todayUTC = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()))
-  const futureApfos = apfos.filter(apfo => {
-    const apfoDate = new Date(apfo.date)
-    const apfoDateUTC = new Date(Date.UTC(apfoDate.getUTCFullYear(), apfoDate.getUTCMonth(), apfoDate.getUTCDate()))
-    return apfoDateUTC >= todayUTC
+  const futureMilestones = activeMilestones.filter(milestone => {
+    const milestoneDate = new Date(milestone.date)
+    const milestoneDateUTC = new Date(Date.UTC(milestoneDate.getUTCFullYear(), milestoneDate.getUTCMonth(), milestoneDate.getUTCDate()))
+    return milestoneDateUTC >= todayUTC
   })
   
-  if (futureApfos.length === 0) {
+  if (futureMilestones.length === 0) {
     // If no future dates, return the most recent past date
-    return apfos.reduce((nearest, current) => 
+    return activeMilestones.reduce((nearest, current) => 
       current.date > nearest.date ? current : nearest
     ).date
   }
   
   // Return the nearest future date
-  return futureApfos.reduce((nearest, current) => 
+  return futureMilestones.reduce((nearest, current) => 
     current.date < nearest.date ? current : nearest
   ).date
 }
 
 export async function addMilestone(
   projectId: number,
-  milestone: { date: Date; item: string }
+  milestoneData: { date: Date; item: string }
 ) {
   await wait(500)
   
-  const apfo = await prisma.apfo.create({
+  const milestone = await prisma.milestone.create({
     data: {
       projectId,
-      date: milestone.date,
-      item: milestone.item
+      date: milestoneData.date,
+      item: milestoneData.item
     }
   })
 
   revalidateTag(`projects:id=${projectId}`)
   revalidateTag("projects:all")
 
-  return apfo
+  return milestone
 }
 
 function wait(duration: number) {

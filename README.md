@@ -9,7 +9,7 @@ A comprehensive project management platform built with Next.js 15, React 19, and
 - **Task Management**: Assign and track tasks across projects and team members
 - **Client Management**: Manage client information and project associations
 - **Team Management**: User profiles, roles, and permissions
-- **Milestone Tracking**: APFO (milestone) tracking with color-coded urgency indicators
+- **Milestone Tracking**: Milestone tracking with color-coded urgency indicators
 - **Real-time Updates**: Live editing of project details, comments, and assignments
 
 ### Key Features
@@ -83,7 +83,7 @@ src/
 - `clientId` - Associated client (nullable)
 - `body` - Project description/comments
 - `userId` - Project manager
-- `apfo` - Main milestone date (nullable)
+- `milestone` - Main milestone date (nullable)
 - `mbaNumber` - MBA reference number
 - `coFileNumbers` - Co file references
 - `dldReviewer` - DLD reviewer assignment
@@ -108,7 +108,7 @@ src/
 - `createdAt` - Client creation timestamp
 - `updatedAt` - Last update timestamp
 
-#### Apfo (Milestone)
+#### Milestone
 - `id` - Primary key
 - `date` - Milestone date
 - `item` - Milestone description

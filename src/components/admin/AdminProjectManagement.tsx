@@ -10,7 +10,7 @@ interface Project {
   client: string
   body: string
   userId: number
-  apfo: Date | null
+  milestone: Date | null
   mbaNumber: string
   coFileNumbers: string
   dldReviewer: string

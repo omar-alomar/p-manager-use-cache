@@ -5,12 +5,12 @@ import { notFound } from "next/navigation"
 import { BriefcaseIcon, UserIcon, CalendarIcon } from "./icons"
 import { formatDate } from "@/utils/dateUtils"
 
-function getApfoStatus(apfo: Date | null): string {
-  if (!apfo) return 'normal'
+function getMilestoneStatus(milestone: Date | null): string {
+  if (!milestone) return 'normal'
   
   const today = new Date()
-  const apfoDate = new Date(apfo)
-  const diffTime = apfoDate.getTime() - today.getTime()
+  const milestoneDate = new Date(milestone)
+  const diffTime = milestoneDate.getTime() - today.getTime()
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
   
   if (diffDays <= 14) return 'urgent'
@@ -24,8 +24,8 @@ export function ProjectCard({
   client,
   clientId,
   body,
-  apfo,
-  apfos,
+  milestone,
+  milestones,
   userId,
   showManager = true,
   showClient = true
@@ -35,8 +35,8 @@ export function ProjectCard({
   client: string
   clientId?: number | null
   body: string
-  apfo: Date | null
-  apfos?: { id: number; date: Date; item: string }[]
+  milestone: Date | null
+  milestones?: { id: number; date: Date; item: string; completed?: boolean }[]
   userId: number
   showManager?: boolean
   showClient?: boolean
@@ -62,34 +62,41 @@ export function ProjectCard({
         
         <div className="project-meta">
           {(() => {
-            // Use nearest APFO date from apfos array if available, otherwise fall back to single apfo
-            const nearestApfo = apfos && apfos.length > 0 
-              ? apfos.reduce((nearest, current) => {
-                  const now = new Date()
-                  // Normalize to UTC midnight for date-only comparison (APFO dates are stored in UTC)
-                  const todayUTC = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()))
-                  const nearestDate = new Date(nearest.date)
-                  const nearestDateUTC = new Date(Date.UTC(nearestDate.getUTCFullYear(), nearestDate.getUTCMonth(), nearestDate.getUTCDate()))
-                  const currentDate = new Date(current.date)
-                  const currentDateUTC = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), currentDate.getUTCDate()))
+            // Use nearest milestone date from milestones array if available, otherwise fall back to single milestone
+            const nearestMilestone = milestones && milestones.length > 0 
+              ? (() => {
+                  // Filter out completed milestones
+                  const activeMilestones = milestones.filter(milestone => !milestone.completed)
                   
-                  // If current is today or in the future and nearest is not, or if both are today/future and current is closer
-                  if (currentDateUTC >= todayUTC && (nearestDateUTC < todayUTC || currentDate < nearestDate)) {
-                    return current
-                  }
-                  // If both are in the past, take the most recent
-                  if (currentDateUTC < todayUTC && nearestDateUTC < todayUTC && currentDate > nearestDate) {
-                    return current
-                  }
-                  return nearest
-                })
-              : apfo ? { date: apfo, item: '' } : null
+                  if (activeMilestones.length === 0) return null
+                  
+                  return activeMilestones.reduce((nearest, current) => {
+                    const now = new Date()
+                    // Normalize to UTC midnight for date-only comparison (milestone dates are stored in UTC)
+                    const todayUTC = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()))
+                    const nearestDate = new Date(nearest.date)
+                    const nearestDateUTC = new Date(Date.UTC(nearestDate.getUTCFullYear(), nearestDate.getUTCMonth(), nearestDate.getUTCDate()))
+                    const currentDate = new Date(current.date)
+                    const currentDateUTC = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), currentDate.getUTCDate()))
+                    
+                    // If current is today or in the future and nearest is not, or if both are today/future and current is closer
+                    if (currentDateUTC >= todayUTC && (nearestDateUTC < todayUTC || currentDate < nearestDate)) {
+                      return current
+                    }
+                    // If both are in the past, take the most recent
+                    if (currentDateUTC < todayUTC && nearestDateUTC < todayUTC && currentDate > nearestDate) {
+                      return current
+                    }
+                    return nearest
+                  })
+                })()
+              : milestone ? { date: milestone, item: '' } : null
 
-            return nearestApfo && (
-              <div className={`project-apfo ${getApfoStatus(nearestApfo.date)}`}>
-                <span className="apfo-label">APFO</span>
-                <span className="apfo-value">
-                  {formatDate(nearestApfo.date)}
+            return nearestMilestone && (
+              <div className={`project-milestone ${getMilestoneStatus(nearestMilestone.date)}`}>
+                <span className="milestone-label">MILESTONE</span>
+                <span className="milestone-value">
+                  {formatDate(nearestMilestone.date)}
                 </span>
               </div>
             )

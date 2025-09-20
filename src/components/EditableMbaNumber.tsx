@@ -9,7 +9,7 @@ interface EditableMbaNumberProps {
   title: string
   clientId: number | null
   body: string
-  apfo: Date | null
+  milestone: Date | null
   coFileNumbers: string
   dldReviewer: string
   userId: number
@@ -21,7 +21,7 @@ export function EditableMbaNumber({
   title,
   clientId,
   body,
-  apfo,
+  milestone,
   coFileNumbers,
   dldReviewer,
   userId 
@@ -52,7 +52,7 @@ export function EditableMbaNumber({
         title,
         clientId,
         body,
-        apfo,
+        milestone,
         mbaNumber,
         coFileNumbers,
         dldReviewer,

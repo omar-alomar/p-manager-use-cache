@@ -22,12 +22,12 @@ export function ProjectForm({
   client: string
   clientId: number | null
   body: string
-  apfo: Date | null
+  milestone: Date | null
   mbaNumber: string
   coFileNumbers: string
   dldReviewer: string
   userId: number
-  apfos?: { id: number; date: Date; item: string }[]
+  milestones?: { id: number; date: Date; item: string; completed?: boolean }[]
   }
 }) {
   const action =
@@ -37,10 +37,10 @@ export function ProjectForm({
   const [clientsList, setClientsList] = useState(clients)
   const [selectedClientId, setSelectedClientId] = useState<number | undefined>(project?.clientId || undefined)
   const [selectedUserId, setSelectedUserId] = useState<number | undefined>(project?.userId)
-  const [apfoEntries, setApfoEntries] = useState<{ date: string; item: string }[]>(
-    project?.apfos?.map(apfo => ({
-      date: apfo.date.toISOString().split('T')[0],
-      item: apfo.item
+  const [milestoneEntries, setMilestoneEntries] = useState<{ date: string; item: string }[]>(
+    project?.milestones?.map(milestone => ({
+      date: milestone.date.toISOString().split('T')[0],
+      item: milestone.item
     })) || []
   )
   
@@ -64,17 +64,17 @@ export function ProjectForm({
     setShowClientModal(false)
   }
 
-  // Handle APFO entry management
-  const addApfoEntry = () => {
-    setApfoEntries(prev => [...prev, { date: '', item: '' }])
+  // Handle milestone entry management
+  const addMilestoneEntry = () => {
+    setMilestoneEntries(prev => [...prev, { date: '', item: '' }])
   }
 
-  const removeApfoEntry = (index: number) => {
-    setApfoEntries(prev => prev.filter((_, i) => i !== index))
+  const removeMilestoneEntry = (index: number) => {
+    setMilestoneEntries(prev => prev.filter((_, i) => i !== index))
   }
 
-  const updateApfoEntry = (index: number, field: 'date' | 'item', value: string) => {
-    setApfoEntries(prev => prev.map((entry, i) => 
+  const updateMilestoneEntry = (index: number, field: 'date' | 'item', value: string) => {
+    setMilestoneEntries(prev => prev.map((entry, i) => 
       i === index ? { ...entry, [field]: value } : entry
     ))
   }
@@ -134,43 +134,43 @@ export function ProjectForm({
             noResultsText="No project managers found"
           />
         </FormGroup>
-        <div className="apfo-section">
+        <div className="milestone-section">
           <label>Milestones (Optional)</label>
-          <div className="apfo-entries">
-            {apfoEntries.length === 0 ? (
-              <div className="apfo-empty-state">
+          <div className="milestone-entries">
+            {milestoneEntries.length === 0 ? (
+              <div className="milestone-empty-state">
                 <p>No milestones added. Click &quot;Add Milestone&quot; to add one, or leave empty if not needed.</p>
               </div>
             ) : (
-              apfoEntries.map((entry, index) => (
-              <div key={index} className="apfo-entry">
-                <div className="apfo-entry-fields">
+              milestoneEntries.map((entry, index) => (
+              <div key={index} className="milestone-entry">
+                <div className="milestone-entry-fields">
                   <FormGroup>
-                    <label htmlFor={`apfoDate_${index}`}>Date</label>
+                    <label htmlFor={`milestoneDate_${index}`}>Date</label>
                     <input
                       type="date"
-                      name={`apfoDate_${index}`}
-                      id={`apfoDate_${index}`}
+                      name={`milestoneDate_${index}`}
+                      id={`milestoneDate_${index}`}
                       value={entry.date}
-                      onChange={(e) => updateApfoEntry(index, 'date', e.target.value)}
+                      onChange={(e) => updateMilestoneEntry(index, 'date', e.target.value)}
                     />
                   </FormGroup>
                   <FormGroup>
-                    <label htmlFor={`apfoItem_${index}`}>Item</label>
+                    <label htmlFor={`milestoneItem_${index}`}>Item</label>
                     <input
                       type="text"
-                      name={`apfoItem_${index}`}
-                      id={`apfoItem_${index}`}
+                      name={`milestoneItem_${index}`}
+                      id={`milestoneItem_${index}`}
                       placeholder="e.g., Preliminary Site Plan"
                       value={entry.item}
-                      onChange={(e) => updateApfoEntry(index, 'item', e.target.value)}
+                      onChange={(e) => updateMilestoneEntry(index, 'item', e.target.value)}
                     />
                   </FormGroup>
                   <button
                     type="button"
-                    className="btn-remove-apfo"
-                    onClick={() => removeApfoEntry(index)}
-                    title="Remove APFO entry"
+                    className="btn-remove-milestone"
+                    onClick={() => removeMilestoneEntry(index)}
+                    title="Remove milestone entry"
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <line x1="18" y1="6" x2="6" y2="18"/>
@@ -183,8 +183,8 @@ export function ProjectForm({
             )}
             <button
               type="button"
-              className="btn-add-apfo"
-              onClick={addApfoEntry}
+              className="btn-add-milestone"
+              onClick={addMilestoneEntry}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="12" y1="5" x2="12" y2="19"/>
@@ -193,8 +193,8 @@ export function ProjectForm({
               Add Milestone
             </button>
           </div>
-          {'apfo' in state && state.apfo && (
-            <div className="error-message">{state.apfo}</div>
+          {'milestone' in state && state.milestone && (
+            <div className="error-message">{state.milestone}</div>
           )}
         </div>
       </div>
@@ -292,7 +292,7 @@ export function SkeletonProjectForm() {
           <SkeletonInput />
         </FormGroup>
         <FormGroup>
-          <label htmlFor="apfo">APFO</label>
+          <label htmlFor="milestone">Milestone</label>
           <SkeletonInput />
         </FormGroup>
       </div>

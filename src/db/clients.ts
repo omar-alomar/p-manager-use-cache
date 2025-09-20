@@ -50,7 +50,7 @@ export async function getClient(clientId: string | number) {
       projects: {
         include: {
           user: true,
-          apfos: {
+          milestones: {
             orderBy: {
               date: 'asc'
             }

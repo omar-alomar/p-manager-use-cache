@@ -2042,7 +2042,7 @@ h6 { font-size: var(--heading-6); font-weight: 500; line-height: 1.4; margin: 0 
   text-align: right;
 }
 
-.card-apfo {
+.card-milestone {
   font-size: var(--text-body);
   font-weight: bold;
   color: #333;
@@ -2377,12 +2377,12 @@ input[type="checkbox"]:checked::after {
   text-decoration: underline;
 }
 
-.apfo-date {
+.milestone-date {
   text-align: center;
   min-width: 100px;
 }
 
-.apfo-highlight {
+.milestone-highlight {
   background-color: #fef3c7;
   color: #92400e;
   padding: 0.25rem 0.5rem;
@@ -2392,22 +2392,22 @@ input[type="checkbox"]:checked::after {
   font-family: monospace;
 }
 
-.apfo-urgent {
+.milestone-urgent {
   background-color: #fecaca;
   color: #991b1b;
 }
 
-.apfo-warning {
+.milestone-warning {
   background-color: #fef3c7;
   color: #92400e;
 }
 
-.apfo-safe {
+.milestone-safe {
   background-color: #d1fae5;
   color: #065f46;
 }
 
-.apfo-neutral {
+.milestone-neutral {
   background-color: #f3f4f6;
   color: #6b7280;
 }
@@ -2947,14 +2947,14 @@ input[type="checkbox"]:checked::after {
   }
 
 /* APFO Entries Styles */
-.apfo-section {
+.milestone-section {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
   flex-grow: 1;
 }
 
-.apfo-section > label {
+.milestone-section > label {
   font-weight: 600;
   color: var(--neutral-700);
   font-size: var(--font-size-sm);
@@ -2963,13 +2963,13 @@ input[type="checkbox"]:checked::after {
   margin-bottom: var(--space-1);
 }
 
-.apfo-entries {
+.milestone-entries {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
 }
 
-.apfo-entry {
+.milestone-entry {
   background: var(--surface-50);
   border: 1px solid var(--surface-200);
   border-radius: var(--radius-md);
@@ -2977,32 +2977,32 @@ input[type="checkbox"]:checked::after {
   transition: all var(--transition-normal);
 }
 
-.apfo-entry:hover {
+.milestone-entry:hover {
   background: var(--surface-100);
   border-color: var(--primary-200);
   box-shadow: var(--shadow-sm);
 }
 
-.apfo-entry-fields {
+.milestone-entry-fields {
   display: flex;
   gap: var(--space-3);
   align-items: flex-end;
   position: relative;
 }
 
-.apfo-entry-fields .form-group {
+.milestone-entry-fields .form-group {
   flex-grow: 1;
 }
 
-.apfo-entry-fields .form-group:first-child {
+.milestone-entry-fields .form-group:first-child {
   flex: 0 0 200px;
 }
 
-.apfo-entry-fields .form-group:last-child {
+.milestone-entry-fields .form-group:last-child {
   flex: 1;
 }
 
-.btn-remove-apfo {
+.btn-remove-milestone {
   background: var(--error-100);
   color: var(--error-600);
   border: 1px solid var(--error-200);
@@ -3018,14 +3018,14 @@ input[type="checkbox"]:checked::after {
   align-self: flex-end;
 }
 
-.btn-remove-apfo:hover {
+.btn-remove-milestone:hover {
   background: var(--error-200);
   color: var(--error-700);
   border-color: var(--error-300);
   transform: translateY(-1px);
 }
 
-.btn-add-apfo {
+.btn-add-milestone {
   background: var(--primary-100);
   color: var(--primary-600);
   border: 1px solid var(--primary-200);
@@ -3041,7 +3041,7 @@ input[type="checkbox"]:checked::after {
   align-self: flex-start;
 }
 
-.btn-add-apfo:hover {
+.btn-add-milestone:hover {
   background: var(--primary-200);
   color: var(--primary-700);
   border-color: var(--primary-300);
@@ -3050,30 +3050,30 @@ input[type="checkbox"]:checked::after {
 }
 
 /* APFO Display Styles */
-.apfo-info {
+.milestone-info {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
 }
 
-.apfo-date {
+.milestone-date {
   font-weight: 600;
   color: inherit;
 }
 
-.apfo-item {
+.milestone-item {
   font-size: var(--font-size-sm);
   opacity: 0.8;
   font-style: italic;
 }
 
-.apfo-list {
+.milestone-list {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
 }
 
-.apfo-list .apfo-entry {
+.milestone-list .milestone-entry {
   background: var(--surface-50);
   border: 1px solid var(--surface-200);
   border-radius: var(--radius-md);
@@ -3081,34 +3081,34 @@ input[type="checkbox"]:checked::after {
   transition: all var(--transition-normal);
 }
 
-.apfo-list .apfo-entry:hover {
+.milestone-list .milestone-entry:hover {
   background: var(--surface-100);
   border-color: var(--primary-200);
   box-shadow: var(--shadow-sm);
 }
 
-.apfo-list .apfo-date {
+.milestone-list .milestone-date {
   font-weight: 600;
   color: var(--primary-700);
   font-size: var(--font-size-sm);
   margin-bottom: var(--space-1);
 }
 
-.apfo-list .apfo-item {
+.milestone-list .milestone-item {
   color: var(--neutral-600);
   font-size: var(--font-size-sm);
   font-style: italic;
 }
 
 /* Multiple APFO Display in Table */
-.apfo-multiple {
+.milestone-multiple {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
   max-width: 200px;
 }
 
-.apfo-multiple .apfo-entry {
+.milestone-multiple .milestone-entry {
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -3119,23 +3119,23 @@ input[type="checkbox"]:checked::after {
   transition: all var(--transition-fast);
 }
 
-.apfo-multiple .apfo-entry:hover {
+.milestone-multiple .milestone-entry:hover {
   background: var(--surface-100);
   border-color: var(--primary-200);
 }
 
-.apfo-multiple .apfo-entry.apfo-nearest {
+.milestone-multiple .milestone-entry.milestone-nearest {
   background: var(--primary-50);
   border-color: var(--primary-300);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.apfo-multiple .apfo-highlight {
+.milestone-multiple .milestone-highlight {
   font-weight: 600;
   font-size: var(--font-size-xs);
 }
 
-.apfo-multiple .apfo-item {
+.milestone-multiple .milestone-item {
   font-size: var(--font-size-xs);
   color: var(--neutral-600);
   font-style: italic;
@@ -3146,14 +3146,14 @@ input[type="checkbox"]:checked::after {
 }
 
 /* APFO Details Grid - Horizontal Layout for Project Details */
-.apfo-details-grid {
+.milestone-details-grid {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-3);
   margin-top: var(--space-2);
 }
 
-.apfo-detail-card {
+.milestone-detail-card {
   background: var(--surface-50);
   border: 1px solid var(--surface-200);
   border-radius: var(--radius-md);
@@ -3164,82 +3164,103 @@ input[type="checkbox"]:checked::after {
   max-width: 300px;
 }
 
-.apfo-detail-card.apfo-urgent {
+.milestone-detail-card.milestone-urgent {
   background: var(--error-50);
   border-color: var(--error-200);
   border-left: 3px solid var(--error-500);
 }
 
-.apfo-detail-card.apfo-warning {
+.milestone-detail-card.milestone-warning {
   background: var(--warning-50);
   border-color: var(--warning-200);
   border-left: 3px solid var(--warning-500);
 }
 
-.apfo-detail-card.apfo-safe {
+.milestone-detail-card.milestone-safe {
   background: var(--success-50);
   border-color: var(--success-200);
   border-left: 3px solid var(--success-500);
 }
 
-.apfo-detail-card:hover {
+.milestone-detail-card:hover {
   transform: translateY(-1px);
   box-shadow: var(--shadow-sm);
 }
 
-.apfo-detail-card.apfo-urgent:hover {
+.milestone-detail-card.milestone-urgent:hover {
   background: var(--error-100);
   border-color: var(--error-300);
 }
 
-.apfo-detail-card.apfo-warning:hover {
+.milestone-detail-card.milestone-warning:hover {
   background: var(--warning-100);
   border-color: var(--warning-300);
 }
 
-.apfo-detail-card.apfo-safe:hover {
+.milestone-detail-card.milestone-safe:hover {
   background: var(--success-100);
   border-color: var(--success-300);
 }
 
-.apfo-detail-date {
+.milestone-detail-date {
   font-weight: 600;
   font-size: var(--font-size-base);
   color: var(--primary-700);
   margin-bottom: var(--space-1);
 }
 
-.apfo-detail-card.apfo-urgent .apfo-detail-date {
+.milestone-detail-card.milestone-urgent .milestone-detail-date {
   color: var(--error-800);
 }
 
-.apfo-detail-card.apfo-warning .apfo-detail-date {
+.milestone-detail-card.milestone-warning .milestone-detail-date {
   color: var(--warning-800);
 }
 
-.apfo-detail-card.apfo-safe .apfo-detail-date {
+.milestone-detail-card.milestone-safe .milestone-detail-date {
   color: var(--success-800);
 }
 
-.apfo-detail-item {
+.milestone-detail-item {
   font-size: var(--font-size-sm);
   color: var(--neutral-600);
   font-style: italic;
   line-height: 1.3;
 }
 
+/* Completed milestone styling */
+.milestone-detail-card.completed {
+  opacity: 0.7;
+  background: var(--neutral-100);
+  border-color: var(--neutral-300);
+}
+
+.milestone-detail-card.completed .milestone-detail-date {
+  color: var(--neutral-500);
+}
+
+.milestone-detail-item.strikethrough {
+  text-decoration: line-through;
+  color: var(--neutral-500);
+}
+
+.milestone-detail-card.updating {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 /* APFO Color Classes for Hero Tags */
-.hero-tag.apfo.apfo-urgent {
+.hero-tag.milestone.milestone-urgent {
   background-color: #fecaca;
   color: #991b1b;
 }
 
-.hero-tag.apfo.apfo-warning {
+.hero-tag.milestone.milestone-warning {
   background-color: #fef3c7;
   color: #92400e;
 }
 
-.hero-tag.apfo.apfo-safe {
+.hero-tag.milestone.milestone-safe {
   background-color: #d1fae5;
   color: #065f46;
 }
@@ -6878,7 +6899,7 @@ td.comments {
   flex-shrink: 0;
 }
 
-.project-apfo {
+.project-milestone {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -6891,42 +6912,42 @@ td.comments {
 }
 
 /* APFO urgent (within 2 weeks) */
-.project-apfo.urgent {
+.project-milestone.urgent {
   background: var(--error-50);
   border-color: var(--error-200);
 }
 
-.project-apfo.urgent .apfo-label {
+.project-milestone.urgent .milestone-label {
   color: var(--error-700);
 }
 
-.project-apfo.urgent .apfo-value {
+.project-milestone.urgent .milestone-value {
   color: var(--error-800);
 }
 
 /* APFO warning (within 4 weeks) */
-.project-apfo.warning {
+.project-milestone.warning {
   background: var(--warning-50);
   border-color: var(--warning-200);
 }
 
-.project-apfo.warning .apfo-label {
+.project-milestone.warning .milestone-label {
   color: var(--warning-700);
 }
 
-.project-apfo.warning .apfo-value {
+.project-milestone.warning .milestone-value {
   color: var(--warning-800);
 }
 
 /* APFO normal (more than 4 weeks) - default green */
-.apfo-label {
+.milestone-label {
   color: var(--success-700);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
-.apfo-value {
+.milestone-value {
   color: var(--success-800);
   font-weight: 700;
   font-size: var(--font-size-sm);
@@ -7469,7 +7490,7 @@ td.comments {
   text-decoration: underline;
 }
 
-.hero-tag.apfo {
+.hero-tag.milestone {
   background: var(--success-50);
   color: var(--success-700);
   border: 1px solid var(--success-200);
