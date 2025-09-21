@@ -1,8 +1,7 @@
 import Link from "next/link"
 import { Skeleton, SkeletonButton } from "./Skeleton"
 import { getUser } from "@/db/users"
-import { notFound } from "next/navigation"
-import { BriefcaseIcon, UserIcon, CalendarIcon } from "./icons"
+import { BriefcaseIcon, UserIcon } from "./icons"
 import { formatDate } from "@/utils/dateUtils"
 
 function getMilestoneStatus(milestone: Date | null): string {

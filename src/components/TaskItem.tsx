@@ -63,87 +63,6 @@ export function TaskItem({
     setEditedTitle(title)
   }, [title])
 
-  useEffect(() => {
-    if (isEditing && inputRef.current) {
-      inputRef.current.focus()
-      inputRef.current.select()
-    }
-  }, [isEditing])
-
-  // Simple click outside handler
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (!isEditing) return
-      
-      const target = event.target as Node
-      
-      // Don't exit if clicking inside the task card
-      if (taskCardRef.current && taskCardRef.current.contains(target)) {
-        return
-      }
-      
-      // Don't exit if clicking on SearchableSelect elements (they're rendered via portal)
-      if (target instanceof Element) {
-        const isSearchableSelect = target.closest('.searchable-select__dropdown') || 
-                                 target.closest('.searchable-select__trigger') ||
-                                 target.closest('.searchable-select')
-        if (isSearchableSelect) {
-          return
-        }
-      }
-      
-      // Click is outside both task card and dropdowns, save and exit
-      handleSaveTitle()
-    }
-
-    if (isEditing) {
-      document.addEventListener('mousedown', handleClickOutside)
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [isEditing])
-
-
-  async function handleChange(newCompleted: boolean) {
-    console.log(`Task ${id}: Changing from ${completed} to ${newCompleted}`)
-    
-    setCompleted(newCompleted)
-    setIsUpdating(true)
-    
-    try {
-      await updateTaskCompletionAction(id, {
-        title: editedTitle,
-        completed: newCompleted,
-        userId,
-        projectId: projectId || undefined
-      })
-      
-      await new Promise(resolve => setTimeout(resolve, 100))
-      
-      const verifiedTask = await verifyTaskUpdate(id)
-      console.log(`Task ${id}: Verified state = ${verifiedTask?.completed}`)
-      
-      if (verifiedTask?.completed !== newCompleted) {
-        console.error(`Task ${id}: Update failed! Reverting...`)
-        setCompleted(!newCompleted)
-        alert('Update failed! Please try again.')
-      } else {
-        setUpdateCount(c => c + 1)
-        // Notify parent component of the update
-        onUpdate?.(id, { completed: newCompleted })
-      }
-      
-    } catch (error) {
-      console.error('Failed to update task:', error)
-      setCompleted(!newCompleted)
-      alert('Update failed! Please try again.')
-    } finally {
-      setIsUpdating(false)
-    }
-  }
-
   const handleSaveTitle = useCallback(async () => {
     if (editedTitle.trim() === '') {
       setEditedTitle(currentTitle)
@@ -191,6 +110,87 @@ export function TaskItem({
       setIsEditing(false)
     }
   }, [editedTitle, currentTitle, id, completed, userId, projectId, onUpdate])
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus()
+      inputRef.current.select()
+    }
+  }, [isEditing])
+
+  // Simple click outside handler
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!isEditing) return
+      
+      const target = event.target as Node
+      
+      // Don't exit if clicking inside the task card
+      if (taskCardRef.current && taskCardRef.current.contains(target)) {
+        return
+      }
+      
+      // Don't exit if clicking on SearchableSelect elements (they're rendered via portal)
+      if (target instanceof Element) {
+        const isSearchableSelect = target.closest('.searchable-select__dropdown') || 
+                                 target.closest('.searchable-select__trigger') ||
+                                 target.closest('.searchable-select')
+        if (isSearchableSelect) {
+          return
+        }
+      }
+      
+      // Click is outside both task card and dropdowns, save and exit
+      handleSaveTitle()
+    }
+
+    if (isEditing) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isEditing, handleSaveTitle])
+
+
+  async function handleChange(newCompleted: boolean) {
+    console.log(`Task ${id}: Changing from ${completed} to ${newCompleted}`)
+    
+    setCompleted(newCompleted)
+    setIsUpdating(true)
+    
+    try {
+      await updateTaskCompletionAction(id, {
+        title: editedTitle,
+        completed: newCompleted,
+        userId,
+        projectId: projectId || undefined
+      })
+      
+      await new Promise(resolve => setTimeout(resolve, 100))
+      
+      const verifiedTask = await verifyTaskUpdate(id)
+      console.log(`Task ${id}: Verified state = ${verifiedTask?.completed}`)
+      
+      if (verifiedTask?.completed !== newCompleted) {
+        console.error(`Task ${id}: Update failed! Reverting...`)
+        setCompleted(!newCompleted)
+        alert('Update failed! Please try again.')
+      } else {
+        setUpdateCount(c => c + 1)
+        // Notify parent component of the update
+        onUpdate?.(id, { completed: newCompleted })
+      }
+      
+    } catch (error) {
+      console.error('Failed to update task:', error)
+      setCompleted(!newCompleted)
+      alert('Update failed! Please try again.')
+    } finally {
+      setIsUpdating(false)
+    }
+  }
 
   function handleKeyDown(e: React.KeyboardEvent) {
     if (e.key === 'Escape') {

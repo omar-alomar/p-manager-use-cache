@@ -55,8 +55,7 @@ export async function createMentions(commentId: number, usernames: string[]) {
 export async function createMentionNotifications(
   commentId: number, 
   mentionedUserIds: number[], 
-  commentAuthorName: string,
-  context: { projectTitle?: string; taskTitle?: string }
+  commentAuthorName: string
 ) {
   if (mentionedUserIds.length === 0) return []
 

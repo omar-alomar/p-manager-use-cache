@@ -1,11 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useNotificationContext } from '@/contexts/NotificationContext';
 import { useAuth } from '@/components/auth/AuthContext';
 
 export function NotificationDemo() {
-  const { addNotification } = useNotificationContext();
   const { user } = useAuth();
   const [isDemoMode, setIsDemoMode] = useState(false);
 

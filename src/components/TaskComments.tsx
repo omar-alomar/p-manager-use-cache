@@ -1,6 +1,5 @@
 import { getTaskComments } from "@/db/comments"
 import { CommentItem } from "@/components/CommentItem"
-import { notFound } from "next/navigation"
 
 interface TaskCommentsProps {
   taskId: string

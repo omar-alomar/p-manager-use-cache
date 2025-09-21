@@ -58,7 +58,6 @@ export function InteractiveProjectCardWithTasks({
   body,
   milestone,
   milestones,
-  userId,
   showManager = true,
   showClient = true,
   tasks,

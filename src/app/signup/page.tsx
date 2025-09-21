@@ -40,7 +40,7 @@ export default function SignupPage() {
         router.push("/projects")
       }
       
-    } catch (_err) {
+    } catch {
       setError("Failed to create account")
     } finally {
       setIsLoading(false)

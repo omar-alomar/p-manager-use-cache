@@ -27,7 +27,6 @@ function QuickAddTaskModalContent({
   presetUserId, 
   presetUserName, 
   presetProjectId,
-  className = "",
   users: propUsers,
   projects: propProjects
 }: QuickAddTaskModalProps) {

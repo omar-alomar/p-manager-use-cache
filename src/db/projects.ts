@@ -164,6 +164,7 @@ export async function createProject({
   return project
 }
 
+/*
 function validateProject(formData: FormData) {
   const errors: { title?: string; body?: string; milestone?: string; mbaNumber?: string; coFileNumbers?: string; dldReviewer?: string; userId?: string } = {}
   const title = formData.get("title") as string
@@ -197,6 +198,7 @@ function validateProject(formData: FormData) {
 
   return [isValid ? { title, body, milestone: milestone ? new Date(milestone) : null, mbaNumber: mbaNumber || "", coFileNumbers, dldReviewer, userId } : undefined, errors] as const
 }
+*/
 
 export async function updateProject(
   projectId: string | number,

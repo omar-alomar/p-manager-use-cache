@@ -21,7 +21,6 @@ export function EditableComments({
   initialComments, 
   title,
   clientId,
-  body,
   milestone,
   mbaNumber,
   coFileNumbers,

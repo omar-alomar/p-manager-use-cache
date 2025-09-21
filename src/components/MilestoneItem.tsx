@@ -12,7 +12,7 @@ interface MilestoneItemProps {
   projectId: number
 }
 
-export function MilestoneItem({ id, date, item, completed, projectId }: MilestoneItemProps) {
+export function MilestoneItem({ id, date, item, completed }: MilestoneItemProps) {
   const [isCompleted, setIsCompleted] = useState(completed)
   const [isUpdating, setIsUpdating] = useState(false)
 

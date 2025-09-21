@@ -9,7 +9,7 @@ interface EditableEmailProps {
   userName: string
 }
 
-export function EditableEmail({ userId, initialEmail, userName }: EditableEmailProps) {
+export function EditableEmail({ userId, initialEmail }: EditableEmailProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [isUpdating, setIsUpdating] = useState(false)
   const [email, setEmail] = useState(initialEmail)

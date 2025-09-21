@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
 import { logOut } from "@/actions/auth"
 import { useAuth } from "@/components/auth/AuthContext"
 import { SettingsIcon } from "@/components/icons"

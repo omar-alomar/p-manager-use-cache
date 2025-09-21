@@ -1,7 +1,6 @@
 "use client"
 
 import { parseMentions, renderMentions } from "@/utils/mentions"
-import { MentionedUser } from "./MentionedUser"
 
 interface CommentTextProps {
   text: string

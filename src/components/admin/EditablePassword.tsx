@@ -9,7 +9,7 @@ interface EditablePasswordProps {
   userName: string
 }
 
-export function EditablePassword({ userId, userName }: EditablePasswordProps) {
+export function EditablePassword({ userId }: EditablePasswordProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [isUpdating, setIsUpdating] = useState(false)
   const [password, setPassword] = useState("")
