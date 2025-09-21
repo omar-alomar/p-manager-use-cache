@@ -8,6 +8,8 @@ import Link from "next/link"
 import { Suspense } from "react"
 import { notFound } from "next/navigation"
 import { TaskItem } from "@/components/TaskItem"
+import { TaskCommentForm } from "@/components/TaskCommentForm"
+import { TaskComments } from "@/components/TaskComments"
 
 export default async function TaskPage({
   params,
@@ -59,6 +61,39 @@ export default async function TaskPage({
                 }
               >
                 <TaskDetails taskId={taskId} />
+              </Suspense>
+            </div>
+          </div>
+
+          {/* Comments Section */}
+          <div className="content-section">
+            <div className="section-header">
+              <div className="section-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+              </div>
+              <div className="section-title-group">
+                <h2 className="section-title">Task Comments</h2>
+                <p className="section-subtitle">Share feedback and discuss this task</p>
+              </div>
+            </div>
+            
+            <div className="section-content">
+              <TaskCommentForm taskId={taskId} />
+              
+              <div className="comments-divider">
+                <span>Recent Comments</span>
+              </div>
+              
+              <Suspense
+                fallback={
+                  <div className="skeleton-content">
+                    <div className="skeleton-comment"></div>
+                  </div>
+                }
+              >
+                <TaskComments taskId={taskId} />
               </Suspense>
             </div>
           </div>

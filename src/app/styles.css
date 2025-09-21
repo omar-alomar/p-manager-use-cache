@@ -1719,6 +1719,12 @@ h6 { font-size: var(--heading-6); font-weight: 500; line-height: 1.4; margin: 0 
   border-color: var(--surface-400);
 }
 
+.task-action-btn.comment-btn:hover {
+  background: var(--info-100);
+  border-color: var(--info-300);
+  color: var(--info-700);
+}
+
 .task-action-btn.edit-btn:hover {
   background: var(--primary-100);
   border-color: var(--primary-300);
@@ -7586,6 +7592,13 @@ td.comments {
 
 /* Project Content Grid */
 .project-content-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+}
+
+/* Task Content Grid */
+.content-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-8);
