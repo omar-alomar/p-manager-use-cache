@@ -2,13 +2,14 @@ import { getRedis } from '@/redis/redis';
 
 export interface NotificationData {
   id: string;
-  type: 'task_assigned' | 'task_completed';
+  type: 'task_assigned' | 'task_completed' | 'mention';
   title: string;
   message: string;
-  taskId: number;
-  taskTitle: string;
+  taskId?: number;
+  taskTitle?: string;
   projectId?: number;
   projectTitle?: string;
+  commentId?: number;
   assignedUserId: number;
   assignedUserName: string;
   assignerUserId?: number;
@@ -207,6 +208,54 @@ export class NotificationService {
     } catch (error) {
       console.error('Error removing user notification from server:', error);
     }
+  }
+
+  async sendMentionNotification(
+    mentionedUserId: number,
+    commentAuthorName: string,
+    commentId: number,
+    commentBody: string,
+    context: { projectTitle?: string; taskTitle?: string; projectId?: number; taskId?: number }
+  ) {
+    console.log('sendMentionNotification called with:', {
+      mentionedUserId,
+      commentAuthorName,
+      commentId,
+      commentBody,
+      context
+    });
+
+    const title = 'You were mentioned in a comment';
+    let message = `${commentAuthorName} mentioned you in a comment`;
+    
+    if (context.projectTitle) {
+      message += ` on project "${context.projectTitle}"`;
+    } else if (context.taskTitle) {
+      message += ` on task "${context.taskTitle}"`;
+    }
+
+    // Add comment preview (truncated to 100 characters)
+    const commentPreview = commentBody.length > 100 
+      ? commentBody.substring(0, 100) + '...' 
+      : commentBody;
+    message += `: "${commentPreview}"`;
+
+    console.log('Sending mention notification:', { title, message, mentionedUserId });
+
+    return this.sendNotification({
+      type: 'mention',
+      title,
+      message,
+      commentId,
+      projectId: context.projectId,
+      projectTitle: context.projectTitle,
+      taskId: context.taskId,
+      taskTitle: context.taskTitle,
+      assignedUserId: mentionedUserId,
+      assignedUserName: '', // Will be filled by the system
+      assignerUserId: undefined,
+      assignerUserName: commentAuthorName,
+    });
   }
 }
 

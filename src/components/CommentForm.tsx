@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react"
 import { addCommentAction } from "@/actions/comments"
 import { useAuth } from "@/components/auth/AuthContext"
+import { MentionAutocomplete } from "./MentionAutocomplete"
 
 interface CommentFormProps {
   projectId: string | number
@@ -57,15 +58,13 @@ export function CommentForm({ projectId }: CommentFormProps) {
 
       <form onSubmit={handleSubmit} className="comment-form">
         <div className="form-group">
-          <textarea
-            id="body"
+          <MentionAutocomplete
             value={body}
-            onChange={(e) => setBody(e.target.value)}
+            onChange={setBody}
+            placeholder="Add a comment... Use @username to mention someone"
             className="form-textarea"
-            placeholder="Add a comment..."
             rows={4}
             disabled={isPending}
-            required
           />
         </div>
 

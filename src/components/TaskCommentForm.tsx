@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react"
 import { addCommentAction } from "@/actions/comments"
 import { useAuth } from "@/components/auth/AuthContext"
+import { MentionAutocomplete } from "./MentionAutocomplete"
 
 interface TaskCommentFormProps {
   taskId: string | number
@@ -54,15 +55,13 @@ export function TaskCommentForm({ taskId }: TaskCommentFormProps) {
           <label htmlFor="comment-body" className="form-label">
             Add a comment
           </label>
-          <textarea
-            id="comment-body"
+          <MentionAutocomplete
             value={body}
-            onChange={(e) => setBody(e.target.value)}
-            placeholder="Share your thoughts about this task..."
+            onChange={setBody}
+            placeholder="Share your thoughts about this task... Use @username to mention someone"
             className="form-textarea"
             rows={3}
             disabled={isPending}
-            required
           />
         </div>
         

@@ -10618,76 +10618,223 @@ td.comments {
     line-height: 1.6;
     color: var(--neutral-800);
   }
-  
-  /* Comment Form */
-  .comment-form-container {
-    background: var(--surface-50);
-    border: 1px solid var(--surface-200);
-    border-radius: var(--radius-lg);
-    padding: var(--space-5);
-    margin-bottom: var(--space-5);
-  }
-  
-  .comment-form {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-  }
-  
-  .comment-form textarea {
-    min-height: 120px;
-    font-size: var(--font-size-base);
-    padding: var(--space-4);
-    border: 1px solid var(--surface-300);
-    border-radius: var(--radius-lg);
-    resize: vertical;
-    line-height: 1.5;
-  }
-  
-  .comment-form textarea:focus {
-    outline: none;
-    border-color: var(--primary-500);
-    box-shadow: 0 0 0 3px var(--primary-100);
-  }
-  
-  .comment-form-actions {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: var(--space-3);
-  }
-  
-  .comment-form .btn {
-    min-width: 120px;
-    min-height: 48px;
-    font-size: var(--font-size-base);
-    font-weight: 600;
-    padding: var(--space-3) var(--space-5);
-  }
-  
-  .comments-divider {
-    text-align: center;
-    margin: var(--space-4) 0;
-    position: relative;
-  }
-  
-  .comments-divider::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: var(--surface-300);
-  }
-  
-  .comments-divider span {
-    background: var(--surface-0);
-    padding: 0 var(--space-3);
-    color: var(--neutral-500);
-    font-size: var(--font-size-sm);
-    position: relative;
-  }
+}
+
+/* Mention Styling */
+.comment-text {
+  color: var(--neutral-700);
+  line-height: 1.5;
+  word-wrap: break-word; /* Break long words if needed */
+}
+
+.mention {
+  background: var(--primary-100);
+  color: var(--primary-700);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  display: inline-block;
+  margin: 0 1px;
+}
+
+.mention:hover {
+  background: var(--primary-200);
+  color: var(--primary-800);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-xs);
+}
+
+/* Notification Bell */
+.notification-bell {
+  position: relative;
+  display: inline-block;
+}
+
+.notification-bell-btn {
+  background: none;
+  border: none;
+  color: var(--neutral-600);
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-bell-btn:hover {
+  background: var(--surface-100);
+  color: var(--neutral-800);
+}
+
+.notification-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: var(--error-500);
+  color: white;
+  border-radius: 50%;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  border: 2px solid var(--surface-0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Mention Autocomplete */
+.mention-autocomplete-container {
+  position: relative;
+  display: block;
+}
+
+.mention-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--surface-0);
+  border: 1px solid var(--surface-200);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 4px;
+}
+
+.mention-suggestion {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid var(--surface-100);
+}
+
+.mention-suggestion:last-child {
+  border-bottom: none;
+}
+
+.mention-suggestion:hover,
+.mention-suggestion.selected {
+  background: var(--primary-50);
+}
+
+.suggestion-avatar {
+  width: 32px;
+  height: 32px;
+  background: var(--primary-100);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.suggestion-avatar svg {
+  color: var(--primary-600);
+  width: 16px;
+  height: 16px;
+}
+
+.suggestion-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.suggestion-name {
+  font-weight: 600;
+  color: var(--neutral-800);
+  font-size: var(--font-size-sm);
+  margin-bottom: 2px;
+}
+
+.suggestion-email {
+  color: var(--neutral-600);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Comment Form */
+.comment-form-container {
+  background: var(--surface-50);
+  border: 1px solid var(--surface-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  margin-bottom: var(--space-5);
+}
+
+.comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.comment-form textarea {
+  min-height: 120px;
+  font-size: var(--font-size-base);
+  padding: var(--space-4);
+  border: 1px solid var(--surface-300);
+  border-radius: var(--radius-lg);
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.comment-form textarea:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px var(--primary-100);
+}
+
+.comment-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.comment-form .btn {
+  min-width: 120px;
+  min-height: 48px;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  padding: var(--space-3) var(--space-5);
+}
+
+.comments-divider {
+  text-align: center;
+  margin: var(--space-4) 0;
+  position: relative;
+}
+
+.comments-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--surface-300);
+}
+
+.comments-divider span {
+  background: var(--surface-0);
+  padding: 0 var(--space-3);
+  color: var(--neutral-500);
+  font-size: var(--font-size-sm);
+  position: relative;
 }
 
 /* Mobile Stats and Grids */
@@ -12137,6 +12284,16 @@ td.comments {
   border-left-color: var(--success-500);
 }
 
+/* Mention notifications - purple accent */
+.notification-item.unread .notification-indicator.mention {
+  background: var(--primary-600);
+}
+
+.notification-item.unread:has(.notification-indicator.mention) {
+  background: var(--primary-25);
+  border-left-color: var(--primary-600);
+}
+
 .notification-item:last-child {
   border-bottom: none;
 }
@@ -12163,6 +12320,10 @@ td.comments {
 
 .notification-indicator.task-completed {
   background: var(--success-500);
+}
+
+.notification-indicator.mention {
+  background: var(--primary-600);
 }
 
 /* Make indicators more subtle for read notifications */

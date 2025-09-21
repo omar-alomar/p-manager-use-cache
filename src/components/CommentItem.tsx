@@ -4,6 +4,7 @@ import { useState, useTransition } from "react"
 import { deleteCommentAction } from "@/actions/comments"
 import { useAuth } from "@/components/auth/AuthContext"
 import { formatDate } from "@/utils/dateUtils"
+import { CommentText } from "./CommentText"
 
 interface Comment {
   id: number
@@ -99,7 +100,9 @@ export function CommentItem({ comment }: CommentItemProps) {
           )}
         </div>
       </div>
-      <div className="comment-body">{comment.body}</div>
+      <div className="comment-body">
+        <CommentText text={comment.body} />
+      </div>
     </div>
   )
 }

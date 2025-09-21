@@ -1,6 +1,9 @@
 "use server"
 
 import { createComment, deleteComment } from "@/db/comments"
+import { createMentions } from "@/db/mentions"
+import { parseMentions, extractMentionedUsernames } from "@/utils/mentions"
+import { notificationService } from "@/services/notificationService"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
 import prisma from "@/db/db"
@@ -40,7 +43,75 @@ export async function addCommentAction(formData: FormData) {
   }
 
   try {
-    await createComment(data.projectId, data.taskId, data.email, data.body, data.userId)
+    // Create the comment
+    const comment = await createComment(data.projectId, data.taskId, data.email, data.body, data.userId)
+    
+    // Parse mentions from the comment body
+    const mentions = parseMentions(data.body)
+    const mentionedUsernames = extractMentionedUsernames(mentions)
+    
+    console.log('Comment body:', data.body)
+    console.log('Parsed mentions:', mentions)
+    console.log('Mentioned usernames:', mentionedUsernames)
+    
+    // Create mentions and notifications if there are any
+    if (mentionedUsernames.length > 0) {
+      const createdMentions = await createMentions(comment.id, mentionedUsernames)
+      const mentionedUserIds = createdMentions.map(m => m.userId)
+      
+      // Get comment author info for notifications
+      const commentAuthor = await prisma.user.findUnique({
+        where: { id: data.userId },
+        select: { name: true }
+      })
+      
+      // Get context for notifications
+      let context: { projectTitle?: string; taskTitle?: string; projectId?: number; taskId?: number } = {}
+      if (data.projectId) {
+        const project = await prisma.project.findUnique({
+          where: { id: Number(data.projectId) },
+          select: { title: true }
+        })
+        if (project) {
+          context.projectTitle = project.title
+          context.projectId = Number(data.projectId)
+        }
+      }
+      if (data.taskId) {
+        const task = await prisma.task.findUnique({
+          where: { id: Number(data.taskId) },
+          select: { title: true }
+        })
+        if (task) {
+          context.taskTitle = task.title
+          context.taskId = Number(data.taskId)
+        }
+      }
+      
+      // Send notifications using the existing notification system
+      if (commentAuthor) {
+        console.log('Sending mention notifications to user IDs:', mentionedUserIds)
+        console.log('Comment author:', commentAuthor.name)
+        console.log('Context:', context)
+        
+        for (const mentionedUserId of mentionedUserIds) {
+          try {
+            const result = await notificationService.sendMentionNotification(
+              mentionedUserId,
+              commentAuthor.name,
+              comment.id,
+              data.body,
+              context
+            )
+            console.log('Notification sent successfully for user', mentionedUserId, ':', result)
+          } catch (error) {
+            console.error('Error sending notification for user', mentionedUserId, ':', error)
+          }
+        }
+      } else {
+        console.log('No comment author found, skipping notifications')
+      }
+    }
     
     // Revalidate the appropriate page to show the new comment
     if (data.projectId) {

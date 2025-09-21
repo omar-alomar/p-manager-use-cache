@@ -174,7 +174,7 @@ export function useNotifications(userId: number | null): UseNotificationsReturn 
         }
         
         // Only process actual notifications
-        if (message.type === 'task_assigned' || message.type === 'task_completed') {
+        if (message.type === 'task_assigned' || message.type === 'task_completed' || message.type === 'mention') {
           addNotification(message as unknown as NotificationData);
         }
       } catch (err) {
