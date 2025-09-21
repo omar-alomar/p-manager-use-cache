@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { updateTaskCompletionAction, verifyTaskUpdate, deleteTaskAction } from "@/actions/tasks"
 import { formatDate } from "@/utils/dateUtils"
 import { SearchableSelect } from "./SearchableSelect"
@@ -144,7 +144,7 @@ export function TaskItem({
     }
   }
 
-  async function handleSaveTitle() {
+  const handleSaveTitle = useCallback(async () => {
     if (editedTitle.trim() === '') {
       setEditedTitle(currentTitle)
       setIsEditing(false)
@@ -190,7 +190,7 @@ export function TaskItem({
       setIsUpdating(false)
       setIsEditing(false)
     }
-  }
+  }, [editedTitle, currentTitle, id, completed, userId, projectId, onUpdate])
 
   function handleKeyDown(e: React.KeyboardEvent) {
     if (e.key === 'Escape') {

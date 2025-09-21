@@ -148,7 +148,7 @@ export function useNotifications(userId: number | null): UseNotificationsReturn 
     } else {
       setNotifications([]);
     }
-  }, [userId]);
+  }, [userId, justCleared]);
 
   useEffect(() => {
     if (!userId) {

@@ -307,6 +307,7 @@ export function SearchableSelect({
         role="combobox"
         aria-expanded={isOpen}
         aria-haspopup="listbox"
+        aria-controls={`${id}-listbox`}
         aria-required={required}
       >
         <span className="searchable-select__value">
@@ -349,6 +350,7 @@ export function SearchableSelect({
             ref={listRef}
             className="searchable-select__options"
             role="listbox"
+            id={`${id}-listbox`}
           >
             {filteredOptions.length > 0 ? (
               filteredOptions.map((option, index) => (

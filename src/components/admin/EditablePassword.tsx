@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { updateUserPasswordAction } from "@/actions/users"
+import { hashPassword, generateSalt } from "@/auth/passwordHasher"
 
 interface EditablePasswordProps {
   userId: number
@@ -42,7 +43,9 @@ export function EditablePassword({ userId, userName }: EditablePasswordProps) {
     setError(null)
     
     try {
-      await updateUserPasswordAction(userId, password)
+      const salt = generateSalt()
+      const hashedPassword = await hashPassword(password, salt)
+      await updateUserPasswordAction(userId, hashedPassword, salt)
       setIsEditing(false)
       setPassword("")
       setConfirmPassword("")

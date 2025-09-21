@@ -41,7 +41,7 @@ export default function LoginPage() {
         router.push("/projects")
       }
       
-    } catch (err) {
+    } catch (_err) {
       setError("Failed to sign in")
     } finally {
       setIsLoading(false)

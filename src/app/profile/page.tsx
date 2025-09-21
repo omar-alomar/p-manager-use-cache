@@ -60,7 +60,7 @@ export default function ProfilePage() {
         // Refresh auth state to get updated user data
         await checkAuth()
       }
-    } catch (err) {
+    } catch (_err) {
       setError("Failed to update profile")
     } finally {
       setIsUpdating(false)
@@ -96,7 +96,7 @@ export default function ProfilePage() {
           confirmPassword: ""
         })
       }
-    } catch (err) {
+    } catch (_err) {
       setError("Failed to change password")
     } finally {
       setIsUpdating(false)

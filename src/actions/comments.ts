@@ -44,7 +44,7 @@ export async function addCommentAction(formData: FormData) {
 
   try {
     // Create the comment
-    const comment = await createComment(data.projectId, data.taskId, data.email, data.body, data.userId)
+    const comment = await createComment(data.projectId ?? null, data.taskId ?? null, data.email, data.body, data.userId)
     
     // Parse mentions from the comment body
     const mentions = parseMentions(data.body)
@@ -66,7 +66,7 @@ export async function addCommentAction(formData: FormData) {
       })
       
       // Get context for notifications
-      let context: { projectTitle?: string; taskTitle?: string; projectId?: number; taskId?: number } = {}
+      const context: { projectTitle?: string; taskTitle?: string; projectId?: number; taskId?: number } = {}
       if (data.projectId) {
         const project = await prisma.project.findUnique({
           where: { id: Number(data.projectId) },

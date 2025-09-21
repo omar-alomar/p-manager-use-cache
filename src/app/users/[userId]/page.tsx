@@ -1,14 +1,12 @@
 import { getProjectsWithUserTasks } from "@/db/projects"
 import { getUserTasks } from "@/db/tasks"
-import { getProjectTasks } from "@/db/tasks"
 import { getUser } from "@/db/users"
-import { ProjectCard, SkeletonProjectCard } from "@/components/ProjectCard"
+import { SkeletonProjectCard } from "@/components/ProjectCard"
 import { Skeleton, SkeletonList } from "@/components/Skeleton"
 import { Suspense } from "react"
 import { notFound, redirect } from "next/navigation"
 import { getCurrentUser } from "@/auth/currentUser"
-import { CalendarIcon, BriefcaseIcon, CheckCircleIcon, ClockIcon, UserIcon, EnvelopeIcon } from "@/components/icons"
-import Link from "next/link"
+import { BriefcaseIcon, CheckCircleIcon, ClockIcon, UserIcon, EnvelopeIcon } from "@/components/icons"
 import { InteractiveProjectCardWithTasks } from "@/components/InteractiveProjectCardWithTasks"
 
 export default async function UserPage({
@@ -226,18 +224,6 @@ async function UserProjectsWithTasks({ userId }: { userId: string }) {
           />
         )
       })}
-    </div>
-  )
-}
-
-async function ProjectManagerInline({ userId }: { userId: number }) {
-  const user = await getUser(userId)
-  if (!user) return null
-
-  return (
-    <div className="project-manager">
-      <UserIcon />
-      <span className="manager-name">{user.name}</span>
     </div>
   )
 }
