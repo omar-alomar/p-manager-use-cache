@@ -1,0 +1,21 @@
+# Use official Node 22 LTS image
+FROM node:22.1.0
+
+# Set working directory inside container
+WORKDIR /app
+
+# Install app dependencies (before copying full code to cache layer)
+COPY package*.json ./
+RUN npm install
+
+# Copy the rest of your app
+COPY . .
+
+# Expose Next.js dev server port
+EXPOSE 3000
+
+# Use environment variable for dev
+ENV NODE_ENV=development
+
+# Start the dev server
+CMD ["npm", "run", "dev"]
