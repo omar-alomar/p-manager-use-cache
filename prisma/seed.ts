@@ -52,13 +52,15 @@ async function createProjects() {
         data: {
           id: project.id,
           title: project.title,
-          clientId: project.clientId,
           body: project.body,
           userId: project.userId,
           milestone: convertMilestoneDate(project.milestone),
           mbaNumber: project.mbaNumber,
           coFileNumbers: project.coFileNumbers,
           dldReviewer: project.dldReviewer,
+          clientRef: project.clientId
+            ? { connect: { id: project.clientId } }
+            : undefined,
         },
       })
     })
