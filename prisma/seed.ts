@@ -58,9 +58,7 @@ async function createProjects() {
           mbaNumber: project.mbaNumber,
           coFileNumbers: project.coFileNumbers,
           dldReviewer: project.dldReviewer,
-          clientRef: project.clientId
-            ? { connect: { id: project.clientId } }
-            : undefined,
+          clientId: project.clientId,
         },
       })
     })
