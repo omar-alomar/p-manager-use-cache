@@ -86,43 +86,24 @@ export function TaskFilters({ taskCounts, users, projects, context = 'all-tasks'
         </div>
       </div>
 
-      {(users && users.length > 0) || (projects && projects.length > 0) ? (
+      {projects && projects.length > 0 && (
         <div className="filter-group filter-group--row">
-          {users && users.length > 0 && (
-            <div className="filter-controls">
-              <label htmlFor="user-filter">Filter by user:</label>
-              <SearchableSelect
-                options={[
-                  { value: '', label: 'All Users' },
-                  ...users.map(user => ({ value: user.id, label: user.name }))
-                ]}
-                value={userFilter || ''}
-                onChange={(value) => setUserFilter(value ? Number(value) : null)}
-                placeholder="All Users"
-                id="user-filter"
-                noResultsText="No users found"
-              />
-            </div>
-          )}
-
-          {projects && projects.length > 0 && (
-            <div className="filter-controls">
-              <label htmlFor="project-filter">Filter by project:</label>
-              <SearchableSelect
-                options={[
-                  { value: '', label: 'All Projects' },
-                  ...projects.map(project => ({ value: project.id, label: project.title }))
-                ]}
-                value={projectFilter || ''}
-                onChange={(value) => setProjectFilter(value ? Number(value) : null)}
-                placeholder="All Projects"
-                id="project-filter"
-                noResultsText="No projects found"
-              />
-            </div>
-          )}
+          <div className="filter-controls">
+            <label htmlFor="project-filter">Filter by project:</label>
+            <SearchableSelect
+              options={[
+                { value: '', label: 'All Projects' },
+                ...projects.map(project => ({ value: project.id, label: project.title }))
+              ]}
+              value={projectFilter || ''}
+              onChange={(value) => setProjectFilter(value ? Number(value) : null)}
+              placeholder="All Projects"
+              id="project-filter"
+              noResultsText="No projects found"
+            />
+          </div>
         </div>
-      ) : null}
+      )}
     </div>
   )
 }

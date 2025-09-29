@@ -93,7 +93,9 @@ export function ProjectCard({
 
             return nearestMilestone && (
               <div className={`project-milestone ${getMilestoneStatus(nearestMilestone.date)}`}>
-                <span className="milestone-label">MILESTONE</span>
+                <span className="milestone-label">
+                  {nearestMilestone.item || 'MILESTONE'}
+                </span>
                 <span className="milestone-value">
                   {formatDate(nearestMilestone.date)}
                 </span>

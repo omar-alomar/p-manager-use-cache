@@ -4,6 +4,7 @@ import { useTaskFilter } from "@/contexts/TaskFilterContext"
 import { TaskStats } from "./TaskStats"
 import { TaskFilters } from "./TaskFilters"
 import { TaskList } from "./TaskList"
+import { UserTaskSection } from "./UserTaskSection"
 
 interface Task {
   id: number
@@ -24,16 +25,13 @@ interface TasksPageClientProps {
 }
 
 export function TasksPageClient({ tasks, users, projects }: TasksPageClientProps) {
-  const { filter, sort, search, userFilter, projectFilter } = useTaskFilter()
+  const { filter, sort, search, projectFilter } = useTaskFilter()
 
-  // Filter tasks based on current filter
+  // Filter tasks based on current filter (excluding user filter since we're grouping by user)
   const filteredTasks = tasks.filter(task => {
     // Status filter - derive from completed field
     if (filter === 'in_progress' && task.completed) return false
     if (filter === 'completed' && !task.completed) return false
-    
-    // User filter
-    if (userFilter && task.userId !== userFilter) return false
     
     // Project filter
     if (projectFilter && task.projectId !== projectFilter) return false
@@ -51,15 +49,30 @@ export function TasksPageClient({ tasks, users, projects }: TasksPageClientProps
     return true
   })
 
-  // Sort tasks
-  const sortedTasks = [...filteredTasks].sort((a, b) => {
-    if (sort === 'title') {
-      return a.title.localeCompare(b.title)
-    } else {
-      // Default to created date (newest first)
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  // Group tasks by user
+  const tasksByUser = filteredTasks.reduce((acc, task) => {
+    const userId = task.userId
+    if (!acc[userId]) {
+      acc[userId] = []
     }
+    acc[userId].push(task)
+    return acc
+  }, {} as Record<number, typeof tasks>)
+
+  // Sort tasks within each user group
+  Object.keys(tasksByUser).forEach(userId => {
+    tasksByUser[Number(userId)].sort((a, b) => {
+      if (sort === 'title') {
+        return a.title.localeCompare(b.title)
+      } else {
+        // Default to created date (newest first)
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      }
+    })
   })
+
+  // Sort users by name for consistent ordering
+  const sortedUsers = users.sort((a, b) => a.name.localeCompare(b.name))
 
   // Calculate stats for all tasks (not filtered)
   const stats = {
@@ -85,16 +98,20 @@ export function TasksPageClient({ tasks, users, projects }: TasksPageClientProps
         <TaskFilters taskCounts={taskCounts} users={users} projects={projects} context="all-tasks" />
       </div>
 
-      {/* Task Lists */}
-      <div className="task-lists-container">
-        <TaskList 
-          title="All Tasks" 
-          tasks={sortedTasks} 
-          users={users} 
-          projects={projects}
-          showProject={true}
-          showUser={true}
-        />
+      {/* User Task Sections */}
+      <div className="user-sections-container">
+        {sortedUsers.map(user => {
+          const userTasks = tasksByUser[user.id] || []
+          return (
+            <UserTaskSection
+              key={user.id}
+              user={user}
+              tasks={userTasks}
+              users={users}
+              projects={projects}
+            />
+          )
+        })}
       </div>
     </div>
   )

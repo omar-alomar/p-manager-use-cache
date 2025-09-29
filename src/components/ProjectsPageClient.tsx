@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react"
 import Link from "next/link"
 import { EditableComments } from "@/components/EditableComments"
+import { ScrollableOverview } from "@/components/ScrollableOverview"
 import { EditableCoFiles } from "@/components/EditableCoFiles"
 import { EditableMbaNumber } from "@/components/EditableMbaNumber"
 import { formatDate } from "@/utils/dateUtils"
@@ -448,7 +449,7 @@ function ProjectRow({ project, userMap }: { project: Project; userMap: Map<numbe
         })()}
       </td>
       <td className="comments">
-        <EditableComments
+        <ScrollableOverview
           projectId={project.id}
           initialComments={project.body}
           title={project.title}
