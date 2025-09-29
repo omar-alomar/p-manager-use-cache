@@ -1406,21 +1406,21 @@ h6 { font-size: var(--heading-6); font-weight: 500; line-height: 1.4; margin: 0 
   color: var(--neutral-50);
 }
 
-.sort-controls, .filter-controls {
+.sort-controls, .filter-controls, .urgency-controls {
   display: flex;
   align-items: center;
   gap: var(--space-2);
   flex-shrink: 0;
 }
 
-.sort-controls label, .filter-controls label {
+.sort-controls label, .filter-controls label, .urgency-controls label {
   font-size: var(--font-size-sm);
   color: var(--neutral-600);
   font-weight: 500;
   white-space: nowrap;
 }
 
-.sort-select, .filter-select {
+.sort-select, .filter-select, .urgency-select {
   padding: var(--space-2) var(--space-3);
   border: 1px solid var(--surface-300);
   border-radius: var(--radius-md);
@@ -1667,6 +1667,39 @@ h6 { font-size: var(--heading-6); font-weight: 500; line-height: 1.4; margin: 0 
   color: var(--success-700);
 }
 
+/* Urgency Badge */
+.urgency-badge {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.urgency-low {
+  background: var(--success-100);
+  color: var(--success-700);
+}
+
+.urgency-medium {
+  background: var(--warning-100);
+  color: var(--warning-700);
+}
+
+.urgency-high {
+  background: hsl(25, 95%, 90%);
+  color: hsl(25, 95%, 30%);
+}
+
+.urgency-critical {
+  background: var(--error-100);
+  color: var(--error-700);
+}
+
 
 .task-meta {
   display: flex;
@@ -1692,6 +1725,35 @@ h6 { font-size: var(--heading-6); font-weight: 500; line-height: 1.4; margin: 0 
   font-weight: 500;
   color: var(--neutral-500);
   font-size: var(--font-size-xs);
+}
+
+.task-urgency {
+  font-size: var(--font-size-xs);
+  color: var(--neutral-500);
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.task-urgency.urgency-low {
+  color: var(--success-600);
+}
+
+.task-urgency.urgency-medium {
+  color: var(--warning-600);
+}
+
+.task-urgency.urgency-high {
+  color: hsl(25, 95%, 40%);
+}
+
+.task-urgency.urgency-critical {
+  color: var(--error-600);
+}
+
+.task-urgency svg {
+  flex-shrink: 0;
 }
 
 .task-actions {
@@ -10128,7 +10190,8 @@ td.comments {
   
   .task-project,
   .task-user,
-  .task-created {
+  .task-created,
+  .task-urgency {
     display: flex;
     align-items: center;
     gap: var(--space-1);
@@ -10792,6 +10855,50 @@ td.comments {
   color: var(--primary-800);
   transform: translateY(-1px);
   box-shadow: var(--shadow-xs);
+}
+
+/* Mention link styles */
+.mention-link {
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mention-link:hover {
+  background: var(--primary-200);
+  color: var(--primary-800);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-xs);
+  text-decoration: none;
+}
+
+.mention-link:visited {
+  color: var(--primary-700);
+}
+
+/* Mention loading state */
+.mention-loading {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.mention-loading:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Mention not found state */
+.mention-not-found {
+  background: var(--error-100);
+  color: var(--error-600);
+  cursor: default;
+}
+
+.mention-not-found:hover {
+  background: var(--error-100);
+  color: var(--error-600);
+  transform: none;
+  box-shadow: none;
 }
 
 /* Notification Bell */
@@ -11476,6 +11583,10 @@ td.comments {
 .searchable-select__option.highlighted {
   background-color: var(--primary-50);
   transform: translateX(2px);
+}
+
+.searchable-select__option:hover .searchable-select__option-text {
+  color: var(--option-color, var(--primary-700));
 }
 
 .searchable-select__option.selected {

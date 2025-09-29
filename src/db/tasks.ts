@@ -19,7 +19,7 @@ export async function getTasksByCompletion(completed: boolean) {
   "use cache"
   
   await wait(500)
-  return prisma.task.findMany({
+  return prisma.task.findMany({ 
     where: { completed },
     include: {
       Project: true,
@@ -42,7 +42,10 @@ export async function getUserTasks(userId: string | number) {
     include: {
       Project: true,
       User: true
-    }
+    },
+    orderBy: [
+      { createdAt: 'desc' }
+    ]
   })
 }
 
@@ -63,7 +66,7 @@ export async function getTask(taskId: string | number) {
   "use cache"
   
   await wait(500)
-  return prisma.task.findUnique({ 
+  return prisma.task.findUnique({
     where: { id: Number(taskId) },
     include: {
       Project: true,
@@ -75,12 +78,14 @@ export async function getTask(taskId: string | number) {
 export async function createTask({
   title,
   completed,
+  urgency,
   userId,
   projectId,
   assignedById,
 }: {
   title: string
   completed: boolean
+  urgency?: string
   userId: number
   projectId?: number
   assignedById?: number
@@ -91,6 +96,7 @@ export async function createTask({
       data: {
         title,
         completed,
+        urgency: urgency as any || 'MEDIUM',
         userId,
         projectId: projectId || null,
         assignedById: assignedById || null,
@@ -106,11 +112,13 @@ export async function updateTask(
   {
     title,
     completed,
+    urgency,
     userId,
     projectId
    }:{
      title: string,
      completed: boolean,
+     urgency?: string,
      userId: number,
      projectId?: number
   }) {
@@ -123,6 +131,7 @@ export async function updateTask(
       data: {
         title,
         completed,
+        urgency: urgency as any || 'MEDIUM',
         userId,
         projectId: projectId || null,
         updatedAt: new Date()

@@ -48,7 +48,6 @@ export async function createTaskAction(prevState: unknown, formData: FormData) {
     revalidatePath('/tasks')
     revalidatePath('/my-tasks')
     revalidatePath('/')
-    revalidateTag('tasks')
 
     // Return success state instead of redirecting
     return { success: true, message: 'Task created successfully!', taskId: task.id }
@@ -118,6 +117,7 @@ function validateTask(formData: FormData) {
   const errors: { 
     title?: string; 
     completed?: string; 
+    urgency?: string;
     userId?: string; 
     projectId?: string;
     status?: string;
@@ -127,6 +127,7 @@ function validateTask(formData: FormData) {
   
   const title = formData.get("title") as string
   const completed = formData.get("completed") === "on"
+  const urgency = formData.get("urgency") as string
   const userId = Number(formData.get("userId"))
   const projectIdRaw = formData.get("projectId")
   const projectId = projectIdRaw && Number(projectIdRaw) > 0 ? Number(projectIdRaw) : undefined
@@ -152,6 +153,7 @@ function validateTask(formData: FormData) {
   return [isValid ? { 
     title, 
     completed, 
+    urgency: urgency || 'MEDIUM',
     userId, 
     projectId 
   } : undefined, errors] as const
@@ -163,6 +165,7 @@ export async function updateTaskCompletionAction(
   data: {
     title: string
     completed: boolean
+    urgency?: string
     userId: number
     projectId?: number
   }
@@ -209,20 +212,13 @@ export async function updateTaskCompletionAction(
       }
     }
     
-    // AGGRESSIVE cache invalidation
-    // 1. Revalidate specific paths
+    // Revalidate paths
     revalidatePath(`/projects/${data.projectId}`)
     revalidatePath('/projects')
     revalidatePath('/tasks')
     revalidatePath('/my-tasks')
     revalidatePath(`/tasks/${taskId}`)
     revalidatePath('/')
-    
-    // 2. Revalidate tags if you're using them
-    revalidateTag('tasks')
-    
-    // 3. Add a small delay to ensure DB write completes
-    await new Promise(resolve => setTimeout(resolve, 50))
     
     return result
   } catch (error) {

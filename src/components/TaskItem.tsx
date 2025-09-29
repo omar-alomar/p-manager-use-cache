@@ -9,6 +9,7 @@ interface TaskItemProps {
   id: number
   initialCompleted: boolean
   title: string
+  urgency?: string
   projectId?: number | null
   projectTitle: string
   userId: number
@@ -26,6 +27,7 @@ export function TaskItem({
   id, 
   initialCompleted, 
   title, 
+  urgency = 'MEDIUM',
   projectId, 
   projectTitle, 
   userId,
@@ -42,6 +44,24 @@ export function TaskItem({
   
   // Derive status from completed field
   const currentStatus = completed ? 'COMPLETED' : 'IN_PROGRESS'
+  
+  // Get urgency display properties
+  const getUrgencyDisplay = (urgency: string) => {
+    switch (urgency) {
+      case 'LOW':
+        return { label: 'Low', emoji: '⚠', className: 'urgency-low' }
+      case 'MEDIUM':
+        return { label: 'Medium', emoji: '⚠', className: 'urgency-medium' }
+      case 'HIGH':
+        return { label: 'High', emoji: '⚠', className: 'urgency-high' }
+      case 'CRITICAL':
+        return { label: 'Critical', emoji: '⚠', className: 'urgency-critical' }
+      default:
+        return { label: 'Medium', emoji: '⚠', className: 'urgency-medium' }
+    }
+  }
+  
+  const urgencyDisplay = getUrgencyDisplay(urgency)
   const [isUpdating, setIsUpdating] = useState(false)
   const [updateCount, setUpdateCount] = useState(0)
   const [isEditing, setIsEditing] = useState(false)
@@ -50,6 +70,7 @@ export function TaskItem({
   const [isDeleting, setIsDeleting] = useState(false)
   const [selectedUserId, setSelectedUserId] = useState<number | undefined>(userId)
   const [selectedProjectId, setSelectedProjectId] = useState<number | undefined>(projectId ?? undefined)
+  const [selectedUrgency, setSelectedUrgency] = useState<string>(urgency)
   const inputRef = useRef<HTMLInputElement>(null)
   const taskCardRef = useRef<HTMLDivElement>(null)
 
@@ -81,6 +102,7 @@ export function TaskItem({
       await updateTaskCompletionAction(id, {
         title: editedTitle,
         completed,
+        urgency: selectedUrgency,
         userId,
         projectId: projectId || undefined
       })
@@ -164,6 +186,7 @@ export function TaskItem({
       await updateTaskCompletionAction(id, {
         title: editedTitle,
         completed: newCompleted,
+        urgency: selectedUrgency,
         userId,
         projectId: projectId || undefined
       })
@@ -218,6 +241,7 @@ export function TaskItem({
       await updateTaskCompletionAction(id, {
         title: editedTitle,
         completed,
+        urgency: selectedUrgency,
         userId: newUserId!,
         projectId: selectedProjectId
       })
@@ -240,6 +264,7 @@ export function TaskItem({
       await updateTaskCompletionAction(id, {
         title: editedTitle,
         completed,
+        urgency: selectedUrgency,
         userId: selectedUserId!,
         projectId: newProjectId
       })
@@ -248,6 +273,29 @@ export function TaskItem({
     } catch (error) {
       console.error('Failed to update project assignment:', error)
       alert('Failed to update project assignment. Please try again.')
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
+  async function handleUrgencyChange(value: string | number | undefined) {
+    const newUrgency = typeof value === 'string' ? value : value?.toString() || 'MEDIUM'
+    if (newUrgency === selectedUrgency || isUpdating) return
+    
+    setIsUpdating(true)
+    try {
+      await updateTaskCompletionAction(id, {
+        title: editedTitle,
+        completed,
+        urgency: newUrgency,
+        userId: selectedUserId!,
+        projectId: selectedProjectId
+      })
+      setSelectedUrgency(newUrgency)
+      setUpdateCount(c => c + 1)
+    } catch (error) {
+      console.error('Failed to update urgency:', error)
+      alert('Failed to update urgency. Please try again.')
     } finally {
       setIsUpdating(false)
     }
@@ -371,21 +419,38 @@ export function TaskItem({
                     className="task-edit-select"
                   />
                 </div>
+                
+                <div className="task-edit-field">
+                  <label className="task-edit-label">Urgency:</label>
+                  <SearchableSelect
+                    options={[
+                      { value: 'LOW', label: '⚠ Low', color: 'var(--success-600)' },
+                      { value: 'MEDIUM', label: '⚠ Medium', color: 'var(--warning-600)' },
+                      { value: 'HIGH', label: '⚠ High', color: 'hsl(25, 95%, 40%)' },
+                      { value: 'CRITICAL', label: '⚠ Critical', color: 'var(--error-600)' }
+                    ]}
+                    value={selectedUrgency}
+                    onChange={handleUrgencyChange}
+                    placeholder="Select urgency"
+                    disabled={isUpdating}
+                    className="task-edit-select"
+                  />
+                </div>
               </div>
             </div>
           ) : (
             <>
-              <div className="task-title-wrapper">
-                <div className="task-header">
-                  <h4 className={`task-title ${completed ? 'completed' : ''}`}>
-                    {currentTitle}
-                  </h4>
-                  <div className="task-badges">
-                    <span className={`status-badge status-${currentStatus.toLowerCase().replace('_', '-')}`}>
-                      {currentStatus.replace('_', ' ')}
-                    </span>
+                <div className="task-title-wrapper">
+                  <div className="task-header">
+                    <h4 className={`task-title ${completed ? 'completed' : ''}`}>
+                      {currentTitle}
+                    </h4>
+                    <div className="task-badges">
+                      <span className={`status-badge status-${currentStatus.toLowerCase().replace('_', '-')}`}>
+                        {currentStatus.replace('_', ' ')}
+                      </span>
+                    </div>
                   </div>
-                </div>
                 
                 <div className="task-meta">
                   {displayProject && projectTitle && (
@@ -418,6 +483,13 @@ export function TaskItem({
                       {formatDate(createdAt)}
                     </span>
                   )}
+                  
+                  <span className={`task-urgency ${urgencyDisplay.className}`} title={`Urgency: ${urgencyDisplay.label}`}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
+                    </svg>
+                    {urgencyDisplay.label}
+                  </span>
                 </div>
               </div>
               

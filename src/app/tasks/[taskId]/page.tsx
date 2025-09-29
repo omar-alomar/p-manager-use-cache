@@ -149,6 +149,7 @@ async function TaskDetails({ taskId }: { taskId: string }) {
         id={task.id}
         initialCompleted={task.completed}
         title={task.title}
+        urgency={task.urgency}
         projectId={task.projectId}
         projectTitle={project?.title || ""}
         userId={task.userId}

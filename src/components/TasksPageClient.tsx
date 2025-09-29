@@ -10,6 +10,7 @@ interface Task {
   id: number
   title: string
   completed: boolean
+  urgency?: string
   userId: number
   projectId: number | null
   createdAt: Date
@@ -25,7 +26,7 @@ interface TasksPageClientProps {
 }
 
 export function TasksPageClient({ tasks, users, projects }: TasksPageClientProps) {
-  const { filter, sort, search, projectFilter } = useTaskFilter()
+  const { filter, sort, search, projectFilter, urgencyFilter } = useTaskFilter()
 
   // Filter tasks based on current filter (excluding user filter since we're grouping by user)
   const filteredTasks = tasks.filter(task => {
@@ -35,6 +36,12 @@ export function TasksPageClient({ tasks, users, projects }: TasksPageClientProps
     
     // Project filter
     if (projectFilter && task.projectId !== projectFilter) return false
+    
+    // Urgency filter
+    if (urgencyFilter !== 'all') {
+      const taskUrgency = task.urgency?.toLowerCase() || 'medium'
+      if (taskUrgency !== urgencyFilter) return false
+    }
     
     // Search filter
     if (search) {
@@ -64,6 +71,12 @@ export function TasksPageClient({ tasks, users, projects }: TasksPageClientProps
     tasksByUser[Number(userId)].sort((a, b) => {
       if (sort === 'title') {
         return a.title.localeCompare(b.title)
+      } else if (sort === 'urgency') {
+        // Sort by urgency: CRITICAL > HIGH > MEDIUM > LOW
+        const urgencyOrder = { 'CRITICAL': 4, 'HIGH': 3, 'MEDIUM': 2, 'LOW': 1 }
+        const aUrgency = urgencyOrder[a.urgency as keyof typeof urgencyOrder] || 2
+        const bUrgency = urgencyOrder[b.urgency as keyof typeof urgencyOrder] || 2
+        return bUrgency - aUrgency // Higher urgency first
       } else {
         // Default to created date (newest first)
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()

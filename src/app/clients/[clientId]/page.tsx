@@ -313,7 +313,7 @@ async function ClientProjects({ clientId }: { clientId: string }) {
             milestones={project.milestones}
             userId={project.user.id}
             showManager={true}
-            showClient={false}
+            showClient={true}
           />
         ))}
       </div>

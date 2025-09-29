@@ -3,7 +3,8 @@
 import { createContext, useContext, useState, ReactNode } from "react"
 
 export type FilterType = 'all' | 'in_progress' | 'completed'
-export type SortType = 'created' | 'title'
+export type SortType = 'created' | 'title' | 'urgency'
+export type UrgencyFilterType = 'all' | 'low' | 'medium' | 'high' | 'critical'
 
 interface TaskFilterContextType {
   filter: FilterType
@@ -16,6 +17,8 @@ interface TaskFilterContextType {
   setUserFilter: (userId: number | null) => void
   projectFilter: number | null
   setProjectFilter: (projectId: number | null) => void
+  urgencyFilter: UrgencyFilterType
+  setUrgencyFilter: (urgency: UrgencyFilterType) => void
 }
 
 const TaskFilterContext = createContext<TaskFilterContextType | undefined>(undefined)
@@ -26,6 +29,7 @@ export function TaskFilterProvider({ children }: { children: ReactNode }) {
   const [search, setSearch] = useState('')
   const [userFilter, setUserFilter] = useState<number | null>(null)
   const [projectFilter, setProjectFilter] = useState<number | null>(null)
+  const [urgencyFilter, setUrgencyFilter] = useState<UrgencyFilterType>('all')
 
   return (
     <TaskFilterContext.Provider value={{
@@ -38,7 +42,9 @@ export function TaskFilterProvider({ children }: { children: ReactNode }) {
       userFilter,
       setUserFilter,
       projectFilter,
-      setProjectFilter
+      setProjectFilter,
+      urgencyFilter,
+      setUrgencyFilter
     }}>
       {children}
     </TaskFilterContext.Provider>

@@ -7,6 +7,7 @@ interface Task {
   id: number
   title: string
   completed: boolean
+  urgency?: string
   userId: number
   projectId: number | null
   createdAt: Date
@@ -122,6 +123,7 @@ export function UserTaskSection({
                   id={task.id}
                   initialCompleted={task.completed}
                   title={task.title}
+                  urgency={task.urgency}
                   projectId={task.projectId}
                   projectTitle={task.Project?.title || "No Project"}
                   userId={task.userId}

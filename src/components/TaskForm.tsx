@@ -19,6 +19,7 @@ export function TaskForm({
     id: number
     title: string
     completed: boolean
+    urgency?: string
     userId: number
     projectId?: number
   }
@@ -28,6 +29,7 @@ export function TaskForm({
   const [state, formAction, pending] = useActionState(action, {})
   const [selectedUserId, setSelectedUserId] = useState<number | undefined>(task?.userId)
   const [selectedProjectId, setSelectedProjectId] = useState<number | undefined>(task?.projectId)
+  const [selectedUrgency, setSelectedUrgency] = useState<string>(task?.urgency || 'MEDIUM')
   
   // Handle success state for task creation/editing
   React.useEffect(() => {
@@ -116,6 +118,26 @@ export function TaskForm({
             id="userId"
             required
             noResultsText="No users found"
+          />
+        </FormGroup>
+      </div>
+
+      <div className="form-row">
+        <FormGroup errorMessage={errors.urgency}>
+          <label htmlFor="urgency">Urgency</label>
+          <SearchableSelect
+            options={[
+              { value: 'LOW', label: '⚠ Low', color: 'var(--success-600)' },
+              { value: 'MEDIUM', label: '⚠ Medium', color: 'var(--warning-600)' },
+              { value: 'HIGH', label: '⚠ High', color: 'hsl(25, 95%, 40%)' },
+              { value: 'CRITICAL', label: '⚠ Critical', color: 'var(--error-600)' }
+            ]}
+            value={selectedUrgency}
+            onChange={(value) => setSelectedUrgency(typeof value === 'string' ? value : value?.toString() || 'MEDIUM')}
+            placeholder="Select urgency level"
+            name="urgency"
+            id="urgency"
+            noResultsText="No urgency levels found"
           />
         </FormGroup>
       </div>

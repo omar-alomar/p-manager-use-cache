@@ -167,7 +167,10 @@ async function UserHero({ userId }: { userId: string }) {
 }
 
 async function UserProjectsWithTasks({ userId }: { userId: string }) {
-  const projects = await getProjectsWithUserTasks(userId)
+  const [projects, userTasks] = await Promise.all([
+    getProjectsWithUserTasks(userId),
+    getUserTasks(userId)
+  ])
 
   if (projects.length === 0) {
     return (
@@ -184,14 +187,14 @@ async function UserProjectsWithTasks({ userId }: { userId: string }) {
   return (
     <div className="projects-grid">
       {projects.map(async (project) => {
-        // Get only tasks assigned to this specific user for this project
-        const userTasks = await getUserTasks(userId)
+        // Filter tasks for this specific project
         const projectUserTasks = userTasks
           .filter(task => task.projectId === project.id)
           .map(task => ({
             id: task.id,
             title: task.title,
             completed: task.completed,
+            urgency: task.urgency,
             userId: task.userId,
             projectId: task.projectId,
             createdAt: task.createdAt,

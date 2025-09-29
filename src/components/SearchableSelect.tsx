@@ -6,6 +6,7 @@ import { createPortal } from "react-dom"
 interface SearchableSelectOption {
   value: string | number
   label: string
+  color?: string
 }
 
 interface SearchableSelectProps {
@@ -316,8 +317,17 @@ export function SearchableSelect({
               {searchTerm}
               <span className="searchable-select__cursor">|</span>
             </span>
+          ) : selectedOption ? (
+            selectedOption.color && selectedOption.label.startsWith('⚠') ? (
+              <>
+                <span style={{ color: selectedOption.color }}>⚠</span>
+                <span>{selectedOption.label.slice(1)}</span>
+              </>
+            ) : (
+              selectedOption.label
+            )
           ) : (
-            selectedOption ? selectedOption.label : placeholder
+            placeholder
           )}
         </span>
         <svg 
@@ -360,8 +370,16 @@ export function SearchableSelect({
                   onClick={() => selectOption(option)}
                   role="option"
                   aria-selected={option.value === value}
+                  style={option.color ? { '--option-color': option.color } as React.CSSProperties : undefined}
                 >
-                  {option.label}
+                  {option.color && option.label.startsWith('⚠') ? (
+                    <>
+                      <span style={{ color: option.color }}>⚠</span>
+                      <span className="searchable-select__option-text">{option.label.slice(1)}</span>
+                    </>
+                  ) : (
+                    option.label
+                  )}
                 </li>
               ))
             ) : (

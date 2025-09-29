@@ -1,6 +1,6 @@
 "use client"
 
-import { useTaskFilter } from "@/contexts/TaskFilterContext"
+import { useTaskFilter, UrgencyFilterType } from "@/contexts/TaskFilterContext"
 import { SearchableSelect } from "./SearchableSelect"
 
 type FilterType = 'all' | 'in_progress' | 'completed'
@@ -18,7 +18,7 @@ interface TaskFiltersProps {
 }
 
 export function TaskFilters({ taskCounts, users, projects, context = 'all-tasks' }: TaskFiltersProps) {
-  const { filter, setFilter, sort, setSort, search, setSearch, userFilter, setUserFilter, projectFilter, setProjectFilter } = useTaskFilter()
+  const { filter, setFilter, sort, setSort, search, setSearch, userFilter, setUserFilter, projectFilter, setProjectFilter, urgencyFilter, setUrgencyFilter } = useTaskFilter()
 
   const filterOptions = [
     { value: 'all', label: 'All Tasks', count: taskCounts?.all || 0 },
@@ -28,7 +28,16 @@ export function TaskFilters({ taskCounts, users, projects, context = 'all-tasks'
 
   const sortOptions = [
     { value: 'created', label: 'Created' },
-    { value: 'title', label: 'Title' }
+    { value: 'title', label: 'Title' },
+    { value: 'urgency', label: 'Urgency' }
+  ]
+
+  const urgencyOptions = [
+    { value: 'all', label: 'All Urgency' },
+    { value: 'low', label: '⚠ Low', color: 'var(--success-600)' },
+    { value: 'medium', label: '⚠ Medium', color: 'var(--warning-600)' },
+    { value: 'high', label: '⚠ High', color: 'hsl(25, 95%, 40%)' },
+    { value: 'critical', label: '⚠ Critical', color: 'var(--error-600)' }
   ]
 
   return (
@@ -78,6 +87,24 @@ export function TaskFilters({ taskCounts, users, projects, context = 'all-tasks'
             className="sort-select"
           >
             {sortOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="filter-group">
+        <div className="urgency-controls">
+          <label htmlFor="urgency-filter">Filter by urgency:</label>
+          <select
+            id="urgency-filter"
+            value={urgencyFilter}
+            onChange={(e) => setUrgencyFilter(e.target.value as UrgencyFilterType)}
+            className="urgency-select"
+          >
+            {urgencyOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>

@@ -37,6 +37,7 @@ function QuickAddTaskModalContent({
   const [isMounted, setIsMounted] = useState(false)
   const [selectedUserId, setSelectedUserId] = useState<number | undefined>(presetUserId)
   const [selectedProjectId, setSelectedProjectId] = useState<number | undefined>(presetProjectId)
+  const [selectedUrgency, setSelectedUrgency] = useState<string>('MEDIUM')
   const [errors, formAction, pending] = useActionState(createTaskAction, {})
 
   // Set mounted state on client side
@@ -191,6 +192,26 @@ function QuickAddTaskModalContent({
               </FormGroup>
             </div>
           )}
+
+          <div className="form-group">
+            <FormGroup errorMessage={'urgency' in errors ? errors.urgency : undefined}>
+              <label htmlFor="task-urgency">Urgency</label>
+              <SearchableSelect
+                options={[
+                  { value: 'LOW', label: '⚠ Low', color: 'var(--success-600)' },
+                  { value: 'MEDIUM', label: '⚠ Medium', color: 'var(--warning-600)' },
+                  { value: 'HIGH', label: '⚠ High', color: 'hsl(25, 95%, 40%)' },
+                  { value: 'CRITICAL', label: '⚠ Critical', color: 'var(--error-600)' }
+                ]}
+                value={selectedUrgency}
+                onChange={(value) => setSelectedUrgency(typeof value === 'string' ? value : value?.toString() || 'MEDIUM')}
+                placeholder="Select urgency level"
+                name="urgency"
+                id="task-urgency"
+                noResultsText="No urgency levels found"
+              />
+            </FormGroup>
+          </div>
 
           <div className="modal-actions">
             <button
