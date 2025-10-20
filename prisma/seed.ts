@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient, Role } from "@prisma/client"
 import seedData from "./seed.json"
 import { convertToUTCISO } from "../src/utils/dateUtils"
 
@@ -15,7 +15,7 @@ async function createUsers() {
           email: user.email,
           password: user.password,
           salt: user.salt,
-          role: user.role,
+          role: user.role as Role,
         },
       })
     })

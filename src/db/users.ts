@@ -1,5 +1,6 @@
 import prisma from "./db"
 import { revalidateTag } from "next/cache"
+import { Role } from "@prisma/client"
 
 export async function getUsers() {
   "use cache"
@@ -76,7 +77,7 @@ export async function updateUserRole(userId: string | number, newRole: string) {
 
   const user = await prisma.user.update({
     where: { id: Number(userId) },
-    data: { role: newRole }
+    data: { role: newRole as Role }
   })
 
   revalidateTag("users:all")

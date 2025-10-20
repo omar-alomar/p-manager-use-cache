@@ -9,7 +9,7 @@ interface TaskItemProps {
   id: number
   initialCompleted: boolean
   title: string
-  urgency?: string
+  urgency?: string | null
   projectId?: number | null
   projectTitle: string
   userId: number
@@ -46,7 +46,7 @@ export function TaskItem({
   const currentStatus = completed ? 'COMPLETED' : 'IN_PROGRESS'
   
   // Get urgency display properties
-  const getUrgencyDisplay = (urgency: string) => {
+  const getUrgencyDisplay = (urgency: string | null) => {
     switch (urgency) {
       case 'LOW':
         return { label: 'Low', emoji: '⚠', className: 'urgency-low' }
@@ -70,7 +70,7 @@ export function TaskItem({
   const [isDeleting, setIsDeleting] = useState(false)
   const [selectedUserId, setSelectedUserId] = useState<number | undefined>(userId)
   const [selectedProjectId, setSelectedProjectId] = useState<number | undefined>(projectId ?? undefined)
-  const [selectedUrgency, setSelectedUrgency] = useState<string>(urgency)
+  const [selectedUrgency, setSelectedUrgency] = useState<string>(urgency || 'MEDIUM')
   const inputRef = useRef<HTMLInputElement>(null)
   const taskCardRef = useRef<HTMLDivElement>(null)
 

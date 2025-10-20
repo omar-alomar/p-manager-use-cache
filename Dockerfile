@@ -1,21 +1,32 @@
-# Use official Node 22 LTS image
-FROM node:22.1.0
-
-# Set working directory inside container
+# deps
+FROM node:22.1.0-bookworm-slim AS deps
 WORKDIR /app
-
-# Install app dependencies (before copying full code to cache layer)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates python3 make g++ pkg-config && rm -rf /var/lib/apt/lists/*
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
-# Copy the rest of your app
+# build
+FROM node:22.1.0-bookworm-slim AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+ENV SKIP_REDIS=1
+# ensure Prisma Client is generated for glibc
+RUN npx -y prisma@6 generate
+# build your Next app (assumes output: "standalone" in next.config)
+RUN npm run build
 
-# Expose Next.js dev server port
+# run
+FROM node:22.1.0-bookworm-slim AS runner
+WORKDIR /app
+ENV NODE_ENV=staging
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates openssl && rm -rf /var/lib/apt/lists/*
+# include prisma schema (so migrate works inside container)
+COPY --from=builder /app/prisma ./prisma
+# include the Next standalone output + assets
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/static ./.next/static
 EXPOSE 3000
-
-# Use environment variable for dev
-ENV NODE_ENV=development
-
-# Start the dev server
-CMD ["npm", "run", "dev"]
+CMD ["sh","-lc","npx -y prisma@6 migrate deploy --schema=/app/prisma/schema.prisma && node server.js"]

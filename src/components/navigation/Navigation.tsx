@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { useAuth } from "@/components/auth/AuthContext"
+import { Role } from "@prisma/client"
 
 export function Navigation() {
   const { user, loading } = useAuth()
@@ -46,7 +47,7 @@ export function Navigation() {
       <li>
         <Link href="/users">Team</Link>
       </li>
-      {user.role === "admin" && (
+      {user.role === Role.admin && (
         <li>
           <Link href="/admin">Admin</Link>
         </li>

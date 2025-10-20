@@ -165,7 +165,7 @@ export async function updateTaskCompletionAction(
   data: {
     title: string
     completed: boolean
-    urgency?: string
+    urgency?: string | null
     userId: number
     projectId?: number
   }

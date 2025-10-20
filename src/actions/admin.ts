@@ -8,6 +8,7 @@ import { deleteProject } from "@/db/projects"
 import { deleteTask } from "@/db/tasks"
 import { deleteClient } from "@/db/clients"
 import { revalidatePath } from "next/cache"
+import { Role } from "@prisma/client"
 
 
 export async function getAdminStatsAction() {
@@ -25,8 +26,8 @@ export async function getAdminStatsAction() {
     totalClients: clients.length,
     completedTasks: tasks.filter(task => task.completed).length,
     pendingTasks: tasks.filter(task => !task.completed).length,
-    adminUsers: users.filter(user => user.role === 'admin').length,
-    regularUsers: users.filter(user => user.role === 'user').length
+    adminUsers: users.filter(user => user.role === Role.admin).length,
+    regularUsers: users.filter(user => user.role === Role.user).length
   }
 
   return stats

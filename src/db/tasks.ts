@@ -85,7 +85,7 @@ export async function createTask({
 }: {
   title: string
   completed: boolean
-  urgency?: string
+  urgency?: string | null
   userId: number
   projectId?: number
   assignedById?: number
@@ -118,7 +118,7 @@ export async function updateTask(
    }:{
      title: string,
      completed: boolean,
-     urgency?: string,
+     urgency?: string | null,
      userId: number,
      projectId?: number
   }) {

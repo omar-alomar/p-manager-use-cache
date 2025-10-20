@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/components/auth/AuthContext"
 import { logOut } from "@/actions/auth"
+import { Role } from "@prisma/client"
 
 export function MobileNavigation() {
   const [isOpen, setIsOpen] = useState(false)
@@ -114,7 +115,7 @@ export function MobileNavigation() {
                   <li>
                     <Link href="/users" onClick={closeMenu}>Team</Link>
                   </li>
-                  {user.role === "admin" && (
+                  {user.role === Role.admin && (
                     <li>
                       <Link href="/admin" onClick={closeMenu}>Admin</Link>
                     </li>

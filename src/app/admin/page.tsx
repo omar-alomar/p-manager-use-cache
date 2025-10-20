@@ -9,6 +9,7 @@ import { AdminUserManagement } from "@/components/admin/AdminUserManagement"
 import { AdminProjectManagement } from "@/components/admin/AdminProjectManagement"
 import { AdminTaskManagement } from "@/components/admin/AdminTaskManagement"
 import { AdminClientManagement } from "@/components/admin/AdminClientManagement"
+import { Role } from "@prisma/client"
 
 export default async function AdminPage() {
   // Check if user is authenticated
@@ -19,8 +20,13 @@ export default async function AdminPage() {
     redirect("/login")
   }
   
+  // Debug: Log the user role
+  console.log("Admin page - User role:", user.role, "Type:", typeof user.role)
+  console.log("Admin page - Role.admin:", Role.admin, "Type:", typeof Role.admin)
+  
   // Redirect to home if not admin
-  if (user.role !== "admin") {
+  if (user.role !== Role.admin) {
+    console.log("Admin page - Redirecting because role doesn't match")
     redirect("/")
   }
 

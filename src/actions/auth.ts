@@ -11,6 +11,7 @@ import {
 import { cookies } from "next/headers"
 import { createUserSession, removeUserFromSession } from "../auth/session"
 import { getCurrentUser } from "../auth/currentUser"
+import { Role } from "@prisma/client"
 
 
 export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
@@ -41,7 +42,7 @@ export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
 
   if (!isCorrectPassword) return "Unable to log you in"
 
-  await createUserSession({ id: user.id, role: user.role as "user" | "admin" }, await cookies())
+  await createUserSession({ id: user.id, role: user.role }, await cookies())
 
   // Return null to indicate success (no error)
   return null
@@ -68,7 +69,7 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
         email: data.email,
         password: hashedPassword,
         salt,
-        role: 'user' // Set default role
+        role: Role.user // Set default role
       },
       select: { 
         id: true, 
@@ -78,7 +79,7 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
 
     if (user == null) return "Unable to create account"
     
-    await createUserSession({ id: user.id, role: user.role as "user" | "admin" }, await cookies())
+    await createUserSession({ id: user.id, role: user.role }, await cookies())
   } catch (error) {
     console.error("Signup error:", error)
     return "Unable to create account"

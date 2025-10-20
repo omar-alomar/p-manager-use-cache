@@ -5,6 +5,7 @@ import { deleteCommentAction } from "@/actions/comments"
 import { useAuth } from "@/components/auth/AuthContext"
 import { formatDate } from "@/utils/dateUtils"
 import { CommentText } from "./CommentText"
+import { Role } from "@prisma/client"
 
 interface Comment {
   id: number
@@ -28,7 +29,7 @@ export function CommentItem({ comment }: CommentItemProps) {
   const [isDeleting, startTransition] = useTransition()
   const [isDeleted, setIsDeleted] = useState(false)
 
-  const canDelete = user && (user.role === 'admin' || user.id === comment.userId)
+  const canDelete = user && (user.role === Role.admin || user.id === comment.userId)
 
   const handleDelete = async () => {
     if (!user || !canDelete) return

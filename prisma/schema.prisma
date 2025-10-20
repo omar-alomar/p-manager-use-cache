@@ -1,31 +1,13 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
-
-model Task {
-  id          Int      @id @default(autoincrement())
-  title       String
-  completed   Boolean  @default(false)
-  urgency     Urgency  @default(MEDIUM)
-  userId      Int
-  assignedById Int?    // Who assigned this task
-  projectId   Int?     @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  AssignedBy User? @relation("TaskAssignedBy", fields: [assignedById], references: [id], onDelete: SetNull)
-  Project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  comments Comment[]
-} 
 
 enum Role {
   user
@@ -39,13 +21,30 @@ enum Urgency {
   CRITICAL
 }
 
+model Task {
+  id          Int      @id @default(autoincrement())
+  title       String
+  completed   Boolean  @default(false)
+  urgency     Urgency? @default(MEDIUM)
+  userId      Int
+  assignedById Int?    // Who assigned this task
+  projectId   Int?     @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  AssignedBy User? @relation("TaskAssignedBy", fields: [assignedById], references: [id], onDelete: SetNull)
+  Project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  comments Comment[]
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
   name      String
   password  String?  // Nullable for OAuth users
   salt      String?  // Nullable for OAuth users
-  role      String   @default("user")
+  role      Role     @default(user)
   createdAt DateTime @default(now())
   
   projects Project[]

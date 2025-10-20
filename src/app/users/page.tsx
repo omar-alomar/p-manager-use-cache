@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/auth/currentUser"
 import { getUsers } from "@/db/users"
 import Link from "next/link"
+import { Role } from "@prisma/client"
 
 export default async function UsersPage() {
   // Check if user is authenticated
@@ -85,7 +86,7 @@ export default async function UsersPage() {
                     <span className="join-date">Joined {new Date(user.createdAt).toLocaleDateString()}</span>
                     <div className="meta-right">
                       <div className={`user-role-badge role-${user.role || 'default'}`}>
-                        {user.role || 'user'}
+                        {user.role || Role.user}
                       </div>
                       <span className="click-hint">→</span>
                     </div>
