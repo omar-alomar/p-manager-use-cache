@@ -5,7 +5,7 @@ import { getRedis } from "../redis/redis";
 
 export const userRoles = ["user", "admin"] as const;
 
-const SESSION_EXPIRATION_SECONDS = 60 * 60 * 24 * 7;
+const SESSION_EXPIRATION_SECONDS = 60 * 60 * 24 * 90; // 3 months
 
 // Environment-specific cookie naming to prevent collisions between prod/staging
 const getCookieSessionKey = () => {
