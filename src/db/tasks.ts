@@ -1,4 +1,5 @@
 import prisma from "./db"
+import { Prisma } from "@prisma/client"
 
 export async function getTasks() {
   "use cache"
@@ -90,21 +91,63 @@ export async function createTask({
   projectId?: number
   assignedById?: number
 }) {
-  // Use a transaction to ensure consistency
-  const task = await prisma.$transaction(async (tx) => {
-    return tx.task.create({
-      data: {
-        title,
-        completed,
-        urgency: urgency as any || 'MEDIUM',
-        userId,
-        projectId: projectId || null,
-        assignedById: assignedById || null,
-      },
-    })
+  // Use raw SQL with explicit ID calculation - completely bypass sequence
+  const urgencyValue = urgency || 'MEDIUM'
+  const projectIdValue = projectId && projectId > 0 ? projectId : null
+  const assignedByIdValue = assignedById || null
+  
+  // Use a transaction to ensure atomicity and prevent race conditions
+  const result = await prisma.$transaction(async (tx) => {
+    return tx.$queryRaw<Array<{
+      id: number
+      title: string
+      completed: boolean
+      urgency: string | null
+      userId: number
+      assignedById: number | null
+      projectId: number | null
+      createdAt: Date
+      updatedAt: Date
+    }>>(Prisma.sql`
+      WITH max_id AS (
+        SELECT COALESCE(MAX(id), 0) + 1 as next_id FROM "Task"
+      )
+      INSERT INTO "Task" (
+        id, title, completed, urgency, "userId", "assignedById", "projectId", "createdAt", "updatedAt"
+      )
+      SELECT 
+        next_id,
+        ${title},
+        ${completed},
+        ${urgencyValue}::"Urgency",
+        ${userId},
+        ${assignedByIdValue},
+        ${projectIdValue},
+        NOW(),
+        NOW()
+      FROM max_id
+      RETURNING *;
+    `)
   })
 
-  return task
+  const task = result[0]
+  
+  if (!task) {
+    throw new Error('Failed to create task')
+  }
+
+  // Return in Prisma format
+  return {
+    id: task.id,
+    title: task.title,
+    completed: task.completed,
+    urgency: task.urgency as any,
+    userId: task.userId,
+    assignedById: task.assignedById,
+    projectId: task.projectId,
+    createdAt: task.createdAt,
+    updatedAt: task.updatedAt,
+  }
 }
 
 export async function updateTask(

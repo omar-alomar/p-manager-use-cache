@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "mcp-server": "tsx src/mcp/server.ts",
-    "inspect": "set DANGEROUSLY_OMIT_AUTH=true && npx @modelcontextprotocol/inspector npm run mcp-server"
+    "inspect": "set DANGEROUSLY_OMIT_AUTH=true && npx @modelcontextprotocol/inspector npm run mcp-server",
+    "fix-sequences": "tsx scripts/fix-task-sequence.ts",
+    "check-sequences": "tsx scripts/check-task-sequence.ts"
   },
   "dependencies": {
     "@azure/msal-node": "^3.6.4",

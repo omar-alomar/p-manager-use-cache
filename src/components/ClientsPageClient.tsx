@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect, useRef } from "react"
 import Link from "next/link"
 import { Client } from "@prisma/client"
 import { User } from "@prisma/client"
@@ -23,9 +23,46 @@ type SortConfig = {
   direction: 'asc' | 'desc' | 'none'
 }
 
+// Helper functions for sessionStorage (defined outside component to avoid build issues)
+function loadClientsSortConfig(): SortConfig | null {
+  if (typeof window === 'undefined' || typeof sessionStorage === 'undefined') return null
+  try {
+    const saved = sessionStorage.getItem('clientsSortConfig')
+    return saved ? JSON.parse(saved) : null
+  } catch {
+    return null
+  }
+}
+
+function saveClientsSortConfig(config: SortConfig): void {
+  if (typeof window === 'undefined' || typeof sessionStorage === 'undefined') return
+  try {
+    sessionStorage.setItem('clientsSortConfig', JSON.stringify(config))
+  } catch {
+    // Ignore errors
+  }
+}
+
 export function ClientsPageClient({ clients }: ClientsPageClientProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'name', direction: 'asc' })
+  const hasLoadedFromStorage = useRef(false)
+
+  // Load sortConfig from sessionStorage on mount (client-side only)
+  useEffect(() => {
+    const saved = loadClientsSortConfig()
+    if (saved) {
+      setSortConfig(saved)
+    }
+    hasLoadedFromStorage.current = true
+  }, [])
+
+  // Save sortConfig to sessionStorage whenever it changes (but only after initial load)
+  useEffect(() => {
+    if (hasLoadedFromStorage.current) {
+      saveClientsSortConfig(sortConfig)
+    }
+  }, [sortConfig])
 
   const handleSort = (key: keyof Client | 'projectCount') => {
     setSortConfig(prevConfig => {
@@ -66,13 +103,25 @@ export function ClientsPageClient({ clients }: ClientsPageClientProps) {
           const aRaw = a[sortConfig.key]
           const bRaw = b[sortConfig.key]
           
-          // Handle Date objects
-          if (aRaw instanceof Date && bRaw instanceof Date) {
+          // Handle Date objects - check for null/undefined before calling getTime()
+          const aIsDate = aRaw instanceof Date
+          const bIsDate = bRaw instanceof Date
+          
+          if (aIsDate && bIsDate) {
             aValue = aRaw.getTime()
             bValue = bRaw.getTime()
+          } else if (aIsDate) {
+            // aRaw is Date, bRaw might be null/undefined
+            aValue = aRaw.getTime()
+            bValue = bIsDate ? bRaw.getTime() : (bRaw ?? '')
+          } else if (bIsDate) {
+            // bRaw is Date, aRaw might be null/undefined
+            aValue = aIsDate ? aRaw.getTime() : (aRaw ?? '')
+            bValue = bRaw.getTime()
           } else {
-            aValue = (aRaw instanceof Date ? aRaw.getTime() : aRaw) || ''
-            bValue = (bRaw instanceof Date ? bRaw.getTime() : bRaw) || ''
+            // Neither is a Date
+            aValue = aRaw ?? ''
+            bValue = bRaw ?? ''
           }
         }
 

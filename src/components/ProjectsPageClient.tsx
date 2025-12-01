@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect, useRef } from "react"
 import Link from "next/link"
 import { EditableComments } from "@/components/EditableComments"
 import { ScrollableOverview } from "@/components/ScrollableOverview"
@@ -9,7 +9,8 @@ import { EditableMbaNumber } from "@/components/EditableMbaNumber"
 import { formatDate } from "@/utils/dateUtils"
 
 // Helper function to check if a date is more than 7 days past
-function isMoreThan7DaysPast(date: Date): boolean {
+function isMoreThan7DaysPast(date: Date | null): boolean {
+  if (!date) return false
   const now = new Date()
   const diffTime = now.getTime() - date.getTime()
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
@@ -17,14 +18,14 @@ function isMoreThan7DaysPast(date: Date): boolean {
 }
 
 // Helper function to filter out milestones that are more than 7 days past or completed
-function filterRecentMilestones<T extends { date: Date; completed?: boolean }>(milestones: T[] | undefined): T[] {
+function filterRecentMilestones<T extends { date: Date | null; completed?: boolean }>(milestones: T[] | undefined): T[] {
   if (!milestones || milestones.length === 0) return []
   
-  return milestones.filter(milestone => !isMoreThan7DaysPast(milestone.date) && !milestone.completed)
+  return milestones.filter(milestone => milestone.date && !isMoreThan7DaysPast(milestone.date) && !milestone.completed)
 }
 
 // Function to get the nearest milestone date from multiple milestone entries
-function getNearestMilestoneDate(milestones: { date: Date; completed?: boolean }[] | undefined, fallbackMilestone: Date | null): Date | null {
+function getNearestMilestoneDate(milestones: { date: Date | null; completed?: boolean }[] | undefined, fallbackMilestone: Date | null): Date | null {
   // First filter out milestones more than 7 days past or completed
   const recentMilestones = filterRecentMilestones(milestones)
   
@@ -40,6 +41,7 @@ function getNearestMilestoneDate(milestones: { date: Date; completed?: boolean }
   // Normalize to UTC midnight for date-only comparison (milestone dates are stored in UTC)
   const todayUTC = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()))
   const futureMilestones = recentMilestones.filter(milestone => {
+    if (!milestone.date) return false
     const milestoneDate = new Date(milestone.date)
     const milestoneDateUTC = new Date(Date.UTC(milestoneDate.getUTCFullYear(), milestoneDate.getUTCMonth(), milestoneDate.getUTCDate()))
     return milestoneDateUTC >= todayUTC
@@ -47,15 +49,21 @@ function getNearestMilestoneDate(milestones: { date: Date; completed?: boolean }
   
   if (futureMilestones.length === 0) {
     // If no future dates, return the most recent past date (within 7 days)
-    return recentMilestones.reduce((nearest, current) => 
-      new Date(current.date) > new Date(nearest.date) ? current : nearest
-    ).date
+    const validMilestones = recentMilestones.filter(m => m.date)
+    if (validMilestones.length === 0) return null
+    return validMilestones.reduce((nearest, current) => {
+      if (!nearest.date || !current.date) return nearest
+      return new Date(current.date) > new Date(nearest.date) ? current : nearest
+    }).date
   }
   
   // Return the nearest future date
-  return futureMilestones.reduce((nearest, current) => 
-    new Date(current.date) < new Date(nearest.date) ? current : nearest
-  ).date
+  const validFutureMilestones = futureMilestones.filter(m => m.date)
+  if (validFutureMilestones.length === 0) return null
+  return validFutureMilestones.reduce((nearest, current) => {
+    if (!nearest.date || !current.date) return nearest
+    return new Date(current.date) < new Date(nearest.date) ? current : nearest
+  }).date
 }
 
 // Function to determine milestone color class based on date proximity
@@ -84,7 +92,7 @@ interface Project {
   clientCompany: string | null
   body: string
   milestone: Date | null
-  milestones?: { id: number; date: Date; item: string; completed?: boolean }[]
+  milestones?: { id: number; date: Date | null; item: string; completed?: boolean }[]
   mbaNumber: string | null
   coFileNumbers: string
   dldReviewer: string
@@ -102,13 +110,52 @@ interface ProjectsPageClientProps {
   currentUser: { id: number; name: string }
 }
 
+type ProjectsSortConfig = {
+  key: 'title' | 'mbaNumber' | 'userId' | 'milestone' | null
+  direction: 'asc' | 'desc' | 'none'
+}
+
+// Helper functions for sessionStorage (defined outside component to avoid build issues)
+function loadProjectsSortConfig(): ProjectsSortConfig | null {
+  if (typeof window === 'undefined' || typeof sessionStorage === 'undefined') return null
+  try {
+    const saved = sessionStorage.getItem('projectsSortConfig')
+    return saved ? JSON.parse(saved) : null
+  } catch {
+    return null
+  }
+}
+
+function saveProjectsSortConfig(config: ProjectsSortConfig): void {
+  if (typeof window === 'undefined' || typeof sessionStorage === 'undefined') return
+  try {
+    sessionStorage.setItem('projectsSortConfig', JSON.stringify(config))
+  } catch {
+    // Ignore errors
+  }
+}
+
 export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPageClientProps) {
   const [search, setSearch] = useState("")
   const [projectManagerFilter, setProjectManagerFilter] = useState<number | null>(null)
-  const [sortConfig, setSortConfig] = useState<{
-    key: 'title' | 'mbaNumber' | 'userId' | 'milestone' | null
-    direction: 'asc' | 'desc' | 'none'
-  }>({ key: null, direction: 'none' })
+  const [sortConfig, setSortConfig] = useState<ProjectsSortConfig>({ key: null, direction: 'none' })
+  const hasLoadedFromStorage = useRef(false)
+
+  // Load sortConfig from sessionStorage on mount (client-side only)
+  useEffect(() => {
+    const saved = loadProjectsSortConfig()
+    if (saved) {
+      setSortConfig(saved)
+    }
+    hasLoadedFromStorage.current = true
+  }, [])
+
+  // Save sortConfig to sessionStorage whenever it changes (but only after initial load)
+  useEffect(() => {
+    if (hasLoadedFromStorage.current) {
+      saveProjectsSortConfig(sortConfig)
+    }
+  }, [sortConfig])
 
   // Create a map of users for quick lookup
   const userMap = useMemo(() => {
@@ -424,8 +471,12 @@ function ProjectRow({ project, userMap }: { project: Project; userMap: Map<numbe
             return (
               <div className="milestone-multiple">
                 {recentMilestones
-                  .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                  .sort((a, b) => {
+                    if (!a.date || !b.date) return 0
+                    return new Date(a.date).getTime() - new Date(b.date).getTime()
+                  })
                   .map((milestone, index) => {
+                    if (!milestone.date) return null
                     const isNearest = nearestMilestone && new Date(milestone.date).getTime() === new Date(nearestMilestone).getTime()
                     return (
                       <div key={milestone.id || index} className={`milestone-entry ${isNearest ? 'milestone-nearest' : ''}`}>
@@ -435,7 +486,8 @@ function ProjectRow({ project, userMap }: { project: Project; userMap: Map<numbe
                         <span className="milestone-item">{milestone.item}</span>
                       </div>
                     )
-                  })}
+                  })
+                  .filter(Boolean)}
               </div>
             )
           }
