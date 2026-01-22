@@ -1,21 +1,25 @@
 import prisma from "./db"
-import { revalidateTag } from "next/cache"
+import { revalidateTag, revalidatePath, unstable_cache } from "next/cache"
 import { Role } from "@prisma/client"
+import { generateSalt, hashPassword } from "../auth/passwordHasher"
 
 export async function getUsers() {
-  "use cache"
-  
-  await wait(500)
-  
-  return prisma.user.findMany({
-    include: {
-      projects: true,
-      tasks: true
+  return unstable_cache(
+    async () => {
+      await wait(500)
+      return prisma.user.findMany({
+        include: {
+          projects: true,
+          tasks: true
+        },
+        orderBy: {
+          name: 'asc'
+        }
+      })
     },
-    orderBy: {
-      name: 'asc'
-    }
-  })
+    ['users:all'],
+    { tags: ['users:all'] }
+  )()
 }
 
 export async function getUser(userId: string | number) {
@@ -64,10 +68,24 @@ export async function getUsersWithTasks() {
 export async function deleteUser(userId: string | number) {
   await wait(500)
 
-  const user = await prisma.user.delete({ where: { id: Number(userId) } })
+  const id = Number(userId)
+  
+  // Check if user exists first
+  const user = await prisma.user.findUnique({ 
+    where: { id } 
+  })
+
+  if (!user) {
+    throw new Error(`User with id ${userId} not found`)
+  }
+
+  // Delete the user
+  await prisma.user.delete({ where: { id } })
 
   revalidateTag("users:all")
-  revalidateTag(`users:id=${user.id}`)
+  revalidateTag(`users:id=${id}`)
+  revalidatePath("/admin")
+  revalidatePath("/users")
 
   return user
 }
@@ -113,6 +131,45 @@ export async function updateUserPassword(userId: string | number, hashedPassword
 
   revalidateTag("users:all")
   revalidateTag(`users:id=${user.id}`)
+
+  return user
+}
+
+export async function createUser(data: {
+  name: string
+  email: string
+  password: string
+  role?: Role
+}) {
+  await wait(500)
+
+  // Check if user already exists
+  const existingUser = await prisma.user.findUnique({
+    where: { email: data.email }
+  })
+
+  if (existingUser) {
+    throw new Error("User with this email already exists")
+  }
+
+  // Hash password
+  const salt = generateSalt()
+  const hashedPassword = await hashPassword(data.password, salt)
+
+  // Create user
+  const user = await prisma.user.create({
+    data: {
+      name: data.name,
+      email: data.email,
+      password: hashedPassword,
+      salt,
+      role: data.role || Role.user
+    }
+  })
+
+  revalidateTag("users:all")
+  revalidatePath("/admin")
+  revalidatePath("/users")
 
   return user
 }

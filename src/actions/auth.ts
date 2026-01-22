@@ -12,6 +12,7 @@ import { cookies } from "next/headers"
 import { createUserSession, removeUserFromSession } from "../auth/session"
 import { getCurrentUser } from "../auth/currentUser"
 import { Role } from "@prisma/client"
+import { revalidateTag, revalidatePath } from "next/cache"
 
 
 export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
@@ -78,6 +79,11 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
     })
 
     if (user == null) return "Unable to create account"
+    
+    // Revalidate cache so new user shows up
+    revalidateTag("users:all")
+    revalidatePath("/admin")
+    revalidatePath("/users")
     
     await createUserSession({ id: user.id, role: user.role }, await cookies())
   } catch (error) {

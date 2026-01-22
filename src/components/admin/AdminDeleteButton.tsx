@@ -1,6 +1,7 @@
 "use client"
 
 import { useTransition } from "react"
+import { useRouter } from "next/navigation"
 
 interface AdminDeleteButtonProps {
   itemId: number
@@ -16,6 +17,7 @@ export function AdminDeleteButton({
   onDelete 
 }: AdminDeleteButtonProps) {
   const [isPending, startTransition] = useTransition()
+  const router = useRouter()
   
   const handleDelete = () => {
     if (!confirm(`Are you sure you want to delete this ${itemType} "${itemName}"? This action cannot be undone.`)) {
@@ -24,6 +26,7 @@ export function AdminDeleteButton({
     
     startTransition(async () => {
       await onDelete(itemId)
+      router.refresh()
     })
   }
   

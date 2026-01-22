@@ -1,11 +1,14 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { UserRoleButton } from "./UserRoleButton"
 import { AdminDeleteButton } from "./AdminDeleteButton"
 import { EditableEmail } from "./EditableEmail"
 import { EditablePassword } from "./EditablePassword"
 import { deleteUserAction } from "@/actions/users"
+import { UserModal } from "./UserModal"
 
 interface User {
   id: number
@@ -22,9 +25,34 @@ interface AdminUserManagementProps {
 }
 
 export function AdminUserManagement({ users }: AdminUserManagementProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const router = useRouter()
+
+  const handleUserCreated = () => {
+    setIsModalOpen(false)
+    router.refresh()
+  }
+
   return (
     <div className="admin-section">
-      <h2 className="section-title">User Management</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+        <h2 className="section-title">User Management</h2>
+        <button
+          className="btn btn-primary"
+          onClick={() => setIsModalOpen(true)}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          New User
+        </button>
+      </div>
+      {isModalOpen && (
+        <UserModal
+          onClose={() => setIsModalOpen(false)}
+          onUserCreated={handleUserCreated}
+        />
+      )}
       <div className="admin-table-container">
         <table className="admin-table">
           <thead>
