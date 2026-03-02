@@ -2,6 +2,7 @@
 
 import { useTaskFilter, UrgencyFilterType } from "@/contexts/TaskFilterContext"
 import { SearchableSelect } from "./SearchableSelect"
+import { URGENCY_FILTER_OPTIONS } from "@/constants/urgency"
 
 type FilterType = 'all' | 'in_progress' | 'completed'
 type SortType = 'created' | 'title'
@@ -30,14 +31,6 @@ export function TaskFilters({ taskCounts, users, projects, context = 'all-tasks'
     { value: 'created', label: 'Created' },
     { value: 'title', label: 'Title' },
     { value: 'urgency', label: 'Urgency' }
-  ]
-
-  const urgencyOptions = [
-    { value: 'all', label: 'All Urgency' },
-    { value: 'low', label: '⚠ Low', color: 'var(--success-600)' },
-    { value: 'medium', label: '⚠ Medium', color: 'var(--warning-600)' },
-    { value: 'high', label: '⚠ High', color: 'hsl(25, 95%, 40%)' },
-    { value: 'critical', label: '⚠ Critical', color: 'var(--error-600)' }
   ]
 
   return (
@@ -104,7 +97,7 @@ export function TaskFilters({ taskCounts, users, projects, context = 'all-tasks'
             onChange={(e) => setUrgencyFilter(e.target.value as UrgencyFilterType)}
             className="urgency-select"
           >
-            {urgencyOptions.map((option) => (
+            {URGENCY_FILTER_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>

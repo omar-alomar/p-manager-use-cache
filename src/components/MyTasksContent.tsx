@@ -1,4 +1,4 @@
-import { getUserTasks } from "@/db/tasks"
+import { getUserTasks, getTasksAssignedByUser } from "@/db/tasks"
 import { getUsers } from "@/db/users"
 import { getProjectsWithUserTasks, getProjects } from "@/db/projects"
 import { TaskFilterProvider } from "@/contexts/TaskFilterContext"
@@ -9,8 +9,9 @@ interface MyTasksContentProps {
 }
 
 export async function MyTasksContent({ currentUser }: MyTasksContentProps) {
-  const [myTasks, users, userProjects, allProjects] = await Promise.all([
+  const [myTasks, assignedByMeTasks, users, userProjects, allProjects] = await Promise.all([
     getUserTasks(currentUser.id),
+    getTasksAssignedByUser(currentUser.id),
     getUsers(),
     getProjectsWithUserTasks(currentUser.id),
     getProjects({})
@@ -19,7 +20,8 @@ export async function MyTasksContent({ currentUser }: MyTasksContentProps) {
   return (
     <TaskFilterProvider>
       <MyTasksClient 
-        myTasks={myTasks} 
+        myTasks={myTasks}
+        assignedByMeTasks={assignedByMeTasks}
         users={users} 
         projects={userProjects}
         allProjects={allProjects}

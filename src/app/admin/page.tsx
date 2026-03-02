@@ -20,13 +20,8 @@ export default async function AdminPage() {
     redirect("/login")
   }
   
-  // Debug: Log the user role
-  console.log("Admin page - User role:", user.role, "Type:", typeof user.role)
-  console.log("Admin page - Role.admin:", Role.admin, "Type:", typeof Role.admin)
-  
   // Redirect to home if not admin
   if (user.role !== Role.admin) {
-    console.log("Admin page - Redirecting because role doesn't match")
     redirect("/")
   }
 

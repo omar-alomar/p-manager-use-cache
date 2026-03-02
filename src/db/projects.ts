@@ -2,13 +2,16 @@ import { Prisma } from "@prisma/client"
 import prisma from "./db"
 import { cacheTag } from "next/dist/server/use-cache/cache-tag"
 import { revalidateTag } from "next/cache"
+import { wait } from "@/utils/wait"
 
 export async function getProjects({
   query,
   userId,
+  includeArchived,
 }: {
   query?: string
   userId?: string | number
+  includeArchived?: boolean
 } = {}) {
   "use cache"
   cacheTag("projects:all")
@@ -22,6 +25,10 @@ export async function getProjects({
 
   if (userId) {
     where.userId = Number(userId)
+  }
+
+  if (includeArchived !== true) {
+    where.archived = false
   }
 
   return prisma.project.findMany({ 
@@ -55,13 +62,20 @@ export async function getProject(projectId: string | number) {
   })
 }
 
-export async function getUserProjects(userId: string | number) {
+export async function getUserProjects(
+  userId: string | number,
+  options?: { includeArchived?: boolean }
+) {
   "use cache"
   cacheTag(`projects:userId=${userId}`)
 
   await wait(500)
+  const where: Prisma.ProjectWhereInput = { userId: Number(userId) }
+  if (options?.includeArchived !== true) {
+    where.archived = false
+  }
   return prisma.project.findMany({ 
-    where: { userId: Number(userId) },
+    where,
     include: {
       clientRef: true,
       milestones: {
@@ -79,9 +93,10 @@ export async function getProjectsWithUserTasks(userId: string | number) {
 
   await wait(500)
   
-  // Get projects where the user is either the manager OR has tasks assigned
+  // Get projects where the user is either the manager OR has tasks assigned (active only)
   return prisma.project.findMany({
     where: {
+      archived: false,
       OR: [
         { userId: Number(userId) }, // Projects where user is the manager
         { 
@@ -128,8 +143,6 @@ export async function createProject({
   userId: number
   milestones?: { date: Date; item: string }[]
 }) {
-  await wait(500)
-  
   const project = await prisma.project.create({
     data: {
       title,
@@ -164,41 +177,6 @@ export async function createProject({
   return project
 }
 
-/*
-function validateProject(formData: FormData) {
-  const errors: { title?: string; body?: string; milestone?: string; mbaNumber?: string; coFileNumbers?: string; dldReviewer?: string; userId?: string } = {}
-  const title = formData.get("title") as string
-  const body = formData.get("body") as string
-  const milestone = formData.get("milestone") as string
-  const mbaNumber = formData.get("mbaNumber") as string
-  const coFileNumbers = formData.get("coFileNumbers") as string
-  const dldReviewer = formData.get("dldReviewer") as string
-  const userId = Number(formData.get("userId"))
-  let isValid = true
-
-  if (title === "") {
-    errors.title = "Required"
-    isValid = false
-  }
-
-  if (body === "") {
-    errors.body = "Required"
-    isValid = false
-  }
-
-  if (milestone === "") {
-    errors.milestone = "Required"
-    isValid = false
-  }
-
-  if (isNaN(userId)) {
-    errors.userId = "Required"
-    isValid = false
-  }
-
-  return [isValid ? { title, body, milestone: milestone ? new Date(milestone) : null, mbaNumber: mbaNumber || "", coFileNumbers, dldReviewer, userId } : undefined, errors] as const
-}
-*/
 
 export async function updateProject(
   projectId: string | number,
@@ -224,8 +202,6 @@ export async function updateProject(
     milestones?: { date: Date; item: string }[]
   }
 ) {
-  await wait(500)
-  
   const project = await prisma.project.update({
     where: { id: Number(projectId) },
     data: {
@@ -264,9 +240,24 @@ export async function updateProject(
   return project
 }
 
-export async function deleteProject(projectId: string | number) {
-  await wait(500)
+export async function setProjectArchived(projectId: string | number, archived: boolean) {
+  const project = await prisma.project.update({
+    where: { id: Number(projectId) },
+    data: { archived },
+  })
 
+  revalidateTag("projects:all")
+  revalidateTag(`projects:id=${project.id}`)
+  revalidateTag(`projects:userId=${project.userId}`)
+  revalidateTag(`projects:userTasks=${project.userId}`)
+  if (project.clientId) {
+    revalidateTag(`clients:id=${project.clientId}`)
+  }
+
+  return project
+}
+
+export async function deleteProject(projectId: string | number) {
   const project = await prisma.project.delete({ where: { id: Number(projectId) } })
 
   revalidateTag("projects:all")
@@ -309,12 +300,29 @@ export function getNearestMilestoneDate(milestones: { date: Date; completed?: bo
   ).date
 }
 
+type UpdatableProjectField = 'body' | 'mbaNumber' | 'coFileNumbers' | 'dldReviewer'
+
+export async function updateProjectField(
+  projectId: number,
+  field: UpdatableProjectField,
+  value: string
+) {
+  const project = await prisma.project.update({
+    where: { id: projectId },
+    data: { [field]: value },
+  })
+
+  revalidateTag("projects:all")
+  revalidateTag(`projects:id=${project.id}`)
+  revalidateTag(`projects:userId=${project.userId}`)
+
+  return project
+}
+
 export async function addMilestone(
   projectId: number,
   milestoneData: { date: Date; item: string }
 ) {
-  await wait(500)
-  
   const milestone = await prisma.milestone.create({
     data: {
       projectId,
@@ -329,8 +337,3 @@ export async function addMilestone(
   return milestone
 }
 
-function wait(duration: number) {
-  return new Promise(resolve => {
-    setTimeout(resolve, duration)
-  })
-}

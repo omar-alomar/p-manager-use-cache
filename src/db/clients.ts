@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client"
 import prisma from "./db"
 import { cacheTag } from "next/dist/server/use-cache/cache-tag"
 import { revalidateTag } from "next/cache"
+import { wait } from "@/utils/wait"
 
 export async function getClients({
   query,
@@ -74,7 +75,6 @@ export async function createClient({
   phone?: string
   address?: string
 }) {
-  await wait(500)
   const client = await prisma.client.create({
     data: {
       name,
@@ -107,7 +107,6 @@ export async function updateClient({
   phone?: string
   address?: string
 }) {
-  await wait(500)
   const client = await prisma.client.update({
     where: { id },
     data: {
@@ -127,7 +126,6 @@ export async function updateClient({
 }
 
 export async function updateClientField(clientId: number, field: 'companyName' | 'address', value: string | null) {
-  await wait(500)
   const client = await prisma.client.update({
     where: { id: clientId },
     data: {
@@ -143,8 +141,6 @@ export async function updateClientField(clientId: number, field: 'companyName' |
 }
 
 export async function deleteClient(clientId: string | number) {
-  await wait(500)
-  
   const client = await prisma.client.delete({
     where: { id: Number(clientId) },
   })
@@ -195,7 +191,3 @@ function validateClient(formData: FormData) {
 
 export { validateClient }
 
-// Utility function for consistent delays
-function wait(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms))
-}

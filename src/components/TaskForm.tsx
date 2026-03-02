@@ -7,6 +7,7 @@ import Link from "next/link"
 import { SkeletonInput } from "./Skeleton"
 import { createTaskAction, editTaskAction } from "@/actions/tasks"
 import { SearchableSelect } from "./SearchableSelect"
+import { URGENCY_SELECT_OPTIONS } from "@/constants/urgency"
 
 export function TaskForm({
   users,
@@ -126,12 +127,7 @@ export function TaskForm({
         <FormGroup errorMessage={errors.urgency}>
           <label htmlFor="urgency">Urgency</label>
           <SearchableSelect
-            options={[
-              { value: 'LOW', label: '⚠ Low', color: 'var(--success-600)' },
-              { value: 'MEDIUM', label: '⚠ Medium', color: 'var(--warning-600)' },
-              { value: 'HIGH', label: '⚠ High', color: 'hsl(25, 95%, 40%)' },
-              { value: 'CRITICAL', label: '⚠ Critical', color: 'var(--error-600)' }
-            ]}
+            options={URGENCY_SELECT_OPTIONS}
             value={selectedUrgency}
             onChange={(value) => setSelectedUrgency(typeof value === 'string' ? value : value?.toString() || 'MEDIUM')}
             placeholder="Select urgency level"

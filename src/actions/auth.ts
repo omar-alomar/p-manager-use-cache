@@ -97,10 +97,7 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
 
 export async function logOut() {
   try {
-    console.log("Logout: Starting...")
     await removeUserFromSession(await cookies())
-    console.log("Logout: Success")
-    // Return null to indicate success (no error)
     return null
   } catch (error) {
     console.error("Logout error:", error)
@@ -180,9 +177,7 @@ export async function changePassword(unsafeData: z.infer<typeof changePasswordSc
 
 export async function clearInvalidSession() {
   try {
-    console.log("clearInvalidSession: Starting...")
     await removeUserFromSession(await cookies())
-    console.log("clearInvalidSession: Success")
     return null
   } catch (error) {
     console.error("clearInvalidSession error:", error)

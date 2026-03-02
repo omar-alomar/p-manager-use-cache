@@ -78,7 +78,7 @@ export function UserModal({ onClose, onUserCreated }: UserModalProps) {
               className="form-input"
               placeholder="Enter user name"
             />
-            {state && 'name' in state && (
+            {state && 'name' in state && typeof state.name === 'string' && (
               <span className="error-message">{state.name}</span>
             )}
           </div>
@@ -95,7 +95,7 @@ export function UserModal({ onClose, onUserCreated }: UserModalProps) {
               className="form-input"
               placeholder="Enter email address"
             />
-            {state && 'email' in state && (
+            {state && 'email' in state && typeof state.email === 'string' && (
               <span className="error-message">{state.email}</span>
             )}
           </div>
@@ -113,7 +113,7 @@ export function UserModal({ onClose, onUserCreated }: UserModalProps) {
               className="form-input"
               placeholder="Enter password (min 8 characters)"
             />
-            {state && 'password' in state && (
+            {state && 'password' in state && typeof state.password === 'string' && (
               <span className="error-message">{state.password}</span>
             )}
           </div>
@@ -131,12 +131,12 @@ export function UserModal({ onClose, onUserCreated }: UserModalProps) {
               <option value="user">User</option>
               <option value="admin">Admin</option>
             </select>
-            {state && 'role' in state && (
+            {state && 'role' in state && typeof state.role === 'string' && (
               <span className="error-message">{state.role}</span>
             )}
           </div>
 
-          {state && 'error' in state && (
+          {state && 'error' in state && typeof state.error === 'string' && (
             <div className="error-message" style={{ marginTop: '1rem' }}>
               {state.error}
             </div>

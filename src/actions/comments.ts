@@ -7,6 +7,7 @@ import { notificationService } from "@/services/notificationService"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
 import prisma from "@/db/db"
+import type { ActionResult } from "@/types"
 
 const addCommentSchema = z.object({
   projectId: z.string().or(z.number()).nullable().optional(),
@@ -24,7 +25,7 @@ const deleteCommentSchema = z.object({
   userRole: z.string()
 })
 
-export async function addCommentAction(formData: FormData) {
+export async function addCommentAction(formData: FormData): Promise<ActionResult> {
   const rawData = {
     projectId: formData.get("projectId"),
     taskId: formData.get("taskId"),
@@ -49,10 +50,6 @@ export async function addCommentAction(formData: FormData) {
     // Parse mentions from the comment body
     const mentions = parseMentions(data.body)
     const mentionedUsernames = extractMentionedUsernames(mentions)
-    
-    console.log('Comment body:', data.body)
-    console.log('Parsed mentions:', mentions)
-    console.log('Mentioned usernames:', mentionedUsernames)
     
     // Create mentions and notifications if there are any
     if (mentionedUsernames.length > 0) {
@@ -90,26 +87,19 @@ export async function addCommentAction(formData: FormData) {
       
       // Send notifications using the existing notification system
       if (commentAuthor) {
-        console.log('Sending mention notifications to user IDs:', mentionedUserIds)
-        console.log('Comment author:', commentAuthor.name)
-        console.log('Context:', context)
-        
         for (const mentionedUserId of mentionedUserIds) {
           try {
-            const result = await notificationService.sendMentionNotification(
+            await notificationService.sendMentionNotification(
               mentionedUserId,
               commentAuthor.name,
               comment.id,
               data.body,
               context
             )
-            console.log('Notification sent successfully for user', mentionedUserId, ':', result)
           } catch (error) {
             console.error('Error sending notification for user', mentionedUserId, ':', error)
           }
         }
-      } else {
-        console.log('No comment author found, skipping notifications')
       }
     }
     
@@ -134,7 +124,7 @@ export async function addCommentAction(formData: FormData) {
   }
 }
 
-export async function deleteCommentAction(formData: FormData) {
+export async function deleteCommentAction(formData: FormData): Promise<ActionResult> {
   const rawData = {
     commentId: formData.get("commentId"),
     userId: formData.get("userId"),

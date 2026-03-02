@@ -43,7 +43,7 @@ export async function createUserAction(prevState: unknown, formData: FormData) {
 
   if (!validation.success) {
     const errors: Record<string, string> = {}
-    validation.error.errors.forEach((err) => {
+    validation.error.issues.forEach((err) => {
       if (err.path[0]) {
         errors[err.path[0] as string] = err.message
       }

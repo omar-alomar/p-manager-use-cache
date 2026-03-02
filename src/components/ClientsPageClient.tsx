@@ -1,10 +1,11 @@
 "use client"
 
-import { useState, useMemo, useEffect, useRef } from "react"
+import { useState, useMemo } from "react"
 import Link from "next/link"
 import { Client } from "@prisma/client"
 import { User } from "@prisma/client"
 import { InlineEditableField } from "@/components/InlineEditableField"
+import { useSessionSort } from "@/hooks/useSessionSort"
 
 type ClientWithProjects = Client & {
   projects: Array<{
@@ -18,62 +19,11 @@ interface ClientsPageClientProps {
   clients: ClientWithProjects[]
 }
 
-type SortConfig = {
-  key: keyof Client | 'projectCount'
-  direction: 'asc' | 'desc' | 'none'
-}
-
-// Helper functions for sessionStorage (defined outside component to avoid build issues)
-function loadClientsSortConfig(): SortConfig | null {
-  if (typeof window === 'undefined' || typeof sessionStorage === 'undefined') return null
-  try {
-    const saved = sessionStorage.getItem('clientsSortConfig')
-    return saved ? JSON.parse(saved) : null
-  } catch {
-    return null
-  }
-}
-
-function saveClientsSortConfig(config: SortConfig): void {
-  if (typeof window === 'undefined' || typeof sessionStorage === 'undefined') return
-  try {
-    sessionStorage.setItem('clientsSortConfig', JSON.stringify(config))
-  } catch {
-    // Ignore errors
-  }
-}
+type ClientSortKey = keyof Client | 'projectCount'
 
 export function ClientsPageClient({ clients }: ClientsPageClientProps) {
   const [searchQuery, setSearchQuery] = useState("")
-  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'name', direction: 'asc' })
-  const hasLoadedFromStorage = useRef(false)
-
-  // Load sortConfig from sessionStorage on mount (client-side only)
-  useEffect(() => {
-    const saved = loadClientsSortConfig()
-    if (saved) {
-      setSortConfig(saved)
-    }
-    hasLoadedFromStorage.current = true
-  }, [])
-
-  // Save sortConfig to sessionStorage whenever it changes (but only after initial load)
-  useEffect(() => {
-    if (hasLoadedFromStorage.current) {
-      saveClientsSortConfig(sortConfig)
-    }
-  }, [sortConfig])
-
-  const handleSort = (key: keyof Client | 'projectCount') => {
-    setSortConfig(prevConfig => {
-      if (prevConfig.key === key) {
-        const direction = prevConfig.direction === 'asc' ? 'desc' : 
-                        prevConfig.direction === 'desc' ? 'none' : 'asc'
-        return { key, direction }
-      }
-      return { key, direction: 'asc' }
-    })
-  }
+  const { sortConfig, handleSort } = useSessionSort<ClientSortKey>('clientsSortConfig', { key: 'name', direction: 'asc' })
 
   const filteredAndSortedClients = useMemo(() => {
     let filtered = clients
@@ -91,17 +41,18 @@ export function ClientsPageClient({ clients }: ClientsPageClientProps) {
     }
 
     // Sort
-    if (sortConfig.direction !== 'none') {
+    if (sortConfig.key && sortConfig.direction !== 'none') {
+      const key = sortConfig.key
       filtered = [...filtered].sort((a, b) => {
         let aValue: string | number
         let bValue: string | number
 
-        if (sortConfig.key === 'projectCount') {
+        if (key === 'projectCount') {
           aValue = a.projects.length
           bValue = b.projects.length
         } else {
-          const aRaw = a[sortConfig.key]
-          const bRaw = b[sortConfig.key]
+          const aRaw = a[key]
+          const bRaw = b[key]
           
           // Handle Date objects - check for null/undefined before calling getTime()
           const aIsDate = aRaw instanceof Date

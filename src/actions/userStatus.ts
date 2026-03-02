@@ -5,9 +5,7 @@ import { getCurrentUser } from "@/auth/currentUser"
 
 export async function getCurrentUserStatus() {
   try {
-    console.log("getCurrentUserStatus: Starting...")
     const user = await getCurrentUser({ withFullUser: true })
-    console.log("getCurrentUserStatus: Got user:", user ? "found" : "null")
     return { success: true, user }
   } catch (error) {
     console.error("getCurrentUserStatus: Error:", error)

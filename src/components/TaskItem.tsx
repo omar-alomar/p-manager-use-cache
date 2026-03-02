@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import { updateTaskCompletionAction, verifyTaskUpdate, deleteTaskAction } from "@/actions/tasks"
 import { formatDate } from "@/utils/dateUtils"
 import { SearchableSelect } from "./SearchableSelect"
+import { getUrgencyDisplay, URGENCY_SELECT_OPTIONS } from "@/constants/urgency"
 
 interface TaskItemProps {
   id: number
@@ -44,22 +45,6 @@ export function TaskItem({
   
   // Derive status from completed field
   const currentStatus = completed ? 'COMPLETED' : 'IN_PROGRESS'
-  
-  // Get urgency display properties
-  const getUrgencyDisplay = (urgency: string | null) => {
-    switch (urgency) {
-      case 'LOW':
-        return { label: 'Low', emoji: '⚠', className: 'urgency-low' }
-      case 'MEDIUM':
-        return { label: 'Medium', emoji: '⚠', className: 'urgency-medium' }
-      case 'HIGH':
-        return { label: 'High', emoji: '⚠', className: 'urgency-high' }
-      case 'CRITICAL':
-        return { label: 'Critical', emoji: '⚠', className: 'urgency-critical' }
-      default:
-        return { label: 'Medium', emoji: '⚠', className: 'urgency-medium' }
-    }
-  }
   
   const urgencyDisplay = getUrgencyDisplay(urgency)
   const [isUpdating, setIsUpdating] = useState(false)
@@ -112,7 +97,6 @@ export function TaskItem({
       const verifiedTask = await verifyTaskUpdate(id)
       
       if (verifiedTask?.title !== editedTitle) {
-        console.error(`Task ${id}: Title update failed! Reverting...`)
         setEditedTitle(currentTitle)
         alert('Update failed! Please try again.')
       } else {
@@ -177,8 +161,6 @@ export function TaskItem({
 
 
   async function handleChange(newCompleted: boolean) {
-    console.log(`Task ${id}: Changing from ${completed} to ${newCompleted}`)
-    
     setCompleted(newCompleted)
     setIsUpdating(true)
     
@@ -194,10 +176,8 @@ export function TaskItem({
       await new Promise(resolve => setTimeout(resolve, 100))
       
       const verifiedTask = await verifyTaskUpdate(id)
-      console.log(`Task ${id}: Verified state = ${verifiedTask?.completed}`)
-      
+
       if (verifiedTask?.completed !== newCompleted) {
-        console.error(`Task ${id}: Update failed! Reverting...`)
         setCompleted(!newCompleted)
         alert('Update failed! Please try again.')
       } else {
@@ -423,12 +403,7 @@ export function TaskItem({
                 <div className="task-edit-field">
                   <label className="task-edit-label">Urgency:</label>
                   <SearchableSelect
-                    options={[
-                      { value: 'LOW', label: '⚠ Low', color: 'var(--success-600)' },
-                      { value: 'MEDIUM', label: '⚠ Medium', color: 'var(--warning-600)' },
-                      { value: 'HIGH', label: '⚠ High', color: 'hsl(25, 95%, 40%)' },
-                      { value: 'CRITICAL', label: '⚠ Critical', color: 'var(--error-600)' }
-                    ]}
+                    options={URGENCY_SELECT_OPTIONS}
                     value={selectedUrgency}
                     onChange={handleUrgencyChange}
                     placeholder="Select urgency"
@@ -445,11 +420,13 @@ export function TaskItem({
                     <h4 className={`task-title ${completed ? 'completed' : ''}`}>
                       {currentTitle}
                     </h4>
-                    <div className="task-badges">
-                      <span className={`status-badge status-${currentStatus.toLowerCase().replace('_', '-')}`}>
-                        {currentStatus.replace('_', ' ')}
-                      </span>
-                    </div>
+                    {completed && (
+                      <div className="task-badges">
+                        <span className={`status-badge status-${currentStatus.toLowerCase().replace('_', '-')}`}>
+                          {currentStatus.replace('_', ' ')}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 
                 <div className="task-meta">

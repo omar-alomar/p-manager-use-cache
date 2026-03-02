@@ -1,88 +1,13 @@
 "use client"
 
-import { useState, useMemo, useEffect, useRef } from "react"
+import { useState, useMemo, useEffect, useRef, useCallback } from "react"
 import Link from "next/link"
-import { EditableComments } from "@/components/EditableComments"
-import { ScrollableOverview } from "@/components/ScrollableOverview"
-import { EditableCoFiles } from "@/components/EditableCoFiles"
-import { EditableMbaNumber } from "@/components/EditableMbaNumber"
+import { useRouter } from "next/navigation"
+import { setProjectArchivedAction } from "@/actions/projects"
+import { EditableProjectField } from "@/components/EditableProjectField"
 import { formatDate } from "@/utils/dateUtils"
-
-// Helper function to check if a date is more than 7 days past
-function isMoreThan7DaysPast(date: Date | null): boolean {
-  if (!date) return false
-  const now = new Date()
-  const diffTime = now.getTime() - date.getTime()
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  return diffDays > 7
-}
-
-// Helper function to filter out milestones that are more than 7 days past or completed
-function filterRecentMilestones<T extends { date: Date | null; completed?: boolean }>(milestones: T[] | undefined): T[] {
-  if (!milestones || milestones.length === 0) return []
-  
-  return milestones.filter(milestone => milestone.date && !isMoreThan7DaysPast(milestone.date) && !milestone.completed)
-}
-
-// Function to get the nearest milestone date from multiple milestone entries
-function getNearestMilestoneDate(milestones: { date: Date | null; completed?: boolean }[] | undefined, fallbackMilestone: Date | null): Date | null {
-  // First filter out milestones more than 7 days past or completed
-  const recentMilestones = filterRecentMilestones(milestones)
-  
-  if (recentMilestones.length === 0) {
-    // If no recent milestones, check if fallback is also too old
-    if (fallbackMilestone && isMoreThan7DaysPast(fallbackMilestone)) {
-      return null
-    }
-    return fallbackMilestone
-  }
-  
-  const now = new Date()
-  // Normalize to UTC midnight for date-only comparison (milestone dates are stored in UTC)
-  const todayUTC = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()))
-  const futureMilestones = recentMilestones.filter(milestone => {
-    if (!milestone.date) return false
-    const milestoneDate = new Date(milestone.date)
-    const milestoneDateUTC = new Date(Date.UTC(milestoneDate.getUTCFullYear(), milestoneDate.getUTCMonth(), milestoneDate.getUTCDate()))
-    return milestoneDateUTC >= todayUTC
-  })
-  
-  if (futureMilestones.length === 0) {
-    // If no future dates, return the most recent past date (within 7 days)
-    const validMilestones = recentMilestones.filter(m => m.date)
-    if (validMilestones.length === 0) return null
-    return validMilestones.reduce((nearest, current) => {
-      if (!nearest.date || !current.date) return nearest
-      return new Date(current.date) > new Date(nearest.date) ? current : nearest
-    }).date
-  }
-  
-  // Return the nearest future date
-  const validFutureMilestones = futureMilestones.filter(m => m.date)
-  if (validFutureMilestones.length === 0) return null
-  return validFutureMilestones.reduce((nearest, current) => {
-    if (!nearest.date || !current.date) return nearest
-    return new Date(current.date) < new Date(nearest.date) ? current : nearest
-  }).date
-}
-
-// Function to determine milestone color class based on date proximity
-function getMilestoneColorClass(milestoneDate: Date | null): string {
-  if (!milestoneDate) return 'milestone-neutral'
-  
-  const now = new Date()
-  const milestone = new Date(milestoneDate)
-  const diffTime = milestone.getTime() - now.getTime()
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  
-  if (diffDays <= 14) {
-    return 'milestone-urgent' // Red - within 2 weeks
-  } else if (diffDays <= 30) {
-    return 'milestone-warning' // Yellow - within a month
-  } else {
-    return 'milestone-safe' // Green - more than a month
-  }
-}
+import { getMilestoneColorClass, filterRecentMilestones, getNearestMilestoneDate } from "@/utils/milestoneUtils"
+import { useSessionSort } from "@/hooks/useSessionSort"
 
 interface Project {
   id: number
@@ -91,6 +16,7 @@ interface Project {
   clientId: number | null
   clientCompany: string | null
   body: string
+  archived?: boolean
   milestone: Date | null
   milestones?: { id: number; date: Date | null; item: string; completed?: boolean }[]
   mbaNumber: string | null
@@ -110,52 +36,12 @@ interface ProjectsPageClientProps {
   currentUser: { id: number; name: string }
 }
 
-type ProjectsSortConfig = {
-  key: 'title' | 'mbaNumber' | 'userId' | 'milestone' | null
-  direction: 'asc' | 'desc' | 'none'
-}
-
-// Helper functions for sessionStorage (defined outside component to avoid build issues)
-function loadProjectsSortConfig(): ProjectsSortConfig | null {
-  if (typeof window === 'undefined' || typeof sessionStorage === 'undefined') return null
-  try {
-    const saved = sessionStorage.getItem('projectsSortConfig')
-    return saved ? JSON.parse(saved) : null
-  } catch {
-    return null
-  }
-}
-
-function saveProjectsSortConfig(config: ProjectsSortConfig): void {
-  if (typeof window === 'undefined' || typeof sessionStorage === 'undefined') return
-  try {
-    sessionStorage.setItem('projectsSortConfig', JSON.stringify(config))
-  } catch {
-    // Ignore errors
-  }
-}
-
 export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPageClientProps) {
+  const router = useRouter()
   const [search, setSearch] = useState("")
   const [projectManagerFilter, setProjectManagerFilter] = useState<number | null>(null)
-  const [sortConfig, setSortConfig] = useState<ProjectsSortConfig>({ key: null, direction: 'none' })
-  const hasLoadedFromStorage = useRef(false)
-
-  // Load sortConfig from sessionStorage on mount (client-side only)
-  useEffect(() => {
-    const saved = loadProjectsSortConfig()
-    if (saved) {
-      setSortConfig(saved)
-    }
-    hasLoadedFromStorage.current = true
-  }, [])
-
-  // Save sortConfig to sessionStorage whenever it changes (but only after initial load)
-  useEffect(() => {
-    if (hasLoadedFromStorage.current) {
-      saveProjectsSortConfig(sortConfig)
-    }
-  }, [sortConfig])
+  const [showArchived, setShowArchived] = useState(false)
+  const { sortConfig, handleSort } = useSessionSort<'title' | 'mbaNumber' | 'userId' | 'milestone'>('projectsSortConfig')
 
   // Create a map of users for quick lookup
   const userMap = useMemo(() => {
@@ -164,28 +50,12 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
     return map
   }, [users])
 
-  // Handle sorting
-  const handleSort = (key: 'title' | 'mbaNumber' | 'userId' | 'milestone') => {
-    setSortConfig(prevConfig => {
-      if (prevConfig.key === key) {
-        // If clicking the same column, cycle through: asc -> desc -> none -> asc
-        if (prevConfig.direction === 'asc') {
-          return { key, direction: 'desc' }
-        } else if (prevConfig.direction === 'desc') {
-          return { key, direction: 'none' }
-        } else {
-          return { key, direction: 'asc' }
-        }
-      } else {
-        // If clicking a different column, set to ascending
-        return { key, direction: 'asc' }
-      }
-    })
-  }
-
   // Filter and sort projects
   const filteredAndSortedProjects = useMemo(() => {
     let filtered = projects.filter(project => {
+      // Archived view toggle
+      if (showArchived ? !project.archived : project.archived) return false
+
       // Search filter
       if (search) {
         const searchLower = search.toLowerCase()
@@ -286,7 +156,7 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
     }
 
     return filtered
-  }, [projects, search, projectManagerFilter, currentUser.id, userMap, sortConfig])
+  }, [projects, search, projectManagerFilter, showArchived, currentUser.id, userMap, sortConfig])
 
   if (projects.length === 0) {
     return (
@@ -337,6 +207,16 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
           <div className="filter-stats">
             Showing {filteredAndSortedProjects.length} of {projects.length} projects
           </div>
+        </div>
+
+        <div className="filter-group filter-group-right">
+          <button
+            type="button"
+            className="btn-view-archived"
+            onClick={() => setShowArchived(!showArchived)}
+          >
+            {showArchived ? "View projects" : "View archive"}
+          </button>
         </div>
       </div>
 
@@ -398,8 +278,14 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
             </tr>
           </thead>
           <tbody>
-            {filteredAndSortedProjects.map((project) => (
-              <ProjectRow key={project.id} project={project} userMap={userMap} />
+            {filteredAndSortedProjects.map((project, index) => (
+              <ProjectRow
+                key={project.id}
+                project={project}
+                userMap={userMap}
+                rowIndex={index}
+                onArchiveChange={() => router.refresh()}
+              />
             ))}
           </tbody>
         </table>
@@ -408,66 +294,242 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
   )
 }
 
-function ProjectRow({ project, userMap }: { project: Project; userMap: Map<number, User> }) {
+const SWIPE_THRESHOLD = 100
+const MAX_DRAG_PX = 210
+
+function ProjectRow({
+  project,
+  userMap,
+  rowIndex,
+  onArchiveChange,
+}: {
+  project: Project
+  userMap: Map<number, User>
+  rowIndex: number
+  onArchiveChange: () => void
+}) {
   const projectManager = userMap.get(project.userId)
-  
+  const rowRef = useRef<HTMLTableRowElement>(null)
+  const isDraggingRef = useRef(false)
+  const startXRef = useRef(0)
+  const currentTranslateRef = useRef(0)
+  const exitHandledRef = useRef(false)
+
+  const [translateX, setTranslateX] = useState(0)
+  const [isExiting, setIsExiting] = useState(false)
+  const [exitTranslate, setExitTranslate] = useState(0)
+  const [isTransitioning, setIsTransitioning] = useState(false)
+  const [isDraggingState, setIsDraggingState] = useState(false)
+
+  const runArchive = useCallback(() => {
+    const row = rowRef.current
+    const w = row ? row.getBoundingClientRect().width : 0
+    setExitTranslate(-(w + 20))
+    setIsExiting(true)
+    setIsTransitioning(true)
+    setIsDraggingState(false)
+    // Optimistic: animate immediately, revert on error
+    setProjectArchivedAction(project.id, !project.archived).catch(() => {
+      setIsExiting(false)
+      setIsTransitioning(true)
+      setTranslateX(0)
+      currentTranslateRef.current = 0
+      setTimeout(() => setIsTransitioning(false), 350)
+    })
+  }, [project.id, project.archived])
+
+  const handleTransitionEnd = useCallback(
+    (e: React.TransitionEvent) => {
+      if (e.propertyName !== "transform" || !isExiting || exitHandledRef.current) return
+      exitHandledRef.current = true
+      onArchiveChange()
+    },
+    [isExiting, onArchiveChange]
+  )
+
+  const handlePointerStart = useCallback(
+    (clientX: number) => {
+      if (isExiting) return
+      startXRef.current = clientX
+      currentTranslateRef.current = translateX
+      isDraggingRef.current = false
+    },
+    [translateX, isExiting]
+  )
+
+  const handlePointerMove = useCallback(
+    (clientX: number) => {
+      if (isExiting) return
+      const delta = clientX - startXRef.current
+      if (!isDraggingRef.current && Math.abs(delta) > 6) {
+        isDraggingRef.current = true
+        setIsDraggingState(true)
+      }
+      if (!isDraggingRef.current) return
+      // Only allow left swipe; rubber-band resistance past threshold
+      const rawDelta = Math.min(0, delta)
+      let next: number
+      if (rawDelta >= -SWIPE_THRESHOLD) {
+        next = rawDelta
+      } else {
+        const over = Math.abs(rawDelta) - SWIPE_THRESHOLD
+        next = -(SWIPE_THRESHOLD + over * 0.35)
+      }
+      next = Math.max(-MAX_DRAG_PX, next)
+      currentTranslateRef.current = next
+      setTranslateX(next)
+    },
+    [isExiting]
+  )
+
+  const handlePointerEnd = useCallback(
+    () => {
+      if (isExiting) return
+      if (!isDraggingRef.current) return
+      const finalTranslate = currentTranslateRef.current
+      setIsDraggingState(false)
+      if (finalTranslate <= -SWIPE_THRESHOLD) {
+        runArchive()
+      } else {
+        setIsTransitioning(true)
+        setTranslateX(0)
+        currentTranslateRef.current = 0
+        setTimeout(() => {
+          setIsTransitioning(false)
+        }, 280)
+      }
+    },
+    [isExiting, runArchive]
+  )
+
+  useEffect(() => {
+    const row = rowRef.current
+    if (!row) return
+    let touchActive = false
+    const onTouchStart = (e: TouchEvent) => {
+      if (!row.contains(e.target as Node)) return
+      touchActive = true
+      handlePointerStart(e.touches[0].clientX)
+      const onTouchMoveDoc = (ev: TouchEvent) => {
+        if (!touchActive || !ev.touches.length) return
+        handlePointerMove(ev.touches[0].clientX)
+        if (isDraggingRef.current) ev.preventDefault()
+      }
+      const cleanup = () => {
+        touchActive = false
+        document.removeEventListener("touchmove", onTouchMoveDoc)
+        document.removeEventListener("touchend", onTouchEndDoc)
+        document.removeEventListener("touchcancel", onTouchEndDoc)
+      }
+      const onTouchEndDoc = (ev: TouchEvent) => {
+        if (!touchActive) return
+        cleanup()
+        if (ev.type === "touchend" && ev.changedTouches.length) handlePointerEnd()
+      }
+      document.addEventListener("touchmove", onTouchMoveDoc, { passive: false })
+      document.addEventListener("touchend", onTouchEndDoc, { passive: true })
+      document.addEventListener("touchcancel", onTouchEndDoc, { passive: true })
+    }
+    row.addEventListener("touchstart", onTouchStart, { passive: true })
+    return () => row.removeEventListener("touchstart", onTouchStart)
+  }, [handlePointerStart, handlePointerMove, handlePointerEnd])
+
+  const [mouseDown, setMouseDown] = useState(false)
+  useEffect(() => {
+    if (!mouseDown) return
+    const onMouseMove = (e: MouseEvent) => handlePointerMove(e.clientX)
+    const onMouseUp = () => {
+      setMouseDown(false)
+      handlePointerEnd()
+    }
+    window.addEventListener("mousemove", onMouseMove)
+    window.addEventListener("mouseup", onMouseUp)
+    return () => {
+      window.removeEventListener("mousemove", onMouseMove)
+      window.removeEventListener("mouseup", onMouseUp)
+    }
+  }, [mouseDown, handlePointerMove, handlePointerEnd])
+
+  const slideStyle = useMemo(() => {
+    const x = isExiting ? exitTranslate : translateX
+    return {
+      transform: `translate3d(${x}px, 0, 0)`,
+      transition: isTransitioning
+        ? "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.22s ease"
+        : "none",
+      opacity: isExiting ? 0 : 1,
+    }
+  }, [translateX, isExiting, exitTranslate, isTransitioning])
+
+  const archiveProgress = isDraggingState ? Math.min(1, Math.abs(translateX) / SWIPE_THRESHOLD) : 0
+  const isArchiveReady = isDraggingState && translateX <= -SWIPE_THRESHOLD
+
   return (
-    <tr>
-      <td className="project-name-cell">
-        <Link href={`/projects/${project.id}`} className="project-name-link">
+    <tr
+      ref={rowRef}
+      className={`project-row ${rowIndex % 2 === 1 ? "project-row-even" : ""} ${project.archived ? "project-row-archived" : ""} ${isExiting ? "project-row-exiting" : ""} ${isArchiveReady ? "project-row-archive-ready" : isDraggingState ? "project-row-dragging" : ""}`}
+      onMouseDown={(e) => {
+        if (isExiting) return
+        if (e.button === 0) {
+          handlePointerStart(e.clientX)
+          setMouseDown(true)
+        }
+      }}
+      onTransitionEnd={handleTransitionEnd}
+    >
+      <td className="project-name-cell row-slideable" style={slideStyle}>
+        <Link
+          href={`/projects/${project.id}`}
+          className="project-name-link"
+          onClick={(e) => {
+            if (isDraggingRef.current) e.preventDefault()
+          }}
+        >
           <div className="project-name-link-content">
             <div className="project-name">{project.title}</div>
-            <div className="project-client">{project.client || 'No client'}</div>
+            <div className="project-client">{project.client || "No client"}</div>
           </div>
         </Link>
       </td>
-      <td className="mba-number">
-        <EditableMbaNumber
+      <td className="mba-number row-slideable" style={slideStyle}>
+        <EditableProjectField
           projectId={project.id}
-          initialMbaNumber={project.mbaNumber || ""}
-          title={project.title}
-          clientId={project.clientId}
-          body={project.body}
-          milestone={project.milestone}
-          coFileNumbers={project.coFileNumbers || ""}
-          dldReviewer={project.dldReviewer || ""}
-          userId={project.userId}
+          field="mbaNumber"
+          initialValue={project.mbaNumber || ""}
+          placeholder="Click to add MBA #"
+          displayMode="comma-list"
         />
       </td>
-      <td className="co-files">
-        <EditableCoFiles
+      <td className="co-files row-slideable" style={slideStyle}>
+        <EditableProjectField
           projectId={project.id}
-          initialCoFiles={project.coFileNumbers || ""}
-          title={project.title}
-          clientId={project.clientId}
-          body={project.body}
-          milestone={project.milestone}
-          mbaNumber={project.mbaNumber || ""}
-          dldReviewer={project.dldReviewer || ""}
-          userId={project.userId}
+          field="coFileNumbers"
+          initialValue={project.coFileNumbers || ""}
+          placeholder="Click to add Co File #'s"
+          displayMode="comma-list"
         />
       </td>
-      <td className="pmgr">
+      <td className="pmgr row-slideable" style={slideStyle}>
         {projectManager ? (
-          <Link href={`/users/${projectManager.id}`} className="pmgr-link">
-            {projectManager.name.split(' ').map(n => n[0]).join('')}
+          <Link
+            href={`/users/${projectManager.id}`}
+            className="pmgr-link"
+            onClick={(e) => isDraggingRef.current && e.preventDefault()}
+          >
+            {projectManager.name.split(" ").map((n) => n[0]).join("")}
           </Link>
         ) : (
           <span className="pmgr-placeholder">-</span>
         )}
       </td>
-      <td className="milestone-date">
+      <td className="milestone-date row-slideable" style={slideStyle}>
         {(() => {
           const nearestMilestone = getNearestMilestoneDate(project.milestones, project.milestone)
-          
-          // If we have multiple milestones, show only recent ones (within 7 days)
           if (project.milestones && project.milestones.length > 0) {
             const recentMilestones = filterRecentMilestones(project.milestones)
-            
             if (recentMilestones.length === 0) {
               return <span className="milestone-neutral">No recent milestones</span>
             }
-            
             return (
               <div className="milestone-multiple">
                 {recentMilestones
@@ -477,10 +539,17 @@ function ProjectRow({ project, userMap }: { project: Project; userMap: Map<numbe
                   })
                   .map((milestone, index) => {
                     if (!milestone.date) return null
-                    const isNearest = nearestMilestone && new Date(milestone.date).getTime() === new Date(nearestMilestone).getTime()
+                    const isNearest =
+                      nearestMilestone &&
+                      new Date(milestone.date).getTime() === new Date(nearestMilestone).getTime()
                     return (
-                      <div key={milestone.id || index} className={`milestone-entry ${isNearest ? 'milestone-nearest' : ''}`}>
-                        <span className={`milestone-highlight ${getMilestoneColorClass(milestone.date)}`}>
+                      <div
+                        key={milestone.id || index}
+                        className={`milestone-entry ${isNearest ? "milestone-nearest" : ""}`}
+                      >
+                        <span
+                          className={`milestone-highlight ${getMilestoneColorClass(milestone.date)}`}
+                        >
                           {formatDate(milestone.date)}
                         </span>
                         <span className="milestone-item">{milestone.item}</span>
@@ -491,27 +560,32 @@ function ProjectRow({ project, userMap }: { project: Project; userMap: Map<numbe
               </div>
             )
           }
-          
-          // Fallback to single milestone date
-          return nearestMilestone && (
-            <span className={`milestone-highlight ${getMilestoneColorClass(nearestMilestone)}`}>
-              {formatDate(nearestMilestone)}
-            </span>
+          return (
+            nearestMilestone && (
+              <span
+                className={`milestone-highlight ${getMilestoneColorClass(nearestMilestone)}`}
+              >
+                {formatDate(nearestMilestone)}
+              </span>
+            )
           )
         })()}
       </td>
-      <td className="comments">
-        <ScrollableOverview
+      <td className="comments row-slideable" style={slideStyle}>
+        <div
+          className={`archive-reveal-indicator${isArchiveReady ? " archive-reveal-ready" : ""}`}
+          style={{ opacity: archiveProgress }}
+          aria-hidden
+        >
+          <span>{project.archived ? "Unarchive" : "Archive"}</span>
+        </div>
+        <EditableProjectField
           projectId={project.id}
-          initialComments={project.body}
-          title={project.title}
-          clientId={project.clientId}
-          body={project.body}
-          milestone={project.milestone}
-          mbaNumber={project.mbaNumber || ""}
-          coFileNumbers={project.coFileNumbers || ""}
-          dldReviewer={project.dldReviewer || ""}
-          userId={project.userId}
+          field="body"
+          initialValue={project.body}
+          placeholder="Click to add overview"
+          multiline
+          displayMode="scrollable-list"
         />
       </td>
     </tr>

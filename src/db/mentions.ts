@@ -6,8 +6,6 @@ import prisma from "./db"
 export async function createMentions(commentId: number, usernames: string[]) {
   if (usernames.length === 0) return []
 
-  console.log('Creating mentions for comment', commentId, 'with usernames:', usernames)
-
   // Get user IDs for the mentioned usernames (exact matches only)
   const users = await prisma.user.findMany({
     where: {
@@ -20,8 +18,6 @@ export async function createMentions(commentId: number, usernames: string[]) {
       name: true
     }
   })
-
-  console.log('Found users for mentions:', users)
 
   // Create mentions
   const mentions = await Promise.all(
@@ -45,7 +41,6 @@ export async function createMentions(commentId: number, usernames: string[]) {
     )
   )
 
-  console.log('Created mentions:', mentions)
   return mentions
 }
 

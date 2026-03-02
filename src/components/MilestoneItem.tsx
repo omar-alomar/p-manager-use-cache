@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { updateMilestoneCompletionAction } from '@/actions/milestones'
 import { formatDate } from '@/utils/dateUtils'
+import { getMilestoneColorClass } from '@/utils/milestoneUtils'
 
 interface MilestoneItemProps {
   id: number
@@ -39,22 +40,6 @@ export function MilestoneItem({ id, date, item, completed }: MilestoneItemProps)
       console.error('Error updating milestone:', error)
     } finally {
       setIsUpdating(false)
-    }
-  }
-
-  // Calculate milestone color class based on date proximity
-  const getMilestoneColorClass = (milestoneDate: Date) => {
-    const now = new Date()
-    const milestone = new Date(milestoneDate)
-    const diffTime = milestone.getTime() - now.getTime()
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    
-    if (diffDays <= 14) {
-      return 'milestone-urgent' // Red - within 2 weeks
-    } else if (diffDays <= 30) {
-      return 'milestone-warning' // Yellow - within a month
-    } else {
-      return 'milestone-safe' // Green - more than a month
     }
   }
 

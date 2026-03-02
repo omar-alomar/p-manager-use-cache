@@ -1,21 +1,9 @@
 import { TaskItem } from "./TaskItem"
-
-interface Task {
-  id: number
-  title: string
-  completed: boolean
-  urgency?: string | null
-  userId: number
-  projectId: number | null
-  createdAt: Date
-  updatedAt: Date
-  User: { id: number; name: string }
-  Project?: { id: number; title: string } | null
-}
+import type { TaskWithRelations } from "@/types"
 
 interface TaskListProps {
   title: string
-  tasks: Task[]
+  tasks: TaskWithRelations[]
   users: { id: number; name: string }[]
   projects: { id: number; title: string }[]
   showProject?: boolean

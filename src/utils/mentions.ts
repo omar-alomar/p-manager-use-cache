@@ -18,10 +18,7 @@ export function parseMentions(text: string): ParsedMention[] {
   const mentions: ParsedMention[] = []
   let match
 
-  console.log('Parsing mentions in text:', text)
-
   while ((match = mentionRegex.exec(text)) !== null) {
-    console.log('Found mention match:', match[1], 'at position', match.index)
     mentions.push({
       username: match[1],
       startIndex: match.index,
@@ -29,7 +26,6 @@ export function parseMentions(text: string): ParsedMention[] {
     })
   }
 
-  console.log('Parsed mentions result:', mentions)
   return mentions
 }
 

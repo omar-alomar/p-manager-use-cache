@@ -61,6 +61,7 @@ model Project {
   clientId Int?
   body   String
   userId Int
+  archived Boolean @default(false)
   milestone   DateTime?
   mbaNumber String @default("")
   coFileNumbers String @default("")

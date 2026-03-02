@@ -38,7 +38,7 @@ export function TaskCommentForm({ taskId }: TaskCommentFormProps) {
       const result = await addCommentAction(formData)
       
       if (result.success) {
-        setMessage({ type: 'success', text: result.message })
+        setMessage({ type: 'success', text: result.message || 'Comment added successfully' })
         setBody("")
         // Clear success message after 3 seconds
         setTimeout(() => setMessage(null), 3000)

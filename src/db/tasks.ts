@@ -1,9 +1,13 @@
 import prisma from "./db"
 import { Prisma } from "@prisma/client"
+import { cacheTag } from "next/dist/server/use-cache/cache-tag"
+import { revalidateTag } from "next/cache"
+import { wait } from "@/utils/wait"
 
 export async function getTasks() {
   "use cache"
-  
+  cacheTag("tasks:all")
+
   await wait(500)
   return prisma.task.findMany({
     include: {
@@ -18,7 +22,8 @@ export async function getTasks() {
 
 export async function getTasksByCompletion(completed: boolean) {
   "use cache"
-  
+  cacheTag("tasks:all")
+
   await wait(500)
   return prisma.task.findMany({ 
     where: { completed },
@@ -36,7 +41,8 @@ export async function getTasksByCompletion(completed: boolean) {
 
 export async function getUserTasks(userId: string | number) {
   "use cache"
-  
+  cacheTag(`tasks:userId=${userId}`)
+
   await wait(500)
   return prisma.task.findMany({ 
     where: { userId: Number(userId) },
@@ -50,9 +56,27 @@ export async function getUserTasks(userId: string | number) {
   })
 }
 
+export async function getTasksAssignedByUser(userId: string | number) {
+  "use cache"
+  cacheTag(`tasks:assignedBy=${userId}`)
+
+  await wait(500)
+  return prisma.task.findMany({
+    where: { assignedById: Number(userId) },
+    include: {
+      Project: true,
+      User: true
+    },
+    orderBy: [
+      { createdAt: 'desc' }
+    ]
+  })
+}
+
 export async function getProjectTasks(projectId: string | number) {
   "use cache"
-  
+  cacheTag(`tasks:projectId=${projectId}`)
+
   await wait(500)
   return prisma.task.findMany({ 
     where: { projectId: Number(projectId) },
@@ -65,7 +89,8 @@ export async function getProjectTasks(projectId: string | number) {
 
 export async function getTask(taskId: string | number) {
   "use cache"
-  
+  cacheTag(`tasks:id=${taskId}`)
+
   await wait(500)
   return prisma.task.findUnique({
     where: { id: Number(taskId) },
@@ -136,6 +161,11 @@ export async function createTask({
     throw new Error('Failed to create task')
   }
 
+  revalidateTag("tasks:all")
+  if (task.userId) revalidateTag(`tasks:userId=${task.userId}`)
+  if (assignedById) revalidateTag(`tasks:assignedBy=${assignedById}`)
+  if (task.projectId) revalidateTag(`tasks:projectId=${task.projectId}`)
+
   // Return in Prisma format
   return {
     id: task.id,
@@ -165,37 +195,22 @@ export async function updateTask(
      userId: number,
      projectId?: number
   }) {
-  console.log('updateTask called with:', { taskId, title, completed, userId, projectId })
-  
-  // Use transaction for consistency
-  const task = await prisma.$transaction(async (tx) => {
-    const updated = await tx.task.update({
-      where: { id: Number(taskId) },
-      data: {
-        title,
-        completed,
-        urgency: urgency as any || 'MEDIUM',
-        userId,
-        projectId: projectId || null,
-        updatedAt: new Date()
-      },
-    })
-    
-    // Verify the update within the transaction
-    const verified = await tx.task.findUnique({
-      where: { id: Number(taskId) }
-    })
-    
-    console.log('Task after update (in transaction):', verified)
-    
-    return updated
+  const task = await prisma.task.update({
+    where: { id: Number(taskId) },
+    data: {
+      title,
+      completed,
+      urgency: urgency as any || 'MEDIUM',
+      userId,
+      projectId: projectId || null,
+      updatedAt: new Date()
+    },
   })
-  
-  // Double-check outside transaction
-  const finalCheck = await prisma.task.findUnique({
-    where: { id: Number(taskId) }
-  })
-  console.log('Final task state:', finalCheck)
+
+  revalidateTag("tasks:all")
+  revalidateTag(`tasks:id=${taskId}`)
+  revalidateTag(`tasks:userId=${userId}`)
+  if (projectId) revalidateTag(`tasks:projectId=${projectId}`)
 
   return task
 }
@@ -205,11 +220,11 @@ export async function deleteTask(taskId: string | number) {
     return tx.task.delete({ where: { id: Number(taskId) } })
   })
 
+  revalidateTag("tasks:all")
+  revalidateTag(`tasks:id=${taskId}`)
+  revalidateTag(`tasks:userId=${task.userId}`)
+  if (task.projectId) revalidateTag(`tasks:projectId=${task.projectId}`)
+
   return task
 }
 
-function wait(duration: number) {
-  return new Promise(resolve => {
-    setTimeout(resolve, duration)
-  })
-}

@@ -17,9 +17,9 @@ export default async function ProjectsPage() {
     redirect("/login")
   }
 
-  // Fetch data for the client component
+  // Fetch data for the client component (include archived so we can filter/toggle in UI)
   const [projectsData, users] = await Promise.all([
-    getProjects(),
+    getProjects({ includeArchived: true }),
     getUsers()
   ])
 
@@ -30,6 +30,8 @@ export default async function ProjectsPage() {
     clientId: project.clientRef?.id || null,
     clientCompany: project.clientRef?.companyName || null
   }))
+
+  const activeProjects = projects.filter(p => !p.archived)
 
   return (
     <>
@@ -42,7 +44,7 @@ export default async function ProjectsPage() {
           <Link className="btn btn-primary" href="/projects/new">
             New Project
           </Link>
-          <NewTaskButton users={users} projects={projects} />
+          <NewTaskButton users={users} projects={activeProjects} />
         </div>
       </div>
 

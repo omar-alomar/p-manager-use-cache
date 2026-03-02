@@ -1,16 +1,26 @@
 "use server"
 
 import { createTask, deleteTask, updateTask, getTask } from "@/db/tasks"
-import { revalidatePath, revalidateTag } from "next/cache"
 import prisma from "@/db/db"
 import { notificationService } from "@/services/notificationService"
 import { getCurrentUser } from "@/auth/currentUser"
+import { revalidateTaskPaths } from "@/utils/revalidate"
+import { parseTaskFormData } from "@/schemas/schemas"
+import type { ActionResult } from "@/types"
 
 
 export async function createTaskAction(prevState: unknown, formData: FormData) {
-  const [data, errors] = validateTask(formData)
+  const result = parseTaskFormData(formData)
 
-  if (!data) return errors
+  if (!result.success) {
+    const errors: Record<string, string> = {}
+    result.error.issues.forEach(issue => {
+      if (issue.path[0]) errors[issue.path[0] as string] = issue.message
+    })
+    return errors
+  }
+
+  const data = result.data
 
   try {
     const currentUser = await getCurrentUser()
@@ -18,7 +28,7 @@ export async function createTaskAction(prevState: unknown, formData: FormData) {
       ...data,
       assignedById: currentUser?.id
     })
-    
+
     // Get user and project details for notification
     const [assignedUser, project, assignerUser] = await Promise.all([
       prisma.user.findUnique({ where: { id: data.userId } }),
@@ -39,15 +49,8 @@ export async function createTaskAction(prevState: unknown, formData: FormData) {
         projectTitle: project?.title,
       })
     }
-    
-    // Revalidate paths
-    if (data.projectId && data.projectId > 0) {
-      revalidatePath(`/projects/${data.projectId}`)
-    }
-    revalidatePath('/projects')
-    revalidatePath('/tasks')
-    revalidatePath('/my-tasks')
-    revalidatePath('/')
+
+    revalidateTaskPaths({ projectId: data.projectId })
 
     // Return success state instead of redirecting
     return { success: true, message: 'Task created successfully!', taskId: task.id }
@@ -62,23 +65,22 @@ export async function editTaskAction(
   prevState: unknown,
   formData: FormData
 ) {
-  const [data, errors] = validateTask(formData)
+  const result = parseTaskFormData(formData)
 
-  if (!data) return errors
+  if (!result.success) {
+    const errors: Record<string, string> = {}
+    result.error.issues.forEach(issue => {
+      if (issue.path[0]) errors[issue.path[0] as string] = issue.message
+    })
+    return errors
+  }
+
+  const data = result.data
 
   try {
     const task = await updateTask(taskId, data)
-    
-    // Revalidate paths
-    if (data.projectId && data.projectId > 0) {
-      revalidatePath(`/projects/${data.projectId}`)
-    }
-    revalidatePath('/projects')
-    revalidatePath('/tasks')
-    revalidatePath('/my-tasks')
-    revalidatePath(`/tasks/${taskId}`)
-    revalidatePath('/')
-    revalidateTag('tasks')
+
+    revalidateTaskPaths({ projectId: data.projectId, taskId })
 
     // Return success state instead of redirecting
     return { success: true, message: 'Task updated successfully!', taskId: task.id }
@@ -91,20 +93,13 @@ export async function deleteTaskAction(taskId: number | string) {
   try {
     const task = await getTask(taskId)
     if (!task) {
-      console.error(`Task ${taskId} not found`)
       return { success: false, message: 'Task not found' }
     }
-    
+
     await deleteTask(taskId)
-    
-    // Revalidate paths
-    revalidatePath(`/projects/${task.projectId}`)
-    revalidatePath('/projects')
-    revalidatePath('/tasks')
-    revalidatePath('/my-tasks')
-    revalidatePath('/')
-    revalidateTag('tasks')
-    
+
+    revalidateTaskPaths({ projectId: task.projectId })
+
     return { success: true, message: 'Task deleted successfully', redirectTo: "/tasks" }
   } catch (error) {
     console.error('Error deleting task:', error)
@@ -112,52 +107,6 @@ export async function deleteTaskAction(taskId: number | string) {
   }
 }
 
-
-function validateTask(formData: FormData) {
-  const errors: { 
-    title?: string; 
-    completed?: string; 
-    urgency?: string;
-    userId?: string; 
-    projectId?: string;
-    status?: string;
-    priority?: string;
-    dueDate?: string;
-  } = {}
-  
-  const title = formData.get("title") as string
-  const completed = formData.get("completed") === "on"
-  const urgency = formData.get("urgency") as string
-  const userId = Number(formData.get("userId"))
-  const projectIdRaw = formData.get("projectId")
-  const projectId = projectIdRaw && Number(projectIdRaw) > 0 ? Number(projectIdRaw) : undefined
-  
-  let isValid = true
-
-  if (title === "") {
-    errors.title = "Required"
-    isValid = false
-  }
-
-  if (isNaN(userId)) {
-    errors.userId = "Required"
-    isValid = false
-  }
-
-  // projectId is optional - if provided, it must be valid
-  if (projectIdRaw && projectId === undefined) {
-    errors.projectId = "Invalid project selection"
-    isValid = false
-  }
-
-  return [isValid ? { 
-    title, 
-    completed, 
-    urgency: urgency || 'MEDIUM',
-    userId, 
-    projectId 
-  } : undefined, errors] as const
-}
 
 // Update task completion status (for checkbox toggle)
 export async function updateTaskCompletionAction(
@@ -170,8 +119,6 @@ export async function updateTaskCompletionAction(
     projectId?: number
   }
 ) {
-  console.log('Server action called with:', { taskId, data })
-  
   try {
     // Get the original task to check if completion status changed and get the original assigner
     const originalTask = await prisma.task.findUnique({
@@ -181,17 +128,15 @@ export async function updateTaskCompletionAction(
 
     // Update the task
     const result = await updateTask(taskId, data)
-    console.log('Update result:', result)
 
     // Send notification if task was just completed
     if (data.completed && originalTask && !originalTask.completed) {
       const currentUser = await getCurrentUser()
-      
+
       if (!currentUser) {
-        console.warn('No current user found, skipping notification')
         return { success: true, message: 'Task updated successfully!', taskId: result.id }
       }
-      
+
       const [completedByUser, project, originalAssigner] = await Promise.all([
         prisma.user.findUnique({ where: { id: currentUser.id } }),
         data.projectId ? prisma.project.findUnique({ where: { id: data.projectId } }) : null,
@@ -211,15 +156,9 @@ export async function updateTaskCompletionAction(
         })
       }
     }
-    
-    // Revalidate paths
-    revalidatePath(`/projects/${data.projectId}`)
-    revalidatePath('/projects')
-    revalidatePath('/tasks')
-    revalidatePath('/my-tasks')
-    revalidatePath(`/tasks/${taskId}`)
-    revalidatePath('/')
-    
+
+    revalidateTaskPaths({ projectId: data.projectId, taskId })
+
     return result
   } catch (error) {
     console.error('Error in updateTaskCompletionAction:', error)
@@ -230,7 +169,7 @@ export async function updateTaskCompletionAction(
 // Verify task update helper
 export async function verifyTaskUpdate(taskId: number) {
   // Bypass cache to get fresh data immediately after update
-  const task = await prisma.task.findUnique({ 
+  const task = await prisma.task.findUnique({
     where: { id: Number(taskId) },
     include: {
       Project: true,

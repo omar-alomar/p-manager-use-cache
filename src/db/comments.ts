@@ -1,7 +1,11 @@
 import prisma from "./db"
+import { cacheTag } from "next/dist/server/use-cache/cache-tag"
+import { revalidateTag } from "next/cache"
+import { wait } from "@/utils/wait"
 
 export async function getProjectComments(projectId: string | number) {
   "use cache"
+  cacheTag(`comments:projectId=${projectId}`)
 
   await wait(500)
   return prisma.comment.findMany({ 
@@ -21,6 +25,7 @@ export async function getProjectComments(projectId: string | number) {
 
 export async function getTaskComments(taskId: string | number) {
   "use cache"
+  cacheTag(`comments:taskId=${taskId}`)
 
   await wait(500)
   return prisma.comment.findMany({ 
@@ -39,9 +44,7 @@ export async function getTaskComments(taskId: string | number) {
 }
 
 export async function createComment(projectId: string | number | null, taskId: string | number | null, email: string, body: string, userId: number) {
-  await wait(500)
-  
-  return prisma.comment.create({
+  const comment = await prisma.comment.create({
     data: {
       projectId: projectId ? Number(projectId) : null,
       taskId: taskId ? Number(taskId) : null,
@@ -50,18 +53,21 @@ export async function createComment(projectId: string | number | null, taskId: s
       userId
     }
   })
+
+  if (projectId) revalidateTag(`comments:projectId=${projectId}`)
+  if (taskId) revalidateTag(`comments:taskId=${taskId}`)
+
+  return comment
 }
 
 export async function deleteComment(commentId: number) {
-  await wait(500)
-  
-  return prisma.comment.delete({
+  const comment = await prisma.comment.delete({
     where: { id: commentId }
   })
+
+  if (comment.projectId) revalidateTag(`comments:projectId=${comment.projectId}`)
+  if (comment.taskId) revalidateTag(`comments:taskId=${comment.taskId}`)
+
+  return comment
 }
 
-function wait(duration: number) {
-  return new Promise(resolve => {
-    setTimeout(resolve, duration)
-  })
-}

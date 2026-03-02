@@ -5,22 +5,11 @@ import { TaskStats } from "./TaskStats"
 import { TaskFilters } from "./TaskFilters"
 import { TaskList } from "./TaskList"
 import { UserTaskSection } from "./UserTaskSection"
-
-interface Task {
-  id: number
-  title: string
-  completed: boolean
-  urgency?: string | null
-  userId: number
-  projectId: number | null
-  createdAt: Date
-  updatedAt: Date
-  User: { id: number; name: string }
-  Project: { id: number; title: string } | null
-}
+import { URGENCY_ORDER } from "@/constants/urgency"
+import type { TaskWithRelations } from "@/types"
 
 interface TasksPageClientProps {
-  tasks: Task[]
+  tasks: TaskWithRelations[]
   users: { id: number; name: string }[]
   projects: { id: number; title: string }[]
 }
@@ -72,10 +61,8 @@ export function TasksPageClient({ tasks, users, projects }: TasksPageClientProps
       if (sort === 'title') {
         return a.title.localeCompare(b.title)
       } else if (sort === 'urgency') {
-        // Sort by urgency: CRITICAL > HIGH > MEDIUM > LOW
-        const urgencyOrder = { 'CRITICAL': 4, 'HIGH': 3, 'MEDIUM': 2, 'LOW': 1 }
-        const aUrgency = urgencyOrder[a.urgency as keyof typeof urgencyOrder] || 2
-        const bUrgency = urgencyOrder[b.urgency as keyof typeof urgencyOrder] || 2
+        const aUrgency = URGENCY_ORDER[a.urgency as string] || 2
+        const bUrgency = URGENCY_ORDER[b.urgency as string] || 2
         return bUrgency - aUrgency // Higher urgency first
       } else {
         // Default to created date (newest first)

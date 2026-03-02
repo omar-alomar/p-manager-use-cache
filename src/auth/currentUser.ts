@@ -34,9 +34,7 @@ async function _getCurrentUser({
   withFullUser = false,
   redirectIfNotFound = false,
 } = {}) {
-  console.log("_getCurrentUser: Starting...")
   const user = await getUserFromSession(await cookies())
-  console.log("_getCurrentUser: Got session user:", user ? "found" : "null")
 
   if (user == null) {
     if (redirectIfNotFound) return redirect("/login")
@@ -44,13 +42,10 @@ async function _getCurrentUser({
   }
 
   if (withFullUser) {
-    console.log("_getCurrentUser: Getting full user from DB...")
     const fullUser = await getUserFromDb(user.id)
-    console.log("_getCurrentUser: Got full user:", fullUser ? "found" : "null")
-    
+
     // If user exists in session but not in database, clear the session and redirect
     if (fullUser == null) {
-      console.log("_getCurrentUser: User not found in database, clearing session...")
       const { clearInvalidSession } = await import("../actions/auth")
       await clearInvalidSession()
       

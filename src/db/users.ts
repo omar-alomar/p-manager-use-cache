@@ -1,37 +1,38 @@
 import prisma from "./db"
-import { revalidateTag, revalidatePath, unstable_cache } from "next/cache"
+import { revalidateTag, revalidatePath } from "next/cache"
+import { cacheTag } from "next/dist/server/use-cache/cache-tag"
 import { Role } from "@prisma/client"
 import { generateSalt, hashPassword } from "../auth/passwordHasher"
+import { wait } from "@/utils/wait"
 
 export async function getUsers() {
-  return unstable_cache(
-    async () => {
-      await wait(500)
-      return prisma.user.findMany({
-        include: {
-          projects: true,
-          tasks: true
-        },
-        orderBy: {
-          name: 'asc'
-        }
-      })
+  "use cache"
+  cacheTag("users:all")
+
+  await wait(500)
+  return prisma.user.findMany({
+    include: {
+      projects: true,
+      tasks: true
     },
-    ['users:all'],
-    { tags: ['users:all'] }
-  )()
+    orderBy: {
+      name: 'asc'
+    }
+  })
 }
 
 export async function getUser(userId: string | number) {
   "use cache"
-  
+  cacheTag(`users:id=${userId}`)
+
   await wait(500)
   return prisma.user.findUnique({ where: { id: Number(userId) } })
 }
 
 export async function getUsersWithTasks() {
   "use cache"
-  
+  cacheTag("users:all")
+
   await wait(500)
   
   // This query should only return users who have at least one task
@@ -66,8 +67,6 @@ export async function getUsersWithTasks() {
 }
 
 export async function deleteUser(userId: string | number) {
-  await wait(500)
-
   const id = Number(userId)
   
   // Check if user exists first
@@ -91,8 +90,6 @@ export async function deleteUser(userId: string | number) {
 }
 
 export async function updateUserRole(userId: string | number, newRole: string) {
-  await wait(500)
-
   const user = await prisma.user.update({
     where: { id: Number(userId) },
     data: { role: newRole as Role }
@@ -105,8 +102,6 @@ export async function updateUserRole(userId: string | number, newRole: string) {
 }
 
 export async function updateUserEmail(userId: string | number, newEmail: string) {
-  await wait(500)
-
   const user = await prisma.user.update({
     where: { id: Number(userId) },
     data: { email: newEmail }
@@ -119,8 +114,6 @@ export async function updateUserEmail(userId: string | number, newEmail: string)
 }
 
 export async function updateUserPassword(userId: string | number, hashedPassword: string, salt: string) {
-  await wait(500)
-
   const user = await prisma.user.update({
     where: { id: Number(userId) },
     data: { 
@@ -141,8 +134,6 @@ export async function createUser(data: {
   password: string
   role?: Role
 }) {
-  await wait(500)
-
   // Check if user already exists
   const existingUser = await prisma.user.findUnique({
     where: { email: data.email }
@@ -174,8 +165,3 @@ export async function createUser(data: {
   return user
 }
 
-function wait(duration: number) {
-  return new Promise(resolve => {
-    setTimeout(resolve, duration)
-  })
-}

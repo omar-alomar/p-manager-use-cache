@@ -12,6 +12,14 @@ const nextConfig: NextConfig = {
   },
   // If TS starts blocking builds later, you *can* flip this on temporarily:
   // typescript: { ignoreBuildErrors: true },
+  webpack: (config, { isServer }) => {
+    // Externalize ioredis to avoid bundling it during build (speeds up builds)
+    if (isServer) {
+      config.externals = config.externals || [];
+      config.externals.push('ioredis');
+    }
+    return config;
+  },
 };
 
 export default nextConfig;

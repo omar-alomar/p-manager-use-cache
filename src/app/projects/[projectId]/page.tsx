@@ -10,7 +10,8 @@ import { DeleteButton } from "./_DeleteButton"
 import { getProjectTasks } from "@/db/tasks"
 import { TaskItem } from "@/components/TaskItem"
 import { formatDate } from "@/utils/dateUtils"
-import { EditableComments } from "@/components/EditableComments"
+import { getMilestoneColorClass } from "@/utils/milestoneUtils"
+import { EditableProjectField } from "@/components/EditableProjectField"
 import { AddTaskToProjectButton } from "@/components/AddTaskToProjectButton"
 import { ProjectEmptyStateActions } from "@/components/ProjectEmptyStateActions"
 import { CommentForm } from "@/components/CommentForm"
@@ -179,6 +180,9 @@ async function ProjectHero({ projectId }: { projectId: string }) {
           
           <div className="hero-basic-info">
             <h1 className="hero-name">{project.title}</h1>
+            {project.archived && (
+              <span className="project-archived-badge hero-archived-badge">Archived</span>
+            )}
             <div className="hero-tags">
               {project.clientRef && (
                 <Link 
@@ -218,22 +222,6 @@ async function ProjectHero({ projectId }: { projectId: string }) {
                   return nearest
                 })
                 
-                // Calculate milestone color class based on date proximity
-                const getMilestoneColorClass = (milestoneDate: Date) => {
-                  const now = new Date()
-                  const milestone = new Date(milestoneDate)
-                  const diffTime = milestone.getTime() - now.getTime()
-                  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-                  
-                  if (diffDays <= 14) {
-                    return 'milestone-urgent' // Red - within 2 weeks
-                  } else if (diffDays <= 30) {
-                    return 'milestone-warning' // Yellow - within a month
-                  } else {
-                    return 'milestone-safe' // Green - more than a month
-                  }
-                }
-                
                 return (
                   <span className={`hero-tag milestone ${getMilestoneColorClass(nearestMilestone.date)}`}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -250,17 +238,12 @@ async function ProjectHero({ projectId }: { projectId: string }) {
             </div>
             
             <div className="hero-comments">
-              <EditableComments
+              <EditableProjectField
                 projectId={project.id}
-                initialComments={project.body}
-                title={project.title}
-                clientId={project.clientId}
-                body={project.body}
-                milestone={project.milestone}
-                mbaNumber={project.mbaNumber || ""}
-                coFileNumbers={project.coFileNumbers || ""}
-                dldReviewer={project.dldReviewer || ""}
-                userId={project.userId}
+                field="body"
+                initialValue={project.body}
+                placeholder="Add comments..."
+                multiline
               />
             </div>
           </div>
@@ -311,7 +294,7 @@ async function ProjectHero({ projectId }: { projectId: string }) {
 
           {/* Action Buttons */}
           <div className="hero-actions">
-            <ProjectHeroActions projectId={projectId} />
+            <ProjectHeroActions projectId={projectId} archived={project.archived ?? false} />
             <DeleteButton projectId={projectId} />
           </div>
         </div>
@@ -463,7 +446,7 @@ async function Tasks({ projectId }: { projectId: string }) {
       getProjectTasks(projectId),
       getProject(projectId),
       getUsers(),
-      getProjects()
+      getProjects({ includeArchived: true }) // include archived so current project stays in dropdown when archived
     ])
     
     if (tasks.length === 0) {

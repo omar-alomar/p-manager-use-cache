@@ -3,6 +3,7 @@
 import { createClient, deleteClient, updateClient, updateClientField, validateClient } from "@/db/clients"
 import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
+import type { ActionResult } from "@/types"
 
 export async function createClientAction(prevState: unknown, formData: FormData) {
   const [data, errors] = validateClient(formData)
@@ -51,7 +52,7 @@ export async function updateClientFieldAction(
   clientId: number,
   field: 'companyName' | 'address',
   value: string
-) {
+): Promise<ActionResult> {
   try {
     await updateClientField(clientId, field, value || null)
     return { success: true, message: `${field} updated successfully` }

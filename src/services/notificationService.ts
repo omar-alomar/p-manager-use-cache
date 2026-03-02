@@ -82,7 +82,7 @@ export class NotificationService {
   }) {
     // Only notify if the assigner is different from the assignee (don't notify yourself)
     if (assignedUserId === assignerUserId) {
-      console.log('Skipping notification: user assigned task to themselves');
+      // Don't notify yourself
       return null;
     }
 
@@ -123,7 +123,7 @@ export class NotificationService {
     // Only notify the assigner if they're different from the completer
     // (don't notify yourself about completing your own task)
     if (assignerUserId === completedByUserId) {
-      console.log('Skipping notification: user completed their own task');
+      // Don't notify yourself
       return null;
     }
 
@@ -217,14 +217,6 @@ export class NotificationService {
     commentBody: string,
     context: { projectTitle?: string; taskTitle?: string; projectId?: number; taskId?: number }
   ) {
-    console.log('sendMentionNotification called with:', {
-      mentionedUserId,
-      commentAuthorName,
-      commentId,
-      commentBody,
-      context
-    });
-
     const title = 'You were mentioned in a comment';
     let message = `${commentAuthorName} mentioned you in a comment`;
     
@@ -239,8 +231,6 @@ export class NotificationService {
       ? commentBody.substring(0, 100) + '...' 
       : commentBody;
     message += `: "${commentPreview}"`;
-
-    console.log('Sending mention notification:', { title, message, mentionedUserId });
 
     return this.sendNotification({
       type: 'mention',
