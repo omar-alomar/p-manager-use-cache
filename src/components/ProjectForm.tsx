@@ -8,11 +8,15 @@ import { SkeletonInput } from "./Skeleton"
 import { createProjectAction, editProjectAction } from "@/actions/projects"
 import { ClientModal } from "./ClientModal"
 import { SearchableSelect } from "./SearchableSelect"
+import { getMilestoneColorClass } from "@/utils/milestoneUtils"
 
 export function ProjectForm({
   users,
   clients,
   project,
+  onSuccess,
+  onCancel,
+  hideDescription,
 }: {
   users: { id: number; name: string }[]
   clients: { id: number; name: string; email: string }[]
@@ -29,6 +33,9 @@ export function ProjectForm({
   userId: number
   milestones?: { id: number; date: Date; item: string; completed?: boolean }[]
   }
+  onSuccess?: () => void
+  onCancel?: () => void
+  hideDescription?: boolean
 }) {
   const action =
     project == null ? createProjectAction : editProjectAction.bind(null, project.id)
@@ -47,15 +54,15 @@ export function ProjectForm({
   // Handle success state for project creation/editing
   React.useEffect(() => {
     if ('success' in state && state.success) {
-      if (!project) {
-        // For new projects, redirect to projects page
+      if (onSuccess) {
+        onSuccess()
+      } else if (!project) {
         window.location.href = '/projects'
       } else {
-        // For edited projects, redirect to project detail
         window.location.href = `/projects/${project.id}`
       }
     }
-  }, [state, project])
+  }, [state, project, onSuccess])
 
   // Handle new client creation
   const handleClientCreated = (newClient: { id: number; name: string; email: string }) => {
@@ -151,6 +158,7 @@ export function ProjectForm({
                       type="date"
                       name={`milestoneDate_${index}`}
                       id={`milestoneDate_${index}`}
+                      className={`milestone-date-input ${entry.date ? getMilestoneColorClass(new Date(entry.date + 'T00:00:00')) : ''}`}
                       value={entry.date}
                       onChange={(e) => updateMilestoneEntry(index, 'date', e.target.value)}
                     />
@@ -199,12 +207,16 @@ export function ProjectForm({
         </div>
       </div>
 
-      <div className="form-row">
-        <FormGroup errorMessage={'body' in state ? state.body : undefined}>
-          <label htmlFor="body">Description</label>
-          <textarea required name="body" id="body" defaultValue={project?.body} />
-        </FormGroup>
-      </div>
+      {hideDescription ? (
+        <input type="hidden" name="body" value={project?.body || ""} />
+      ) : (
+        <div className="form-row">
+          <FormGroup errorMessage={'body' in state ? state.body : undefined}>
+            <label htmlFor="body">Description</label>
+            <textarea required name="body" id="body" defaultValue={project?.body} />
+          </FormGroup>
+        </div>
+      )}
       
       <div className="form-row">
         <FormGroup errorMessage={'mbaNumber' in state ? state.mbaNumber : undefined}>
@@ -240,12 +252,22 @@ export function ProjectForm({
       </div>
       
       <div className="form-actions">
-        <Link
-          className="btn btn-outline btn-cancel"
-          href={project == null ? "/projects" : `/projects/${project.id}`}
-        >
-          Cancel
-        </Link>
+        {onCancel ? (
+          <button
+            type="button"
+            className="btn btn-outline btn-cancel"
+            onClick={onCancel}
+          >
+            Cancel
+          </button>
+        ) : (
+          <Link
+            className="btn btn-outline btn-cancel"
+            href={project == null ? "/projects" : `/projects/${project.id}`}
+          >
+            Cancel
+          </Link>
+        )}
         <button 
           disabled={pending} 
           className="btn btn-primary btn-save"

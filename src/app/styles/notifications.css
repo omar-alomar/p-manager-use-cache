@@ -1,0 +1,319 @@
+/* ============================================================
+   NOTIFICATIONS — Bell, center panel, toast
+   ============================================================ */
+
+/* ── Wrapper — positions the dropdown relative to the bell ── */
+.notification-center {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ── Bell button ── */
+.notification-bell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #FFFFFF;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.notification-bell:hover {
+  background: var(--neutral-50);
+  border-color: var(--border-strong);
+  color: var(--text-secondary);
+}
+
+.notification-bell svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+/* Red dot badge */
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 16px;
+  height: 16px;
+  background: var(--danger-text);
+  color: white;
+  border-radius: var(--radius-full);
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  border: 2px solid #FFFFFF;
+  pointer-events: none;
+}
+
+/* Connection indicator dot */
+.connection-indicator {
+  position: absolute;
+  bottom: -3px;
+  left: -3px;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  border: 2px solid #FFFFFF;
+}
+.connection-indicator.disconnected { background: var(--warning-text); }
+
+/* ── Dropdown panel ── */
+.notification-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 340px;
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  z-index: 500;
+  overflow: hidden;
+  animation: notif-drop 140ms ease;
+}
+
+@keyframes notif-drop {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Header */
+.notification-dropdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  background: var(--neutral-50);
+}
+
+.notification-dropdown-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.notification-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: background var(--transition), color var(--transition);
+}
+.notification-close-btn:hover {
+  background: var(--neutral-200);
+  color: var(--text-primary);
+}
+.notification-close-btn svg { width: 14px; height: 14px; display: block; }
+
+/* Clear all bar */
+.notification-dropdown-actions {
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  background: var(--neutral-50);
+}
+
+.notification-clear-btn {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--primary-600);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: color var(--transition);
+}
+.notification-clear-btn:hover { color: var(--primary-800); text-decoration: underline; }
+
+/* List */
+.notification-list {
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  transition: background var(--transition);
+}
+
+.notification-item:last-child { border-bottom: none; }
+.notification-item:hover { background: var(--neutral-50); }
+
+.notification-item.unread { background: var(--primary-50); }
+.notification-item.unread:hover { background: var(--primary-100); }
+
+/* Item inner layout */
+.notification-item-content {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.notification-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+  margin-top: 5px;
+  background: var(--primary-500);
+}
+.notification-indicator.task-assigned  { background: var(--primary-500); }
+.notification-indicator.task-completed { background: var(--success-500); }
+.notification-indicator.mention        { background: var(--warning-500); }
+
+.notification-text { flex: 1; min-width: 0; }
+
+.notification-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0 0 2px;
+  line-height: 1.3;
+}
+
+.notification-message {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  line-height: 1.45;
+  margin: 0 0 2px;
+}
+
+.notification-timestamp {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.notification-unread-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--primary-500);
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+.notification-remove-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-muted);
+  opacity: 0;
+  transition: background var(--transition), color var(--transition), opacity var(--transition);
+}
+.notification-item:hover .notification-remove-btn { opacity: 1; }
+.notification-remove-btn:hover { background: var(--neutral-200); color: var(--text-primary); }
+.notification-remove-btn svg { width: 12px; height: 12px; display: block; }
+
+/* Legacy class aliases */
+.notification-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--primary-500);
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+.notification-content { flex: 1; min-width: 0; }
+.notification-time { font-size: var(--font-size-xs); color: var(--text-muted); }
+
+.notification-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  background: var(--neutral-50);
+}
+
+.notification-empty {
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* ── Toast — white card with left accent bar ── */
+.notification-toast {
+  position: fixed;
+  bottom: var(--space-6);
+  right: var(--space-6);
+  max-width: 320px;
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--primary-500);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-4);
+  z-index: 2000;
+  animation: toast-in 200ms ease;
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.toast-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: var(--primary-50);
+  color: var(--primary-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.toast-content { flex: 1; min-width: 0; }
+
+.toast-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.toast-message {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}

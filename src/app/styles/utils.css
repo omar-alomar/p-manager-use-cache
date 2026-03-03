@@ -1,0 +1,156 @@
+/* ============================================================
+   UTILS — Utility classes, animations, responsive
+   ============================================================ */
+
+/* ── Screen reader ── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Truncate ── */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Checkbox utility ── */
+.checkbox-spacing { margin-right: 6px; }
+
+/* ── Alerts ── */
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: 6px;
+  font-size: var(--font-size-sm);
+  border: 1px solid transparent;
+}
+
+.alert-info    { background: var(--primary-50);   border-color: var(--primary-200);    color: var(--primary-700); }
+.alert-success { background: var(--success-bg);   border-color: var(--success-border); color: var(--success-text); }
+.alert-warning { background: var(--warning-bg);   border-color: var(--warning-border); color: var(--warning-text); }
+.alert-danger  { background: var(--danger-bg);    border-color: var(--danger-border);  color: var(--danger-text); }
+
+/* ── Mobile navigation ── */
+.mobile-nav {
+  display: none;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .content-grid,
+  .project-content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .task-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .admin-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .top-nav {
+    padding: 0 var(--space-4);
+    gap: var(--space-3);
+  }
+
+  .nav-center { display: none; }
+
+  .container {
+    padding: var(--space-5) var(--space-4);
+  }
+
+  .project-content-grid,
+  .task-content {
+    padding: var(--space-4);
+  }
+
+  .project-hero,
+  .user-hero,
+  .client-hero,
+  .task-hero {
+    padding: var(--space-5) var(--space-4);
+  }
+
+  .hero-content {
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .hero-right-section {
+    align-items: flex-start;
+  }
+
+  .hero-left-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hero-stats {
+    flex-wrap: wrap;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .team-grid,
+  .clients-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .task-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .quick-add-modal {
+    width: calc(100% - var(--space-8));
+    max-height: calc(100vh - var(--space-8));
+  }
+
+  .modal {
+    max-width: 100%;
+    max-height: calc(100vh - var(--space-8));
+  }
+
+  .task-filters {
+    gap: var(--space-3);
+  }
+
+  .projects-filters {
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .task-lists-grid-three {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .task-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .admin-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+}

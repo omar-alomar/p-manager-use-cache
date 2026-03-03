@@ -1,0 +1,52 @@
+/* ============================================================
+   FAB — Floating action button (quick-add task)
+   ============================================================ */
+
+.fab {
+  position: fixed;
+  bottom: var(--space-6);
+  right: var(--space-6);
+  z-index: 100;
+}
+
+/* Indigo pill with glowing shadow */
+.quick-add-task-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 44px;
+  padding: 0 var(--space-5);
+  border-radius: 9999px;
+  background: var(--primary-600);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: var(--font-weight-medium);
+  font-family: inherit;
+  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.35), 0 2px 6px rgba(79, 70, 229, 0.2);
+  transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+}
+
+.quick-add-task-btn:hover {
+  background: var(--primary-700);
+  box-shadow: 0 6px 24px rgba(79, 70, 229, 0.45), 0 3px 8px rgba(79, 70, 229, 0.25);
+  transform: translateY(-1px);
+}
+
+.quick-add-task-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+}
+
+.quick-add-task-btn:focus {
+  outline: 2px solid var(--primary-400);
+  outline-offset: 2px;
+}
+
+.quick-add-task-btn svg { flex-shrink: 0; }
+
+.quick-add-task-btn.loading {
+  opacity: 0.75;
+  pointer-events: none;
+}

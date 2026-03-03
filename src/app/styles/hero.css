@@ -1,0 +1,641 @@
+/* ============================================================
+   HERO SECTIONS — Shared patterns for project, user, client, task heroes
+   ============================================================ */
+
+/* Base hero shell */
+.user-hero,
+.task-hero {
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--border);
+  padding: 28px 32px;
+}
+
+/* ── Project / Client Hero — card-style layout matching content-sections ── */
+.project-hero,
+.client-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: var(--space-6) var(--space-6) 0;
+  max-width: var(--content-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0;
+}
+
+/* Row 1: identity + actions (acts as the "header" area) */
+.hero-top-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--neutral-50);
+  border-bottom: 1px solid var(--border);
+}
+
+.hero-identity {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-width: 0;
+  flex: 1;
+}
+
+.hero-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.hero-title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+/* Hero badges */
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  background: var(--neutral-100);
+  color: var(--text-muted);
+  border: 1px solid var(--neutral-300);
+}
+
+.hero-badge.archived {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.hero-badge.company {
+  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+}
+
+/* Row 2: editable description */
+.hero-body {
+  padding: var(--space-4) var(--space-5);
+}
+
+.hero-body .comments-text {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.hero-body .comments-text:hover {
+  background: var(--neutral-50);
+  border-color: var(--border);
+}
+
+.hero-body .comments-placeholder {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.hero-body .comments-edit-wrapper {
+  width: 100%;
+}
+
+.hero-body .comments-edit-textarea {
+  width: 100%;
+  font-size: var(--font-size-sm);
+  padding: var(--space-2);
+  border: 1px solid var(--primary-300);
+  border-radius: 6px;
+  background: #FFFFFF;
+  outline: none;
+  resize: none;
+  font-family: inherit;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.hero-body .comments-edit-textarea:focus {
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+.hero-body .comments-edit-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Row 3: stats bar */
+.hero-stats-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--border);
+  background: var(--neutral-50);
+}
+
+.hero-stat {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-4);
+}
+
+.hero-stat:first-child {
+  padding-left: 0;
+}
+
+.hero-stat-number {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.hero-stat-number.hero-stat-success { color: var(--success-text); }
+.hero-stat-number.hero-stat-warning { color: var(--warning-text); }
+
+.hero-stat-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hero-stat-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+/* Progress ring */
+.hero-progress-ring {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-progress-ring svg {
+  transform: rotate(-90deg);
+}
+
+.hero-progress-text {
+  position: absolute;
+  font-size: 9px;
+  font-weight: var(--font-weight-bold);
+  color: var(--primary-600);
+  line-height: 1;
+}
+
+/* ── Legacy inner layout (user/client heroes) ── */
+.hero-content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-6);
+}
+
+.hero-left-section {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  flex: 1;
+  min-width: 0;
+}
+
+.hero-right-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-4);
+  flex-shrink: 0;
+}
+
+/* Avatar — polished gradient treatment */
+.hero-avatar { flex-shrink: 0; }
+
+.avatar-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary-100), var(--primary-200));
+  color: var(--primary-700);
+  border: 1px solid var(--primary-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+/* Larger avatar for user page */
+.user-hero .avatar-circle {
+  width: 72px;
+  height: 72px;
+  font-size: var(--font-size-2xl);
+}
+
+.avatar-text {
+  font-weight: var(--font-weight-semibold);
+}
+
+.icon-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary-100), var(--primary-200));
+  color: var(--primary-700);
+  border: 1px solid var(--primary-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icon-circle svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Info block */
+.hero-basic-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.hero-name {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.hero-subtitle,
+.hero-meta {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  margin-bottom: var(--space-3);
+}
+
+/* Tags row */
+.hero-tags {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+  background: var(--neutral-100);
+  color: var(--neutral-600);
+  border: 1px solid var(--neutral-200);
+  text-decoration: none;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.hero-tag.clickable:hover {
+  background: var(--neutral-200);
+  border-color: var(--neutral-300);
+}
+
+.hero-tag.client {
+  background: var(--primary-50);
+  color: var(--primary-700);
+  border-color: var(--primary-200);
+}
+
+.hero-tag.client:hover {
+  background: var(--primary-100);
+  border-color: var(--primary-300);
+}
+
+.hero-tag.manager {
+  background: var(--neutral-50);
+  color: var(--text-secondary);
+  border-color: var(--neutral-200);
+}
+
+.hero-tag.manager:hover {
+  background: var(--neutral-100);
+  border-color: var(--neutral-300);
+}
+
+/* Milestone color variants on hero tags */
+.hero-tag.milestone.milestone-urgent {
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+.hero-tag.milestone.milestone-warning {
+  background: #fffbeb;
+  color: #92400e;
+  border-color: #fde68a;
+}
+.hero-tag.milestone.milestone-safe {
+  background: #ecfdf5;
+  color: #065f46;
+  border-color: #a7f3d0;
+}
+
+/* Stats strip (used by user/client heroes) */
+.hero-stats {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-3);
+}
+
+.stat-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 72px;
+  text-align: center;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  box-shadow: var(--shadow-xs);
+}
+
+.stat-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-number,
+.stat-card .stat-number {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.stat-label,
+.stat-card .stat-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.stat-percentage {
+  font-size: var(--font-size-xs);
+  color: var(--primary-600);
+  font-weight: var(--font-weight-semibold);
+}
+
+.stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--primary-50);
+  border: 1px solid var(--primary-100);
+  margin: 0 auto var(--space-1);
+}
+
+.stat-icon svg { width: 16px; height: 16px; color: var(--primary-600); }
+
+.stat-icon.completed { background: var(--success-bg); border-color: var(--success-border); }
+.stat-icon.completed svg { color: var(--success-text); }
+.stat-icon.in-progress { background: var(--warning-bg); border-color: var(--warning-border); }
+.stat-icon.in-progress svg { color: var(--warning-text); }
+.stat-icon.assigned { background: var(--primary-50); border-color: var(--primary-100); }
+.stat-icon.assigned svg { color: var(--primary-600); }
+.stat-icon.total { background: var(--primary-50); border-color: var(--primary-100); }
+.stat-icon.total svg { color: var(--primary-600); }
+
+.stat-content { text-align: center; }
+
+/* Hero actions */
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+/* Hero description (legacy) */
+.hero-description {
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  background: var(--neutral-50);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.hero-description p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-size: var(--font-size-sm);
+}
+
+/* Task hero (simpler layout) */
+.task-hero {
+  padding: var(--space-6) var(--space-6);
+}
+
+.task-hero .hero-content { align-items: center; }
+
+.task-hero .hero-title h1 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
+  margin: 0;
+}
+
+/* Stat cards in task stats bar */
+.task-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+/* My tasks stat panels (synced widths) */
+.my-tasks-stats-wrapper { margin-bottom: var(--space-5); }
+.my-tasks-stats-group { display: flex; width: 100%; }
+.my-tasks-stat-panel { min-width: 0; overflow: hidden; }
+.my-tasks-stat-panel .stat-card { width: 100%; height: 100%; }
+
+/* Profile pages outer container */
+.project-profile-container,
+.user-profile-container {
+  min-height: calc(100vh - var(--nav-height));
+  background: var(--neutral-100);
+}
+
+/* Contact items on user page */
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.user-stats {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.user-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+/* Hero on card (compact) */
+.project-milestone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--success-bg);
+  border: 1px solid var(--success-border);
+  border-radius: 6px;
+  font-size: var(--font-size-xs);
+}
+.project-milestone.urgent {
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+}
+.project-milestone.warning {
+  background: var(--warning-bg);
+  border-color: var(--warning-border);
+}
+.milestone-label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--success-text);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.milestone-value {
+  font-weight: var(--font-weight-bold);
+  color: var(--success-text);
+  font-size: var(--font-size-sm);
+}
+.project-milestone.urgent .milestone-label,
+.project-milestone.urgent .milestone-value { color: var(--danger-text); }
+.project-milestone.warning .milestone-label,
+.project-milestone.warning .milestone-value { color: var(--warning-text); }
+
+/* Detail grid on project/user pages */
+.detail-grid,
+.project-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-5);
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.detail-item.full-width { grid-column: 1 / -1; }
+
+.detail-label-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.milestone-add-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: #FFFFFF;
+  cursor: pointer;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.milestone-add-btn:hover {
+  background: var(--primary-50);
+  color: var(--primary-600);
+  border-color: var(--primary-300);
+}
+
+.detail-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.detail-value {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.description-text {
+  line-height: 1.65;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.no-description,
+.placeholder-text {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: var(--font-size-sm);
+}
+
+.client-link,
+.user-link {
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  transition: color var(--transition);
+}
+.client-link:hover,
+.user-link:hover { color: var(--primary-600); text-decoration: underline; }

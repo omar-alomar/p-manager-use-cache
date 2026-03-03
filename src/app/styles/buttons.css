@@ -1,0 +1,342 @@
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: 34px;
+  padding: 0 var(--space-4);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: var(--font-weight-medium);
+  font-family: inherit;
+  line-height: 1;
+  border: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background var(--transition), border-color var(--transition),
+              color var(--transition), box-shadow var(--transition);
+  min-width: unset;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--primary-400);
+  outline-offset: 2px;
+}
+
+.btn:disabled,
+.btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Sizes */
+.btn-sm {
+  height: 28px;
+  padding: 0 var(--space-3);
+  font-size: var(--font-size-xs);
+}
+
+.btn-lg {
+  height: 40px;
+  padding: 0 var(--space-6);
+  font-size: var(--font-size-md);
+}
+
+/* Variants */
+.btn-primary {
+  background: var(--primary-600);
+  border-color: var(--primary-600);
+  color: white;
+  box-shadow: 0 1px 3px rgba(79, 70, 229, 0.25), 0 1px 2px rgba(79, 70, 229, 0.15);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-700);
+  border-color: var(--primary-700);
+  color: white;
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.35), 0 1px 3px rgba(79, 70, 229, 0.2);
+}
+
+.btn-secondary {
+  background: #FFFFFF;
+  border-color: var(--border);
+  color: var(--text-secondary);
+  box-shadow: var(--shadow-xs);
+}
+.btn-secondary:hover:not(:disabled) {
+  background: var(--neutral-50);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.btn-outline {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text-secondary);
+}
+.btn-outline:hover:not(:disabled) {
+  background: var(--neutral-50);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.btn-ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-secondary);
+}
+.btn-ghost:hover:not(:disabled) {
+  background: var(--neutral-100);
+  color: var(--text-primary);
+}
+
+.btn-danger {
+  background: var(--danger-text);
+  border-color: var(--danger-text);
+  color: white;
+  box-shadow: 0 1px 3px rgba(220, 38, 38, 0.2);
+}
+.btn-danger:hover:not(:disabled) {
+  background: #b91c1c;
+  border-color: #b91c1c;
+  color: white;
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.3);
+}
+
+.btn-cancel {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text-secondary);
+}
+.btn-cancel:hover:not(:disabled) {
+  background: var(--neutral-50);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.btn-save {
+  background: var(--primary-600);
+  border-color: var(--primary-600);
+  color: white;
+  box-shadow: 0 1px 3px rgba(79, 70, 229, 0.25);
+}
+.btn-save:hover:not(:disabled) {
+  background: var(--primary-700);
+  border-color: var(--primary-700);
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.35);
+}
+.btn-save:disabled {
+  background: var(--neutral-300);
+  border-color: var(--neutral-300);
+  color: var(--neutral-500);
+  cursor: not-allowed;
+  opacity: 1;
+  box-shadow: none;
+}
+
+/* Hero action buttons */
+.hero-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 34px;
+  padding: 0 var(--space-4);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: var(--font-weight-medium);
+  border: 1px solid var(--border);
+  background: #FFFFFF;
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: var(--shadow-xs);
+  transition: background var(--transition), border-color var(--transition), color var(--transition), box-shadow var(--transition);
+}
+.hero-action-btn:hover {
+  background: var(--neutral-50);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+.hero-action-btn.danger {
+  background: var(--danger-text);
+  border-color: var(--danger-text);
+  color: white;
+  box-shadow: 0 1px 3px rgba(220, 38, 38, 0.2);
+}
+.hero-action-btn.danger:hover {
+  background: #b91c1c;
+  border-color: #b91c1c;
+}
+.hero-action-btn.secondary {
+  background: #FFFFFF;
+  color: var(--text-secondary);
+  border-color: var(--border);
+}
+.hero-action-btn.secondary:hover {
+  background: var(--neutral-50);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+/* Spinner in buttons */
+.btn-spinner,
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: btn-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes btn-spin {
+  to { transform: rotate(360deg); }
+}
+
+.btn-loading {
+  opacity: 0.8;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.spinner-ring {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border);
+  border-top-color: var(--primary-600);
+  border-radius: 50%;
+  animation: btn-spin 0.7s linear infinite;
+}
+
+.animate-spin { animation: btn-spin 1s linear infinite; }
+
+.delete-btn-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+}
+
+/* Form action rows */
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border);
+  margin-top: var(--space-6);
+}
+
+.form-btn-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border);
+}
+
+/* Archive / view-archived buttons */
+.btn-view-archived {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 var(--space-3);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color var(--transition), border-color var(--transition), background var(--transition);
+}
+.btn-view-archived:hover {
+  color: var(--text-secondary);
+  border-color: var(--border-strong);
+  background: var(--neutral-50);
+}
+.btn-view-archived--active {
+  color: white;
+  background: var(--neutral-700);
+  border-color: var(--neutral-700);
+}
+.btn-view-archived--active:hover {
+  background: var(--neutral-800);
+  border-color: var(--neutral-800);
+  color: white;
+}
+
+/* Milestone buttons */
+.btn-add-milestone {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 32px;
+  padding: 0 var(--space-3);
+  background: var(--primary-50);
+  color: var(--primary-700);
+  border: 1px solid var(--primary-200);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: background var(--transition), border-color var(--transition);
+}
+.btn-add-milestone:hover {
+  background: var(--primary-100);
+  border-color: var(--primary-300);
+}
+
+.btn-remove-milestone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+  flex-shrink: 0;
+}
+.btn-remove-milestone:hover {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  border-color: var(--danger-border);
+}
+
+/* Project hero btn */
+.btn-hero {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 34px;
+  padding: 0 var(--space-4);
+  background: var(--primary-600);
+  border: 1px solid var(--primary-700);
+  border-radius: 6px;
+  color: white;
+  font-size: 13px;
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(79, 70, 229, 0.25);
+  transition: background var(--transition), box-shadow var(--transition);
+}
+.btn-hero:hover {
+  background: var(--primary-700);
+  color: white;
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.35);
+}

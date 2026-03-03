@@ -2,6 +2,7 @@ import { getProjectComments } from "@/db/comments"
 import { getProject } from "@/db/projects"
 import { getUser, getUsers } from "@/db/users"
 import { getProjects } from "@/db/projects"
+import { getClients } from "@/db/clients"
 import Link from "next/link"
 import { Suspense } from "react"
 import { notFound, redirect } from "next/navigation"
@@ -9,8 +10,6 @@ import { getCurrentUser } from "@/auth/currentUser"
 import { DeleteButton } from "./_DeleteButton"
 import { getProjectTasks } from "@/db/tasks"
 import { TaskItem } from "@/components/TaskItem"
-import { formatDate } from "@/utils/dateUtils"
-import { getMilestoneColorClass } from "@/utils/milestoneUtils"
 import { EditableProjectField } from "@/components/EditableProjectField"
 import { AddTaskToProjectButton } from "@/components/AddTaskToProjectButton"
 import { ProjectEmptyStateActions } from "@/components/ProjectEmptyStateActions"
@@ -18,6 +17,7 @@ import { CommentForm } from "@/components/CommentForm"
 import { CommentItem } from "@/components/CommentItem"
 import { ProjectHeroActions } from "@/components/ProjectHeroActions"
 import { MilestoneItem } from "@/components/MilestoneItem"
+import { AddMilestoneButton } from "@/components/AddMilestoneButton"
 
 export default async function ProjectPage({
   params,
@@ -40,14 +40,31 @@ export default async function ProjectPage({
       <Suspense
         fallback={
           <div className="project-hero skeleton-hero">
-            <div className="hero-left-section">
-              <div className="hero-avatar">
-                <div className="avatar-circle skeleton-avatar"></div>
+            <div className="hero-top-row">
+              <div className="hero-identity">
+                <div className="hero-avatar">
+                  <div className="avatar-circle skeleton-avatar"></div>
+                </div>
+                <div className="hero-title-group">
+                  <div className="skeleton-heading" style={{ width: '60%' }}></div>
+                  <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
+                    <div className="skeleton" style={{ width: 80, height: 20, borderRadius: 999 }}></div>
+                    <div className="skeleton" style={{ width: 90, height: 20, borderRadius: 999 }}></div>
+                  </div>
+                </div>
               </div>
-              <div className="hero-basic-info">
-                <div className="skeleton-title"></div>
-                <div className="skeleton-subtitle"></div>
-              </div>
+            </div>
+            <div className="hero-body">
+              <div className="skeleton-text" style={{ width: '90%' }}></div>
+              <div className="skeleton-text" style={{ width: '65%', marginTop: 6 }}></div>
+            </div>
+            <div className="hero-stats-bar">
+              {[1, 2, 3].map((i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 16px' }}>
+                  <div className="skeleton" style={{ width: 24, height: 22 }}></div>
+                  <div className="skeleton-text" style={{ width: 50 }}></div>
+                </div>
+              ))}
             </div>
           </div>
         }
@@ -57,103 +74,164 @@ export default async function ProjectPage({
 
       <div className="project-content-grid">
         {/* Project Details Section */}
-        <div className="content-section">
-          <div className="section-header">
-            <div className="section-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-              </svg>
-            </div>
-            <div className="section-title-group">
-              <h2 className="section-title">Project Details</h2>
-              <p className="section-subtitle">Project information and metadata</p>
-            </div>
-          </div>
-          
-          <div className="section-content">
-            <Suspense
-              fallback={
-                <div className="skeleton-content">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="skeleton-row">
-                      <div className="skeleton-label"></div>
-                      <div className="skeleton-value"></div>
+        <Suspense
+          fallback={
+            <div className="content-section">
+              <div className="section-header">
+                <div className="section-icon skeleton-icon"></div>
+                <div className="section-title-group">
+                  <div className="skeleton-heading" style={{ width: '45%' }}></div>
+                  <div className="skeleton-text short" style={{ marginTop: 4 }}></div>
+                </div>
+              </div>
+              <div className="section-content">
+                <div className="skeleton-detail-grid">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="skeleton-detail-item">
+                      <div className="skeleton-text short"></div>
+                      <div className="skeleton" style={{ width: '70%', marginTop: 6 }}></div>
                     </div>
                   ))}
                 </div>
-              }
-            >
+              </div>
+            </div>
+          }
+        >
+          <div className="content-section">
+            <div className="section-header">
+              <div className="section-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+              </div>
+              <div className="section-title-group">
+                <h2 className="section-title">Project Details</h2>
+                <p className="section-subtitle">Project information and metadata</p>
+              </div>
+            </div>
+            <div className="section-content">
               <ProjectDetails projectId={projectId} />
-            </Suspense>
+            </div>
           </div>
-        </div>
+        </Suspense>
 
         {/* Tasks Section */}
-        <div className="content-section">
-          <div className="section-header">
-            <div className="section-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22,4 12,14.01 9,11.01"/>
-              </svg>
-            </div>
-            <div className="section-title-group">
-              <h2 className="section-title">Tasks</h2>
-              <p className="section-subtitle">Project task management</p>
-            </div>
-            <div className="section-actions">
-              <AddTaskToProjectButton projectId={projectId} />
-            </div>
-          </div>
-          
-          <div className="section-content">
-            <Suspense
-              fallback={
-                <div className="skeleton-content">
+        <Suspense
+          fallback={
+            <div className="content-section">
+              <div className="section-header">
+                <div className="section-icon skeleton-icon"></div>
+                <div className="section-title-group">
+                  <div className="skeleton-heading" style={{ width: '30%' }}></div>
+                  <div className="skeleton-text short" style={{ marginTop: 4 }}></div>
+                </div>
+              </div>
+              <div className="section-content">
+                <div className="skeleton-tasks-list">
                   {[1, 2, 3].map((i) => (
-                    <div key={i} className="skeleton-task"></div>
+                    <div key={i} className="skeleton-task-row">
+                      <div className="skeleton-checkbox"></div>
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' as const, gap: 4 }}>
+                        <div className="skeleton" style={{ width: `${70 - i * 12}%` }}></div>
+                        <div className="skeleton-text" style={{ width: '30%' }}></div>
+                      </div>
+                    </div>
                   ))}
                 </div>
-              }
-            >
+              </div>
+            </div>
+          }
+        >
+          <div className="content-section">
+            <div className="section-header">
+              <div className="section-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22,4 12,14.01 9,11.01"/>
+                </svg>
+              </div>
+              <div className="section-title-group">
+                <h2 className="section-title">Tasks</h2>
+                <p className="section-subtitle">Project task management</p>
+              </div>
+              <div className="section-actions">
+                <AddTaskToProjectButton projectId={projectId} />
+              </div>
+            </div>
+            <div className="section-content">
               <Tasks projectId={projectId} />
-            </Suspense>
+            </div>
           </div>
-        </div>
+        </Suspense>
 
         {/* Comments Section */}
-        <div className="content-section">
-          <div className="section-header">
-            <div className="section-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-              </svg>
-            </div>
-            <div className="section-title-group">
-              <h2 className="section-title">Project Comments</h2>
-              <p className="section-subtitle">Share feedback and discuss this project</p>
-            </div>
-          </div>
-          
-          <div className="section-content">
-            <CommentForm projectId={projectId} />
-            
-            <div className="comments-divider">
-              <span>Recent Comments</span>
-            </div>
-            
-            <Suspense
-              fallback={
-                <div className="skeleton-content">
-                  <div className="skeleton-comment"></div>
+        <Suspense
+          fallback={
+            <div className="content-section">
+              <div className="section-header">
+                <div className="section-icon skeleton-icon"></div>
+                <div className="section-title-group">
+                  <div className="skeleton-heading" style={{ width: '50%' }}></div>
+                  <div className="skeleton-text short" style={{ marginTop: 4 }}></div>
                 </div>
-              }
-            >
-              <Comments projectId={projectId} />
-            </Suspense>
+              </div>
+              <div className="section-content">
+                <div className="skeleton-comments-list">
+                  {[1, 2].map((i) => (
+                    <div key={i} className="skeleton-comment-row">
+                      <div className="skeleton-avatar"></div>
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' as const, gap: 6 }}>
+                        <div className="skeleton-text" style={{ width: '25%' }}></div>
+                        <div className="skeleton" style={{ width: `${85 - i * 20}%` }}></div>
+                        <div className="skeleton-text" style={{ width: `${60 - i * 15}%` }}></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          }
+        >
+          <div className="content-section">
+            <div className="section-header">
+              <div className="section-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+              </div>
+              <div className="section-title-group">
+                <h2 className="section-title">Project Comments</h2>
+                <p className="section-subtitle">Share feedback and discuss this project</p>
+              </div>
+            </div>
+            <div className="section-content">
+              <CommentForm projectId={projectId} />
+
+              <div className="comments-divider">
+                <span>Recent Comments</span>
+              </div>
+
+              <Suspense
+                fallback={
+                  <div className="skeleton-comments-list">
+                    {[1, 2].map((i) => (
+                      <div key={i} className="skeleton-comment-row">
+                        <div className="skeleton-avatar"></div>
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' as const, gap: 6 }}>
+                          <div className="skeleton-text" style={{ width: '25%' }}></div>
+                          <div className="skeleton" style={{ width: `${85 - i * 20}%` }}></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                }
+              >
+                <Comments projectId={projectId} />
+              </Suspense>
+            </div>
           </div>
-        </div>
+        </Suspense>
       </div>
     </div>
   )
@@ -161,142 +239,129 @@ export default async function ProjectPage({
 
 async function ProjectHero({ projectId }: { projectId: string }) {
   try {
-    const project = await getProject(projectId)
+    const [project, tasks, allUsers, allClients] = await Promise.all([
+      getProject(projectId),
+      getProjectTasks(projectId),
+      getUsers(),
+      getClients(),
+    ])
     if (project == null) return notFound()
 
-    const tasks = await getProjectTasks(projectId)
     const completedTasks = tasks.filter(task => task.completed).length
     const activeTasks = tasks.filter(task => !task.completed).length
 
+    const completionPct = tasks.length > 0 ? Math.round((completedTasks / tasks.length) * 100) : 0
+
+    // Minimal shapes for the form props
+    const usersForForm = allUsers.map(u => ({ id: u.id, name: u.name }))
+    const clientsForForm = allClients.map(c => ({ id: c.id, name: c.name, email: c.email }))
+    const projectForForm = {
+      ...project,
+      client: project.clientRef?.name || "No Client",
+      clientId: project.clientRef?.id || null,
+    }
+
     return (
       <div className="project-hero">
-        {/* Left Section - Project Info */}
-        <div className="hero-left-section">
-          <div className="hero-avatar">
-            <Suspense fallback={<div className="avatar-circle skeleton-avatar"></div>}>
-              <ProjectManagerAvatar projectId={projectId} />
-            </Suspense>
-          </div>
-          
-          <div className="hero-basic-info">
-            <h1 className="hero-name">{project.title}</h1>
-            {project.archived && (
-              <span className="project-archived-badge hero-archived-badge">Archived</span>
-            )}
-            <div className="hero-tags">
-              {project.clientRef && (
-                <Link 
-                  href={`/clients/${project.clientRef.id}`}
-                  className="hero-tag client clickable"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
-                  </svg>
-                  {project.clientRef.name}
-                </Link>
-              )}
-              {project.milestones && project.milestones.length > 0 && (() => {
-                // Filter out completed milestones
-                const activeMilestones = project.milestones.filter(milestone => !milestone.completed)
-                
-                if (activeMilestones.length === 0) return null
-                
-                const nearestMilestone = activeMilestones.reduce((nearest, current) => {
-                  const now = new Date()
-                  // Normalize to UTC midnight for date-only comparison (milestone dates are stored in UTC)
-                  const todayUTC = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()))
-                  const nearestDate = new Date(nearest.date)
-                  const nearestDateUTC = new Date(Date.UTC(nearestDate.getUTCFullYear(), nearestDate.getUTCMonth(), nearestDate.getUTCDate()))
-                  const currentDate = new Date(current.date)
-                  const currentDateUTC = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), currentDate.getUTCDate()))
-                  
-                  // If current is today or in the future and nearest is not, or if both are today/future and current is closer
-                  if (currentDateUTC >= todayUTC && (nearestDateUTC < todayUTC || currentDate < nearestDate)) {
-                    return current
-                  }
-                  // If both are in the past, take the most recent
-                  if (currentDateUTC < todayUTC && nearestDateUTC < todayUTC && currentDate > nearestDate) {
-                    return current
-                  }
-                  return nearest
-                })
-                
-                return (
-                  <span className={`hero-tag milestone ${getMilestoneColorClass(nearestMilestone.date)}`}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                      <polyline points="14,2 14,8 20,8"/>
-                      <line x1="16" y1="13" x2="8" y2="13"/>
-                      <line x1="16" y1="17" x2="8" y2="17"/>
-                      <polyline points="10,9 9,9 8,9"/>
+        {/* Row 1: Identity + Actions */}
+        <div className="hero-top-row">
+          <div className="hero-identity">
+            <div className="hero-avatar">
+              <Suspense fallback={<div className="avatar-circle skeleton-avatar"></div>}>
+                <ProjectManagerAvatar projectId={projectId} />
+              </Suspense>
+            </div>
+            <div className="hero-title-group">
+              <div className="hero-title-row">
+                <h1 className="hero-name">{project.title}</h1>
+                {project.archived && (
+                  <span className="hero-badge archived">Archived</span>
+                )}
+              </div>
+              <div className="hero-tags">
+                {project.clientRef && (
+                  <Link
+                    href={`/clients/${project.clientRef.id}`}
+                    className="hero-tag client clickable"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                      <circle cx="12" cy="7" r="4"/>
                     </svg>
-                    {formatDate(nearestMilestone.date)}
-                  </span>
-                )
-              })()}
+                    {project.clientRef.name}
+                  </Link>
+                )}
+                <Suspense fallback={null}>
+                  <ProjectManagerTag projectId={projectId} />
+                </Suspense>
+              </div>
             </div>
-            
-            <div className="hero-comments">
-              <EditableProjectField
-                projectId={project.id}
-                field="body"
-                initialValue={project.body}
-                placeholder="Add comments..."
-                multiline
-              />
-            </div>
+          </div>
+          <div className="hero-actions">
+            <ProjectHeroActions
+              projectId={projectId}
+              archived={project.archived ?? false}
+              users={usersForForm}
+              clients={clientsForForm}
+              project={projectForForm}
+            />
+            <DeleteButton projectId={projectId} />
           </div>
         </div>
 
-        {/* Right Section - Stats & Actions */}
-        <div className="hero-right-section">
-          <div className="hero-stats">
-            <div className="stat-card primary">
-              <div className="stat-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-                </svg>
-              </div>
-              <div className="stat-content">
-                <div className="stat-number">{tasks.length}</div>
-                <div className="stat-label">Total</div>
-              </div>
-            </div>
-            
-            <div className="stat-card success">
-              <div className="stat-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                  <polyline points="22,4 12,14.01 9,11.01"/>
-                </svg>
-              </div>
-              <div className="stat-content">
-                <div className="stat-number">{completedTasks}</div>
-                <div className="stat-label">Completed</div>
-              </div>
-            </div>
-            
-            <div className="stat-card warning">
-              <div className="stat-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10"/>
-                  <polyline points="12,6 12,12 16,14"/>
-                </svg>
-              </div>
-              <div className="stat-content">
-                <div className="stat-number">{activeTasks}</div>
-                <div className="stat-label">Active</div>
-              </div>
-            </div>
-          </div>
+        {/* Row 2: Description */}
+        <div className="hero-body">
+          <EditableProjectField
+            projectId={project.id}
+            field="body"
+            initialValue={project.body}
+            placeholder="Add a project description..."
+            multiline
+          />
+        </div>
 
-          {/* Action Buttons */}
-          <div className="hero-actions">
-            <ProjectHeroActions projectId={projectId} archived={project.archived ?? false} />
-            <DeleteButton projectId={projectId} />
+        {/* Row 3: Stats bar */}
+        <div className="hero-stats-bar">
+          <div className="hero-stat">
+            <span className="hero-stat-number">{tasks.length}</span>
+            <span className="hero-stat-label">Total</span>
           </div>
+          <div className="hero-stat-divider" />
+          <div className="hero-stat">
+            <span className="hero-stat-number hero-stat-success">{completedTasks}</span>
+            <span className="hero-stat-label">Completed</span>
+          </div>
+          <div className="hero-stat-divider" />
+          <div className="hero-stat">
+            <span className="hero-stat-number hero-stat-warning">{activeTasks}</span>
+            <span className="hero-stat-label">Active</span>
+          </div>
+          {tasks.length > 0 && (
+            <>
+              <div className="hero-stat-divider" />
+              <div className="hero-stat">
+                <div className="hero-progress-ring">
+                  <svg viewBox="0 0 36 36" width="32" height="32">
+                    <path
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                      fill="none"
+                      stroke="var(--neutral-200)"
+                      strokeWidth="3"
+                    />
+                    <path
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                      fill="none"
+                      stroke="var(--primary-500)"
+                      strokeWidth="3"
+                      strokeDasharray={`${completionPct}, 100`}
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <span className="hero-progress-text">{completionPct}%</span>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     )
@@ -347,11 +412,12 @@ async function ProjectDetails({ projectId }: { projectId: string }) {
           </div>
         )}
 
-        {project.milestones && project.milestones.length > 0 && (
-          <div className="detail-item">
-            <label className="detail-label">
-              Milestones
-            </label>
+        <div className="detail-item full-width">
+          <div className="detail-label-row">
+            <label className="detail-label">Milestones</label>
+            <AddMilestoneButton projectId={project.id} />
+          </div>
+          {project.milestones && project.milestones.length > 0 ? (
             <div className="detail-value">
               <div className="milestone-details-grid">
                 {project.milestones
@@ -368,10 +434,12 @@ async function ProjectDetails({ projectId }: { projectId: string }) {
                   ))}
               </div>
             </div>
-          </div>
-        )}
-
-
+          ) : (
+            <div className="detail-value">
+              <span className="milestone-neutral">No milestones</span>
+            </div>
+          )}
+        </div>
 
       </div>
     )
@@ -418,6 +486,28 @@ async function ProjectManagerAvatar({ projectId }: { projectId: string }) {
         </svg>
       </div>
     )
+  }
+}
+
+async function ProjectManagerTag({ projectId }: { projectId: string }) {
+  try {
+    const project = await getProject(projectId)
+    if (project == null) return null
+    const user = await getUser(project.userId)
+    if (user == null) return null
+
+    return (
+      <Link href={`/users/${user.id}`} className="hero-tag manager clickable">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+        {user.name}
+      </Link>
+    )
+  } catch {
+    return null
   }
 }
 

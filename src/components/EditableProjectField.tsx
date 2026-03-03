@@ -26,11 +26,16 @@ export function EditableProjectField({
   const [showAll, setShowAll] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const commaListRef = useRef<HTMLTextAreaElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (isEditing) {
-      if (multiline && textareaRef.current) {
+      if (displayMode === 'comma-list' && commaListRef.current) {
+        commaListRef.current.focus()
+        commaListRef.current.style.height = 'auto'
+        commaListRef.current.style.height = commaListRef.current.scrollHeight + 'px'
+      } else if (multiline && textareaRef.current) {
         textareaRef.current.focus()
         textareaRef.current.select()
         textareaRef.current.style.height = 'auto'
@@ -40,7 +45,7 @@ export function EditableProjectField({
         inputRef.current.select()
       }
     }
-  }, [isEditing, multiline])
+  }, [isEditing, multiline, displayMode])
 
   // Auto-scroll to bottom when showing all items
   useEffect(() => {
@@ -93,6 +98,52 @@ export function EditableProjectField({
 
   // --- Editing mode ---
   if (isEditing) {
+    // Comma-list: edit as one-per-line textarea, store as comma-separated
+    if (displayMode === 'comma-list') {
+      const editLines = value
+        ? value.split(',').map(s => s.trim()).filter(Boolean).join('\n')
+        : ''
+
+      function handleCommaListChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+        // Store as comma-separated internally
+        const lines = e.target.value.split('\n').map(s => s.trim()).filter(Boolean)
+        setValue(lines.join(', '))
+        e.target.style.height = 'auto'
+        e.target.style.height = e.target.scrollHeight + 'px'
+      }
+
+      function handleCommaListKeyDown(e: React.KeyboardEvent) {
+        if (e.key === 'Escape') {
+          setValue(initialValue)
+          setIsEditing(false)
+        }
+      }
+
+      const wrapperClass =
+        field === 'coFileNumbers' ? 'co-files-edit-wrapper' :
+        field === 'mbaNumber' ? 'mba-number-edit-wrapper' :
+        'edit-wrapper'
+
+      return (
+        <div className={wrapperClass}>
+          <textarea
+            ref={commaListRef}
+            defaultValue={editLines}
+            onChange={handleCommaListChange}
+            onBlur={handleSave}
+            onKeyDown={handleCommaListKeyDown}
+            disabled={isUpdating}
+            className="comma-list-edit-textarea"
+            placeholder={placeholder}
+            style={{ opacity: isUpdating ? 0.5 : 1 }}
+          />
+          <div className="comma-list-edit-hint">
+            {isUpdating ? "Saving..." : "One per line · Esc to cancel"}
+          </div>
+        </div>
+      )
+    }
+
     if (multiline) {
       const wrapperClass = displayMode === 'scrollable-list' ? 'overview-edit-wrapper' : 'comments-edit-wrapper'
       const textareaClass = displayMode === 'scrollable-list' ? 'overview-edit-textarea' : 'comments-edit-textarea'
@@ -273,7 +324,7 @@ export function EditableProjectField({
       onClick={() => setIsEditing(true)}
       title="Click to edit"
     >
-      {value || <span className={textPlaceholderClass}>{placeholder}</span>}
+      {value ? <span style={{ whiteSpace: 'pre-wrap' }}>{value}</span> : <span className={textPlaceholderClass}>{placeholder}</span>}
     </div>
   )
 }

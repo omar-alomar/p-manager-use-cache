@@ -1,0 +1,240 @@
+/* ============================================================
+   MILESTONES — Milestone entries in table and detail pages
+   ============================================================ */
+
+/* ── Projects table cell ── */
+td.milestone-date {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.milestone-highlight {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xs);
+}
+
+.milestone-neutral {
+  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+  font-style: italic;
+}
+
+/* ── Milestone chips inside table cells ── */
+.milestone-multiple {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+}
+
+.milestone-multiple .milestone-entry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 5px 14px;
+  border-radius: 6px;
+  border: 2px solid;
+  width: 150px;
+  transition: box-shadow var(--transition);
+}
+
+.milestone-multiple .milestone-entry:hover {
+  box-shadow: var(--shadow-xs);
+}
+
+/* Urgent — red */
+.milestone-multiple .milestone-entry.milestone-urgent {
+  background: #FDE8E8;
+  border-color: #FAC7C7;
+}
+
+/* Warning — amber */
+.milestone-multiple .milestone-entry.milestone-warning {
+  background: #FEF3E2;
+  border-color: #FCE2B6;
+}
+
+/* Safe — green */
+.milestone-multiple .milestone-entry.milestone-safe {
+  background: #E2F7F0;
+  border-color: #B7EAD9;
+}
+
+
+.milestone-multiple .milestone-highlight {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xs);
+  line-height: 1.4;
+}
+
+.milestone-multiple .milestone-item {
+  font-size: 10px;
+  color: var(--text-secondary);
+  font-style: italic;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+/* ── Archived table — grey out all milestone chips ── */
+.projects-table-container--archived .milestone-multiple .milestone-entry {
+  background: var(--neutral-100);
+  border-color: var(--neutral-200);
+}
+
+.projects-table-container--archived .milestone-multiple .milestone-highlight {
+  color: var(--text-muted);
+}
+
+.projects-table-container--archived .milestone-multiple .milestone-item {
+  color: var(--text-muted);
+}
+
+.projects-table-container--archived .milestone-date > span.milestone-highlight {
+  background: var(--neutral-100);
+  border-color: var(--neutral-200);
+  color: var(--text-muted);
+}
+
+/* ── Color classes (text) — used by getMilestoneColorClass() ── */
+.milestone-urgent  { color: var(--danger-text); }
+.milestone-warning { color: var(--warning-text); }
+.milestone-safe    { color: var(--success-text); }
+
+/* ── Standalone pill (single-milestone fallback in table cell) ── */
+.milestone-date > span.milestone-highlight {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 2px solid;
+}
+.milestone-date > span.milestone-highlight.milestone-urgent  { background: #FDE8E8; border-color: #FAC7C7; }
+.milestone-date > span.milestone-highlight.milestone-warning { background: #FEF3E2; border-color: #FCE2B6; }
+.milestone-date > span.milestone-highlight.milestone-safe    { background: #E2F7F0; border-color: #B7EAD9; }
+
+/* ── Detail chips (in project page milestone section) ── */
+.milestone-details-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.milestone-detail-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 5px 14px;
+  border-radius: 6px;
+  border: 2px solid;
+  width: 150px;
+  background: #FFFFFF;
+  cursor: pointer;
+  transition: box-shadow var(--transition), opacity var(--transition);
+}
+
+.milestone-detail-card:hover {
+  box-shadow: var(--shadow-xs);
+}
+
+.milestone-detail-card.milestone-urgent  { background: #FDE8E8; border-color: #FAC7C7; }
+.milestone-detail-card.milestone-warning { background: #FEF3E2; border-color: #FCE2B6; }
+.milestone-detail-card.milestone-safe    { background: #E2F7F0; border-color: #B7EAD9; }
+
+.milestone-detail-card.completed {
+  opacity: 0.55;
+  background: var(--neutral-100);
+  border-color: var(--neutral-200);
+}
+
+.milestone-detail-card.updating {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.milestone-detail-date {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xs);
+  line-height: 1.4;
+}
+
+.milestone-detail-card.milestone-urgent .milestone-detail-date  { color: var(--danger-text); }
+.milestone-detail-card.milestone-warning .milestone-detail-date { color: var(--warning-text); }
+.milestone-detail-card.milestone-safe .milestone-detail-date    { color: var(--success-text); }
+.milestone-detail-card.completed .milestone-detail-date         { color: var(--text-muted); }
+
+.milestone-detail-item {
+  font-size: 10px;
+  color: var(--text-secondary);
+  font-style: italic;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.milestone-detail-item.strikethrough {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+/* Milestone list (in project detail section) */
+.milestone-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.milestone-list .milestone-entry {
+  background: var(--neutral-50);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: var(--space-3);
+  transition: border-color var(--transition);
+}
+
+.milestone-list .milestone-entry:hover {
+  border-color: var(--border-strong);
+}
+
+.milestone-list .milestone-date {
+  font-weight: var(--font-weight-semibold);
+  color: var(--primary-700);
+  font-size: var(--font-size-sm);
+  margin-bottom: 4px;
+}
+
+.milestone-list .milestone-item {
+  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+  font-style: italic;
+}
+
+/* Milestone info block */
+.milestone-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.milestone-date { font-weight: var(--font-weight-semibold); color: inherit; }
+.milestone-item { font-size: var(--font-size-xs); opacity: 0.85; font-style: italic; }
+
+/* Milestone items list in forms */
+.milestone-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.milestone-item-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.milestone-item-row .form-group { flex: 1; }

@@ -1,11 +1,12 @@
 import { Suspense } from "react"
-import Link from "next/link"
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/auth/currentUser"
 import { getProjects } from "@/db/projects"
 import { getUsers } from "@/db/users"
+import { getClients } from "@/db/clients"
 import { ProjectsPageClient } from "@/components/ProjectsPageClient"
 import { NewTaskButton } from "@/components/NewTaskButton"
+import { NewProjectButton } from "@/components/NewProjectButton"
 import { Skeleton } from "@/components/Skeleton"
 
 export default async function ProjectsPage() {
@@ -18,9 +19,10 @@ export default async function ProjectsPage() {
   }
 
   // Fetch data for the client component (include archived so we can filter/toggle in UI)
-  const [projectsData, users] = await Promise.all([
+  const [projectsData, users, clients] = await Promise.all([
     getProjects({ includeArchived: true }),
-    getUsers()
+    getUsers(),
+    getClients()
   ])
 
   // Transform projects data to match ProjectsPageClient expectations
@@ -41,9 +43,7 @@ export default async function ProjectsPage() {
           <p className="page-subtitle">Manage and track project progress</p>
         </div>
         <div className="title-btns">
-          <Link className="btn btn-primary" href="/projects/new">
-            New Project
-          </Link>
+          <NewProjectButton users={users} clients={clients} />
           <NewTaskButton users={users} projects={activeProjects} />
         </div>
       </div>

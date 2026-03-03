@@ -311,7 +311,7 @@ export function SearchableSelect({
         aria-controls={`${id}-listbox`}
         aria-required={required}
       >
-        <span className="searchable-select__value">
+        <span className={`searchable-select__value${!isTyping && !selectedOption ? ' searchable-select__value--placeholder' : ''}`}>
           {isTyping ? (
             <span className="searchable-select__search-display">
               {searchTerm}

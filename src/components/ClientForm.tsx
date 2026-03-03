@@ -5,12 +5,14 @@ import { createClientAction, editClientAction } from "@/actions/clients"
 import { useActionState } from "react"
 import { useRouter } from "next/navigation"
 
-export function ClientForm({ 
+export function ClientForm({
   initialData,
   clientId,
   isEdit = false,
-  redirectTo = "/clients"
-}: { 
+  redirectTo = "/clients",
+  onSuccess,
+  onCancel,
+}: {
   initialData?: {
     name: string
     companyName?: string
@@ -21,6 +23,8 @@ export function ClientForm({
   clientId?: number
   isEdit?: boolean
   redirectTo?: string
+  onSuccess?: () => void
+  onCancel?: () => void
 }) {
   const router = useRouter()
   const [state, formAction] = useActionState(
@@ -48,10 +52,14 @@ export function ClientForm({
 
   // Handle redirect after successful form submission
   useEffect(() => {
-    if (state?.success && state?.redirectTo) {
-      router.push(state.redirectTo)
+    if (state?.success) {
+      if (onSuccess) {
+        onSuccess()
+      } else if (state.redirectTo) {
+        router.push(state.redirectTo)
+      }
     }
-  }, [state, router])
+  }, [state, router, onSuccess])
 
   return (
     <div className="form-wrapper">
@@ -154,9 +162,15 @@ export function ClientForm({
           <button type="submit" className="btn btn-primary">
             {isEdit ? 'Update Client' : 'Create Client'}
           </button>
-          <a href={redirectTo} className="btn btn-secondary">
-            Cancel
-          </a>
+          {onCancel ? (
+            <button type="button" className="btn btn-secondary" onClick={onCancel}>
+              Cancel
+            </button>
+          ) : (
+            <a href={redirectTo} className="btn btn-secondary">
+              Cancel
+            </a>
+          )}
         </div>
 
         {state?.success && (

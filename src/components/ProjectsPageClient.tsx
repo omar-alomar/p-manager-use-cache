@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { setProjectArchivedAction } from "@/actions/projects"
 import { EditableProjectField } from "@/components/EditableProjectField"
 import { formatDate } from "@/utils/dateUtils"
-import { getMilestoneColorClass, filterRecentMilestones, getNearestMilestoneDate } from "@/utils/milestoneUtils"
+import { getMilestoneColorClass, getNearestMilestoneDate } from "@/utils/milestoneUtils"
 import { useSessionSort } from "@/hooks/useSessionSort"
 
 interface Project {
@@ -171,7 +171,7 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
   return (
     <div className="projects-content">
       {/* Search and Filter Controls */}
-      <div className="projects-filters">
+      <div className={`projects-filters${showArchived ? " projects-filters--archived" : ""}`}>
         <div className="filter-group">
           <div className="search-box">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -212,16 +212,27 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
         <div className="filter-group filter-group-right">
           <button
             type="button"
-            className="btn-view-archived"
+            className={`btn-view-archived${showArchived ? " btn-view-archived--active" : ""}`}
             onClick={() => setShowArchived(!showArchived)}
           >
-            {showArchived ? "View projects" : "View archive"}
+            {showArchived ? "← View projects" : "View archive"}
           </button>
         </div>
       </div>
 
+      {showArchived && (
+        <div className="archive-view-banner">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="21 8 21 21 3 21 3 8"/>
+            <rect x="1" y="3" width="22" height="5"/>
+            <line x1="10" y1="12" x2="14" y2="12"/>
+          </svg>
+          <span>Archived projects</span>
+        </div>
+      )}
+
       {/* Projects Table */}
-      <div className="projects-table-container">
+      <div className={`projects-table-container${showArchived ? " projects-table-container--archived" : ""}`}>
         <table className="projects-table">
           <thead>
             <tr>
@@ -255,7 +266,7 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
                 onClick={() => handleSort('userId')}
                 style={{ cursor: 'pointer', userSelect: 'none' }}
               >
-                P<br />MGR
+                MGR
                 {sortConfig.key === 'userId' && sortConfig.direction !== 'none' && (
                   <span style={{ marginLeft: '4px' }}>
                     {sortConfig.direction === 'asc' ? '↑' : '↓'}
@@ -526,13 +537,13 @@ function ProjectRow({
         {(() => {
           const nearestMilestone = getNearestMilestoneDate(project.milestones, project.milestone)
           if (project.milestones && project.milestones.length > 0) {
-            const recentMilestones = filterRecentMilestones(project.milestones)
-            if (recentMilestones.length === 0) {
-              return <span className="milestone-neutral">No recent milestones</span>
+            const displayMilestones = project.milestones.filter(m => m.date && !m.completed)
+            if (displayMilestones.length === 0) {
+              return <span className="milestone-neutral">No milestones</span>
             }
             return (
               <div className="milestone-multiple">
-                {recentMilestones
+                {displayMilestones
                   .sort((a, b) => {
                     if (!a.date || !b.date) return 0
                     return new Date(a.date).getTime() - new Date(b.date).getTime()
@@ -545,7 +556,7 @@ function ProjectRow({
                     return (
                       <div
                         key={milestone.id || index}
-                        className={`milestone-entry ${isNearest ? "milestone-nearest" : ""}`}
+                        className={`milestone-entry ${getMilestoneColorClass(milestone.date)} ${isNearest ? "milestone-nearest" : ""}`}
                       >
                         <span
                           className={`milestone-highlight ${getMilestoneColorClass(milestone.date)}`}

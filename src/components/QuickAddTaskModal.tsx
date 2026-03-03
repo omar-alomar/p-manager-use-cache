@@ -21,12 +21,11 @@ interface QuickAddTaskModalProps {
   projects?: { id: number; title: string }[]
 }
 
-// Wrapper component to provide fresh useActionState for each modal instance
-function QuickAddTaskModalContent({ 
-  isOpen, 
-  onClose, 
-  presetUserId, 
-  presetUserName, 
+function QuickAddTaskDrawerContent({
+  isOpen,
+  onClose,
+  presetUserId,
+  presetUserName,
   presetProjectId,
   users: propUsers,
   projects: propProjects
@@ -41,20 +40,16 @@ function QuickAddTaskModalContent({
   const [selectedUrgency, setSelectedUrgency] = useState<string>('MEDIUM')
   const [errors, formAction, pending] = useActionState(createTaskAction, {})
 
-  // Set mounted state on client side
   useEffect(() => {
     setIsMounted(true)
   }, [])
 
-  // Use provided data or fetch when modal opens
   useEffect(() => {
     if (isOpen) {
       if (propUsers && propProjects) {
-        // Use provided data
         setUsers(propUsers)
         setProjects(propProjects)
       } else {
-        // Fetch data if not provided
         const fetchData = async () => {
           setIsLoadingProjects(true)
           setIsLoadingUsers(true)
@@ -77,72 +72,58 @@ function QuickAddTaskModalContent({
     }
   }, [isOpen, propUsers, propProjects])
 
-  // Handle successful form submission
   useEffect(() => {
     if (errors && 'success' in errors && errors.success) {
       onClose()
     }
   }, [errors, onClose])
 
-  // Handle escape key to close modal
   useEffect(() => {
+    if (!isOpen) return
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isOpen) {
-        onClose()
-      }
+      if (event.key === 'Escape') onClose()
     }
-
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscape)
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape)
-    }
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
   }, [isOpen, onClose])
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = ""
+    }
+    return () => { document.body.style.overflow = "" }
+  }, [isOpen])
 
   if (!isOpen || !isMounted) return null
 
-  const modalTitle = presetUserName 
-    ? `New Task... for ${presetUserName}`
-    : "New Task..."
+  const drawerTitle = presetUserName
+    ? `New Task for ${presetUserName}`
+    : "New Task"
 
-  const modalContent = (
+  return createPortal(
     <>
-      {/* Backdrop */}
-      <div 
-        className="modal-backdrop" 
-        onClick={onClose}
-        aria-hidden="true"
-      />
-      
-      {/* Modal */}
-      <div className="quick-add-modal" role="dialog" aria-labelledby="quick-add-title">
-        <div className="modal-header">
-          <h3 id="quick-add-title" className="modal-title">
-            {modalTitle}
-          </h3>
-          <button
-            onClick={onClose}
-            className="modal-close-btn"
-            aria-label="Close modal"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M18 6L6 18M6 6l12 12"/>
+      <div className="drawer-backdrop" onClick={onClose} />
+      <div className="drawer-panel">
+        <div className="drawer-header">
+          <h2 className="modal-title">{drawerTitle}</h2>
+          <button className="modal-close-btn" onClick={onClose}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </button>
         </div>
+        <div className="drawer-body">
+          <form action={formAction} className={`form ${pending ? 'form-loading' : ''}`}>
+            {presetUserId && (
+              <input type="hidden" name="userId" value={presetUserId} />
+            )}
+            {presetProjectId && (
+              <input type="hidden" name="projectId" value={presetProjectId} />
+            )}
 
-        <form action={formAction} className={`quick-add-form ${pending ? 'form-loading' : ''}`}>
-          {/* Hidden inputs for preset values */}
-          {presetUserId && (
-            <input type="hidden" name="userId" value={presetUserId} />
-          )}
-          {presetProjectId && (
-            <input type="hidden" name="projectId" value={presetProjectId} />
-          )}
-          
-          <div className="form-group">
             <FormGroup errorMessage={'title' in errors ? errors.title : undefined}>
               <label htmlFor="task-title">Task Title</label>
               <input
@@ -151,14 +132,11 @@ function QuickAddTaskModalContent({
                 name="title"
                 id="task-title"
                 placeholder="Enter task title..."
-                className="form-input"
                 autoFocus
               />
             </FormGroup>
-          </div>
 
-          {!presetUserId && (
-            <div className="form-group">
+            {!presetUserId && (
               <FormGroup errorMessage={'userId' in errors ? errors.userId : undefined}>
                 <label htmlFor="task-user">Assigned To</label>
                 <SearchableSelect
@@ -173,11 +151,9 @@ function QuickAddTaskModalContent({
                   noResultsText="No team members found"
                 />
               </FormGroup>
-            </div>
-          )}
+            )}
 
-          {!presetProjectId && (
-            <div className="form-group">
+            {!presetProjectId && (
               <FormGroup errorMessage={'projectId' in errors ? errors.projectId : undefined}>
                 <label htmlFor="task-project">Project</label>
                 <SearchableSelect
@@ -191,10 +167,8 @@ function QuickAddTaskModalContent({
                   noResultsText="No projects found"
                 />
               </FormGroup>
-            </div>
-          )}
+            )}
 
-          <div className="form-group">
             <FormGroup errorMessage={'urgency' in errors ? errors.urgency : undefined}>
               <label htmlFor="task-urgency">Urgency</label>
               <SearchableSelect
@@ -207,45 +181,33 @@ function QuickAddTaskModalContent({
                 noResultsText="No urgency levels found"
               />
             </FormGroup>
-          </div>
 
-          <div className="modal-actions">
-            <button
-              type="button"
-              onClick={onClose}
-              className="btn btn-outline"
-              disabled={pending}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={pending}
-              className="btn"
-            >
-              {pending ? (
-                <>
-                  <svg className="spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                  </svg>
-                  Creating...
-                </>
-              ) : (
-                'Create Task'
-              )}
-            </button>
-          </div>
-        </form>
+            <div className="form-actions">
+              <button
+                type="button"
+                onClick={onClose}
+                className="btn btn-outline"
+                disabled={pending}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={pending}
+                className="btn btn-primary"
+              >
+                {pending ? 'Creating...' : 'Create Task'}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </>
+    </>,
+    document.body
   )
-
-  return createPortal(modalContent, document.body)
 }
 
-// Main component that conditionally renders the modal content
 export function QuickAddTaskModal(props: QuickAddTaskModalProps) {
   if (!props.isOpen) return null
-  
-  return <QuickAddTaskModalContent {...props} />
+  return <QuickAddTaskDrawerContent {...props} />
 }

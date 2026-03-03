@@ -69,7 +69,7 @@ export function TaskStatCard({
         </div>
         <div className="stat-content">
           <div className="stat-number">{count}</div>
-          <div className="stat-label">Assigned by me</div>
+          <div className="stat-label">Assigned to others</div>
         </div>
       </div>
     )

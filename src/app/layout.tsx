@@ -38,8 +38,8 @@ export default function RootLayout({
             <nav className="top-nav">
               <div className="nav-text-large">
                 <Link href="/projects" className="nav-title-link">
-                  <div>Mildenberg Project Platform</div>
-                  <div className="nav-subtitle">Alpha Version 1.0</div>
+                  <span className="nav-logo">Mildenberg</span>
+                  <span className="nav-subtitle">α 1.1</span>
                 </Link>
               </div>
               <div className="nav-center">

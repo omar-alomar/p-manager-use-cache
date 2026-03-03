@@ -151,7 +151,7 @@ export function MyTasksClient({ myTasks, assignedByMeTasks, users, projects, all
           <Separator id="sep-2" className="task-list-separator" />
           <Panel id="assigned-by-me" defaultSize="33" minSize="15" className="task-list-panel">
             <TaskList 
-              title="Assigned by me" 
+              title="Assigned to others" 
               tasks={assignedByMeInProgress} 
               users={users} 
               projects={allProjects}

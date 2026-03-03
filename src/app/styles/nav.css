@@ -1,0 +1,273 @@
+/* ============================================================
+   NAVIGATION — Midnight Indigo Glass
+   Deep dark with purple undertones, indigo glow accents.
+   ============================================================ */
+
+.top-nav {
+  height: var(--nav-height);
+  background: var(--dark-surface);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding: 0 var(--space-6);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.08);
+}
+
+/* ── Signature glow line at bottom edge ── */
+.top-nav::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 5%,
+    rgba(99, 102, 241, 0.35) 25%,
+    rgba(129, 140, 248, 0.55) 50%,
+    rgba(99, 102, 241, 0.35) 75%,
+    transparent 95%
+  );
+  pointer-events: none;
+}
+
+/* Soft downward glow beneath the nav */
+.top-nav::before {
+  content: "";
+  position: absolute;
+  bottom: -12px;
+  left: 10%;
+  right: 10%;
+  height: 12px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(79, 70, 229, 0.08) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* ── Logo / Title ── */
+.nav-text-large {
+  flex-shrink: 0;
+}
+
+.nav-title-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-decoration: none;
+  transition: opacity var(--transition);
+}
+
+.nav-title-link:hover {
+  opacity: 0.9;
+}
+
+.nav-logo {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #FFFFFF;
+}
+
+.nav-subtitle {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--primary-300);
+  background: rgba(79, 70, 229, 0.18);
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-transform: none;
+  border: 1px solid rgba(99, 102, 241, 0.15);
+}
+
+/* ── Center nav links ── */
+.nav-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.nav-list {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-list a {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: var(--font-weight-medium);
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  transition: color 150ms ease, text-shadow 150ms ease;
+  white-space: nowrap;
+}
+
+.nav-list a:hover {
+  color: var(--violet-450);
+}
+
+.nav-list a.active {
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-color: var(--violet-600);
+  text-decoration-thickness: 2px;
+}
+
+/* ── User status (right side) ── */
+.user-status-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.user-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+}
+
+.user-status .user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-align: right;
+}
+
+.user-status .user-info-link {
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background var(--transition);
+}
+
+.user-status .user-info-link:hover {
+  background: rgba(99, 102, 241, 0.08);
+}
+
+.user-status .user-name {
+  font-weight: var(--font-weight-semibold);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  line-height: 1;
+}
+
+.user-status .user-email,
+.user-status .user-role {
+  display: none;
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* Icon buttons (settings, notification, etc.) */
+.settings-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.4);
+  transition: background var(--transition), color var(--transition), box-shadow var(--transition);
+}
+
+.settings-button:hover {
+  background: rgba(99, 102, 241, 0.1);
+  color: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 12px rgba(79, 70, 229, 0.08);
+}
+
+/* Logout button */
+.logout-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  padding: 0 var(--space-3);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: var(--font-weight-medium);
+  color: rgba(255, 255, 255, 0.45);
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
+}
+
+.logout-button:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.06);
+}
+
+.logout-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── Dark nav overrides for notification bell ── */
+.top-nav .notification-bell {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.4);
+  transition: background var(--transition), border-color var(--transition), color var(--transition), box-shadow var(--transition);
+}
+
+.top-nav .notification-bell:hover {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.2);
+  color: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 12px rgba(79, 70, 229, 0.08);
+}
+
+/* Login link */
+.login-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  padding: 0 var(--space-3);
+  background: var(--primary-600);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 13px;
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  transition: background var(--transition), box-shadow var(--transition);
+  box-shadow: 0 0 16px rgba(79, 70, 229, 0.2);
+}
+
+.login-link:hover {
+  background: var(--primary-500);
+  color: white;
+  box-shadow: 0 0 24px rgba(79, 70, 229, 0.3);
+}

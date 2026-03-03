@@ -1,20 +1,21 @@
 # Mildenberg Project Platform — Claude Instructions
 
 ## Project Overview
-Internal project management platform for the Mildenberg team. Tracks projects, tasks, clients, milestones, and team collaboration.
+Internal project management platform for the Mildenberg team. Tracks projects, tasks, clients, milestones, and team collaboration. Current version: **α 1.1**.
 
 ## Tech Stack
 - **Framework**: Next.js 15 (canary `15.2.0-canary.56`), React 19, TypeScript
 - **Database**: PostgreSQL via Prisma ORM
 - **Cache/Sessions**: Redis (ioredis)
 - **Validation**: Zod
-- **Styling**: Plain CSS (`src/app/styles.css`) — no Tailwind, no CSS Modules
+- **Styling**: Plain CSS split into modular files under `src/app/styles/` — no Tailwind, no CSS Modules
 
 ## Project Structure
 ```
 src/
 ├── actions/       # Next.js server actions ("use server") — all mutations go here
 ├── app/           # Next.js App Router pages and API routes
+│   └── styles/    # Modular CSS files (see Design System section)
 ├── auth/          # Session management, password hashing, currentUser helper
 ├── components/    # React components (admin/, auth/, navigation/ subdirs)
 ├── constants/     # Shared constants — urgency.ts (URGENCY_OPTIONS, URGENCY_SELECT_OPTIONS, URGENCY_ORDER)
@@ -27,6 +28,49 @@ src/
 ├── types/         # Shared TypeScript types — TaskWithRelations, ActionResult
 └── utils/         # dateUtils, mentions, milestoneUtils, wait, revalidate
 ```
+
+## Design System
+
+### Color Palettes (`src/app/styles/tokens.css`)
+Two brand color scales, plus zinc neutrals and semantic colors:
+
+- **Indigo Primary** (`--primary-50` → `--primary-900`): Brand color for buttons, links, focus rings, badges, and interactive accents on **light surfaces**. Core value: `--primary-600: #4F46E5`.
+- **Violet Accent** (`--violet-300` → `--violet-700`, including half-steps `--violet-350`, `--violet-450`): Companion purple for interactive states on **dark surfaces** (nav hover/active). More saturated purple than indigo. Core value: `--violet-500: #8B5CF6`.
+- **Zinc Neutrals** (`--neutral-0` → `--neutral-900`): Warm grays for text, borders, surfaces.
+- **Dark Surface** (`--dark-surface: #0C0A1D`): Deep indigo-tinted black for the nav bar.
+- **Semantic Colors**: success (green), warning (amber), danger/error (red), urgency accents.
+
+### CSS Architecture (`src/app/styles/`)
+Styles are split into modular files imported via `styles.css`:
+| File | Scope |
+|---|---|
+| `tokens.css` | Design tokens — all CSS custom properties |
+| `base.css` | Reset, body, layout, container |
+| `nav.css` | Top navigation bar (dark surface, violet accents) |
+| `buttons.css` | Button variants |
+| `badges.css` | Status/urgency badges |
+| `cards.css` | Card components |
+| `forms.css` | Form inputs, selects, client select, milestone fields |
+| `modals.css` | Drawers (slide-over panels) and legacy modals |
+| `hero.css` | Page hero sections, project details grid |
+| `projects.css` | Project table, project-specific styles |
+| `tasks.css` | Task lists, task items |
+| `milestones.css` | Milestone chips and detail cards |
+| `comments.css` | Comment list, comment form, mention autocomplete |
+| `notifications.css` | Notification bell, center, toasts |
+| `fab.css` | Floating action button |
+| `admin.css` | Admin panel |
+| `auth.css` | Login/signup pages |
+| `profile.css` | User profile page |
+| `skeleton.css` | Loading skeletons |
+| `empty.css` | Empty state illustrations |
+| `utils.css` | Utility classes |
+
+### UI Patterns
+- **Drawers over modals**: All create/edit flows use slide-over drawers (`drawer-panel`, 580px, slides from right via `createPortal`). No modals. Nested drawers use `.drawer-nested` for z-index stacking.
+- **Navigation**: Dark nav (`--dark-surface`) with white text. Hover turns `--violet-450`, active uses text underline in `--violet-500`. Active detection via `usePathname()`.
+- **Inline editing**: Project detail fields use `InlineEditableField` for in-place edits.
+- **Milestone color coding**: Date inputs shaded by urgency — `getMilestoneColorClass()` returns `milestone-urgent` (≤14 days), `milestone-warning` (≤30 days), `milestone-safe` (>30 days).
 
 ## Key Conventions
 

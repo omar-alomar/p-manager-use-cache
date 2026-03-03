@@ -1,9 +1,9 @@
 import { Suspense } from "react"
-import Link from "next/link"
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/auth/currentUser"
 import { getClients } from "@/db/clients"
 import { ClientsPageClient } from "@/components/ClientsPageClient"
+import { NewClientButton } from "@/components/NewClientButton"
 import { Skeleton } from "@/components/Skeleton"
 
 export default async function ClientsPage() {
@@ -26,9 +26,7 @@ export default async function ClientsPage() {
           <p className="page-subtitle">Manage client information and relationships</p>
         </div>
         <div className="title-btns">
-          <Link className="btn" href="/clients/new">
-            New Client
-          </Link>
+          <NewClientButton />
         </div>
       </div>
 
