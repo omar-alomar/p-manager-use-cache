@@ -23,7 +23,7 @@ export default async function MyTasksPage() {
   ])
 
   return (
-    <div className="my-tasks-page">
+    <>
       <div className="page-title">
         <div className="title-content">
           <h1>My Tasks</h1>
@@ -39,6 +39,6 @@ export default async function MyTasksPage() {
       <Suspense fallback={<TasksLoading />}>
         <MyTasksContent currentUser={user} />
       </Suspense>
-    </div>
+    </>
   )
 }

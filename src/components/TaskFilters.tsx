@@ -16,10 +16,25 @@ interface TaskFiltersProps {
   users?: { id: number; name: string }[]
   projects?: { id: number; title: string }[]
   context?: 'all-tasks' | 'my-tasks'
+  onReset?: () => void
+  layoutDirty?: boolean
 }
 
-export function TaskFilters({ taskCounts, users, projects, context = 'all-tasks' }: TaskFiltersProps) {
+export function TaskFilters({ taskCounts, users, projects, context = 'all-tasks', onReset, layoutDirty = false }: TaskFiltersProps) {
   const { filter, setFilter, sort, setSort, search, setSearch, userFilter, setUserFilter, projectFilter, setProjectFilter, urgencyFilter, setUrgencyFilter } = useTaskFilter()
+
+  // Show the reset icon when any filter/sort is non-default or panels have been resized/collapsed
+  const hasActiveFilters = search !== '' || sort !== 'created' || urgencyFilter !== 'all' || projectFilter !== null || (context !== 'my-tasks' && filter !== 'all') || layoutDirty
+
+  // Resets all filter state; onReset() lets the parent also restore panel layout
+  const resetFilters = () => {
+    setSearch('')
+    setSort('created')
+    setUrgencyFilter('all')
+    setProjectFilter(null)
+    if (context !== 'my-tasks') setFilter('all')
+    onReset?.()
+  }
 
   const filterOptions = [
     { value: 'all', label: 'All Tasks', count: taskCounts?.all || 0 },
@@ -122,6 +137,17 @@ export function TaskFilters({ taskCounts, users, projects, context = 'all-tasks'
               noResultsText="No projects found"
             />
           </div>
+        </div>
+      )}
+
+      {hasActiveFilters && (
+        <div className="filter-group filter-group-right">
+          <button type="button" className="filter-reset-btn" onClick={resetFilters} title="Reset filters">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 12a9 9 0 1 1 9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+              <path d="M3 22v-6h6"/>
+            </svg>
+          </button>
         </div>
       )}
     </div>

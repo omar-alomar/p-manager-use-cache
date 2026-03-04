@@ -71,6 +71,7 @@ Styles are split into modular files imported via `styles.css`:
 - **Navigation**: Dark nav (`--dark-surface`) with white text. Hover turns `--violet-450`, active uses text underline in `--violet-500`. Active detection via `usePathname()`.
 - **Inline editing**: Project detail fields use `InlineEditableField` for in-place edits.
 - **Milestone color coding**: Date inputs shaded by urgency — `getMilestoneColorClass()` returns `milestone-urgent` (≤14 days), `milestone-warning` (≤30 days), `milestone-safe` (>30 days).
+- **My Tasks resizable panels**: Three-column layout (`react-resizable-panels`) for In Progress / Completed / Assigned to others. Headers are color-tinted by category (warning/success/primary). Panels collapse when dragged below `MIN_SIZE` threshold or when the header is clicked (uses `panelRef.collapse()`/`expand()`). A reset icon in the filter bar restores default widths via `groupRef.setLayout()` and expands all collapsed panels. The `layoutDirty` flag tracks whether any panel has been resized.
 
 ## Key Conventions
 
