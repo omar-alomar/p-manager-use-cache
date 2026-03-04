@@ -117,7 +117,7 @@ async function TaskHero({ taskId }: { taskId: string }) {
           <h1>{task.title}</h1>
         </div>
         <div className="hero-actions">
-          <Link href="/my-tasks" className="btn btn-outline">
+          <Link href="/tasks" className="btn btn-outline">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M19 12H5M12 19l-7-7 7-7"/>
             </svg>

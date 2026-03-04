@@ -66,6 +66,82 @@
 
 .auth-link a:hover { text-decoration: underline; }
 
+/* ── Auth form fields ── */
+.login-form,
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.form-field label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.form-field input {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--neutral-0);
+  color: var(--text-primary);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.form-field input:focus {
+  outline: none;
+  border-color: var(--primary-400);
+  box-shadow: 0 0 0 3px var(--primary-50);
+}
+
+.form-field input:disabled {
+  background: var(--neutral-100);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.form-error {
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-sm);
+  color: var(--danger-text);
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  border-radius: 6px;
+}
+
+.login-form .submit-button,
+.signup-form .submit-button {
+  width: 100%;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: #FFFFFF;
+  background: var(--primary-600);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.login-form .submit-button:hover,
+.signup-form .submit-button:hover {
+  background: var(--primary-700);
+}
+
+.login-form .submit-button:disabled,
+.signup-form .submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Error message in auth forms */
 .auth-error {
   display: flex;

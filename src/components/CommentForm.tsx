@@ -73,7 +73,7 @@ export function CommentForm({ projectId }: CommentFormProps) {
           disabled={isPending || !body.trim()}
           className="comment-submit-btn"
         >
-          {isPending ? "Adding Comment..." : "Add Comment"}
+          {isPending ? "Posting..." : "Post"}
         </button>
       </form>
     </div>

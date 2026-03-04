@@ -26,6 +26,7 @@ export function ProjectCard({
   milestone,
   milestones,
   userId,
+  archived = false,
   showManager = true,
   showClient = true
 }: {
@@ -37,11 +38,12 @@ export function ProjectCard({
   milestone: Date | null
   milestones?: { id: number; date: Date; item: string; completed?: boolean }[]
   userId: number
+  archived?: boolean
   showManager?: boolean
   showClient?: boolean
 }) {
   return (
-    <div className="enhanced-project-card">
+    <div className={`enhanced-project-card${archived ? " enhanced-project-card--archived" : ""}`}>
       <div className="project-card-header">
         <div className="project-title-section">
           <h3 className="project-title">{title}</h3>

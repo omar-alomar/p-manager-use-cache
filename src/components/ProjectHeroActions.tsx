@@ -32,6 +32,17 @@ export function ProjectHeroActions({ projectId, archived = false, users, clients
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [drawerKey, setDrawerKey] = useState(0)
 
+  // Apply grey-out class to page container when project is archived
+  useEffect(() => {
+    const container = document.querySelector('.project-profile-container')
+    if (!container) return
+    if (archived) {
+      container.classList.add('project-page-archived')
+    } else {
+      container.classList.remove('project-page-archived')
+    }
+  }, [archived])
+
   const closeDrawer = useCallback(() => {
     setDrawerOpen(false)
     setDrawerKey(prev => prev + 1)
@@ -65,6 +76,15 @@ export function ProjectHeroActions({ projectId, archived = false, users, clients
   async function handleArchiveToggle() {
     if (archiving) return
     setArchiving(true)
+    // Immediately apply/remove grey-out for visual feedback
+    const container = document.querySelector('.project-profile-container')
+    if (container) {
+      if (!archived) {
+        container.classList.add('project-page-archived')
+      } else {
+        container.classList.remove('project-page-archived')
+      }
+    }
     try {
       await setProjectArchivedAction(projectId, !archived)
       router.refresh()

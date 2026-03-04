@@ -71,9 +71,9 @@
 }
 
 .projects-table th {
-  padding: var(--space-3) 16px;
+  padding: 14px 18px;
   text-align: left;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: var(--font-weight-semibold);
   color: var(--text-secondary);
   text-transform: uppercase;
@@ -96,10 +96,10 @@
 .projects-table tbody tr:last-child { border-bottom: none; }
 
 .projects-table td {
-  padding: 12px 16px;
+  padding: 14px 18px;
   vertical-align: middle;
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .projects-table td:last-child { text-align: center; }
@@ -191,7 +191,7 @@
 
 .project-name {
   font-weight: var(--font-weight-semibold);
-  font-size: 13px;
+  font-size: 14px;
   color: var(--primary-700);
   line-height: 1.3;
 }
@@ -213,8 +213,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--radius-full);
   background: var(--primary-100);
   color: var(--primary-700);
@@ -264,7 +264,7 @@
 /* Co files cell */
 .co-files {
   text-align: center;
-  font-size: 13px;
+  font-size: 14px;
   min-width: 100px;
   max-width: 120px;
   word-wrap: break-word;
@@ -422,7 +422,7 @@
   text-align: center;
 }
 
-/* Project detail page grid */
+/* Project detail page grid (legacy — kept for archived overlay) */
 .project-content-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -430,6 +430,83 @@
   padding: var(--space-6);
   max-width: var(--content-max-width);
   margin: 0 auto;
+}
+
+/* Single-column content layout (user page, etc.) */
+.project-content-single {
+  padding: var(--space-6);
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+}
+
+/* Remove top padding when single-column follows the grid */
+.project-content-grid + .project-content-single {
+  padding-top: 0;
+}
+
+/* ── Project detail body — white card panel below hero ── */
+.project-detail-body {
+  display: flex;
+  flex-direction: column;
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin: var(--space-5) var(--space-6) var(--space-6);
+  max-width: var(--content-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  overflow: hidden;
+}
+
+/* Two-column grid with vertical divider */
+.project-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  align-items: stretch;
+}
+
+.project-detail-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: var(--space-6);
+}
+
+/* Vertical divider between columns */
+.project-detail-divider {
+  background: var(--neutral-200);
+  align-self: stretch;
+}
+
+/* ── Open section — lightweight label + content ── */
+.open-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.open-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.open-section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0;
+}
+
+.open-section-title svg {
+  color: var(--neutral-400);
+  flex-shrink: 0;
 }
 
 /* Project section blocks (inside detail page) */
@@ -494,7 +571,7 @@
 
 .project-text {
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.6;
   margin: 0;
   white-space: pre-wrap;
@@ -503,7 +580,7 @@
 .project-text-placeholder {
   color: var(--text-muted);
   font-style: italic;
-  font-size: 13px;
+  font-size: 14px;
   margin: 0;
 }
 
@@ -523,13 +600,13 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  height: 34px;
-  padding: 0 var(--space-4);
+  height: 38px;
+  padding: 0 18px;
   background: var(--primary-600);
   color: white;
   text-decoration: none;
-  border-radius: 6px;
-  font-size: 13px;
+  border-radius: 8px;
+  font-size: 14px;
   font-weight: var(--font-weight-medium);
   border: 1px solid var(--primary-700);
   box-shadow: 0 1px 3px rgba(79, 70, 229, 0.2);

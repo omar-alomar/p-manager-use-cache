@@ -62,27 +62,41 @@
   align-items: center;
   gap: var(--space-2);
   text-decoration: none;
-  transition: opacity var(--transition);
-}
-
-.nav-title-link:hover {
-  opacity: 0.9;
 }
 
 .nav-logo {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   letter-spacing: -0.03em;
   color: #FFFFFF;
+  position: relative;
+  padding-bottom: 4px;
+}
+
+.nav-logo::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background: var(--violet-600);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+
+.nav-title-link:hover .nav-logo::after {
+  transform: scaleX(1);
 }
 
 .nav-subtitle {
-  font-size: 9.5px;
+  font-size: 10px;
   font-weight: 600;
   color: var(--primary-300);
   background: rgba(79, 70, 229, 0.18);
-  padding: 2px 7px;
-  border-radius: 4px;
+  padding: 3px 8px;
+  border-radius: 5px;
   letter-spacing: 0.06em;
   line-height: 1;
   text-transform: none;
@@ -109,9 +123,9 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-size: 13px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
   font-weight: var(--font-weight-medium);
   color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
@@ -168,7 +182,7 @@
 .user-status .user-name {
   font-weight: var(--font-weight-semibold);
   color: rgba(255, 255, 255, 0.8);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1;
 }
 
@@ -188,11 +202,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border: none;
   background: transparent;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   color: rgba(255, 255, 255, 0.4);
   transition: background var(--transition), color var(--transition), box-shadow var(--transition);
@@ -209,11 +223,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 30px;
+  height: 34px;
   padding: 0 var(--space-3);
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 13px;
   font-weight: var(--font-weight-medium);
@@ -253,13 +267,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 30px;
-  padding: 0 var(--space-3);
+  height: 34px;
+  padding: 0 14px;
   background: var(--primary-600);
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   color: white;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: var(--font-weight-medium);
   text-decoration: none;
   transition: background var(--transition), box-shadow var(--transition);

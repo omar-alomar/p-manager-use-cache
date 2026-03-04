@@ -163,8 +163,8 @@ button { cursor: pointer; }
   outline-offset: 2px;
 }
 
-/* Scrollbar — slim 4px, rounded */
-::-webkit-scrollbar { width: 4px; height: 4px; }
+/* Scrollbar — slim 6px, rounded */
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
   background: var(--neutral-300);

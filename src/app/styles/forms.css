@@ -135,7 +135,7 @@
 /* Label */
 .form-group label,
 .form-label {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: var(--font-weight-medium);
   color: var(--text-secondary);
   display: block;
@@ -148,12 +148,12 @@
 .form-control,
 .form-input {
   width: 100%;
-  height: 34px;
-  padding: 0 var(--space-3);
+  height: 38px;
+  padding: 0 14px;
   background: #FFFFFF;
   border: 1px solid var(--border);
-  border-radius: 6px;
-  font-size: 13px;
+  border-radius: 8px;
+  font-size: 14px;
   font-family: inherit;
   color: var(--text-primary);
   outline: none;
@@ -265,15 +265,15 @@ input[type="checkbox"]:checked::after {
 .form-input,
 .form-select {
   width: 100%;
-  padding: 0 var(--space-3);
+  padding: 0 14px;
   border: 1px solid var(--border);
-  border-radius: 6px;
-  font-size: 13px;
+  border-radius: 8px;
+  font-size: 14px;
   background: #FFFFFF;
   color: var(--text-primary);
   font-family: inherit;
   line-height: 1.5;
-  height: 34px;
+  height: 38px;
   outline: none;
   transition: border-color var(--transition), box-shadow var(--transition);
 }
@@ -303,12 +303,12 @@ input[type="checkbox"]:checked::after {
 }
 
 .search-input {
-  padding: 0 var(--space-3) 0 34px;
-  height: 34px;
+  padding: 0 14px 0 38px;
+  height: 38px;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 8px;
   background: #FFFFFF;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-primary);
   width: 100%;
   min-width: 400px;
@@ -327,12 +327,12 @@ input[type="checkbox"]:checked::after {
 .sort-select,
 .filter-select,
 .urgency-select {
-  height: 34px;
-  padding: 0 var(--space-3);
+  height: 38px;
+  padding: 0 14px;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 8px;
   background: #FFFFFF;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-secondary);
   cursor: pointer;
   outline: none;
@@ -414,7 +414,7 @@ input[type="checkbox"]:checked::after {
 .sort-controls label,
 .filter-controls label,
 .urgency-controls label {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-muted);
   font-weight: var(--font-weight-medium);
   white-space: nowrap;
@@ -490,12 +490,12 @@ input[type="checkbox"]:checked::after {
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  height: 34px;
-  padding: 0 var(--space-3);
+  height: 38px;
+  padding: 0 14px;
   background: #FFFFFF;
   border: 1px solid var(--border);
-  border-radius: 6px;
-  font-size: 13px;
+  border-radius: 8px;
+  font-size: 14px;
   font-family: inherit;
   color: var(--text-primary);
   cursor: pointer;
@@ -576,8 +576,8 @@ input[type="checkbox"]:checked::after {
 }
 
 .searchable-select__option {
-  padding: 7px var(--space-3);
-  font-size: 13px;
+  padding: 9px 14px;
+  font-size: 14px;
   color: var(--text-primary);
   cursor: pointer;
   display: flex;

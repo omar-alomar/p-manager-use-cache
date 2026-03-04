@@ -41,7 +41,7 @@ export function NewClientButton() {
   return (
     <>
       <button
-        className="btn"
+        className="btn btn-primary"
         onClick={() => setDrawerOpen(true)}
       >
         New Client

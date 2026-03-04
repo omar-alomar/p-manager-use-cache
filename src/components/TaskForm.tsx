@@ -38,7 +38,7 @@ export function TaskForm({
       if (!task) {
         // For new tasks, show success message briefly, then redirect
         const timer = setTimeout(() => {
-          window.location.href = '/tasks'
+          window.location.href = '/dashboard'
         }, 1500)
         return () => clearTimeout(timer)
       } else {
@@ -159,7 +159,7 @@ export function TaskForm({
       <div className="form-row form-btn-row">
         <Link
           className="btn btn-outline"
-          href={task == null ? "/tasks" : `/tasks/${task.id}`}
+          href={task == null ? "/dashboard" : `/tasks/${task.id}`}
         >
           Cancel
         </Link>
@@ -200,7 +200,7 @@ export function SkeletonTaskForm() {
         </FormGroup>
       </div>
       <div className="form-row form-btn-row">
-        <Link className="btn btn-outline" href="/tasks">
+        <Link className="btn btn-outline" href="/dashboard">
           Cancel
         </Link>
         <button disabled className="btn">

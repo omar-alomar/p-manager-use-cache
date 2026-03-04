@@ -1,15 +1,15 @@
 import { Suspense } from "react"
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/auth/currentUser"
-import { TasksPageContent } from "@/components/TasksPageContent"
+import { MyTasksContent } from "@/components/MyTasksContent"
 import { NewTaskButton } from "@/components/NewTaskButton"
 import { getUsers } from "@/db/users"
 import { getProjects } from "@/db/projects"
-import TasksLoading from "./loading"
+import DashboardLoading from "../dashboard/loading"
 
-export default async function TasksPage() {
+export default async function MyTasksPage() {
   // Check if user is authenticated
-  const user = await getCurrentUser()
+  const user = await getCurrentUser({ withFullUser: true })
   
   // Redirect to login if not authenticated
   if (!user) {
@@ -23,12 +23,12 @@ export default async function TasksPage() {
   ])
 
   return (
-    <div className="tasks-page">
+    <>
       <div className="page-title">
         <div className="title-content">
-          <h1>Task Management</h1>
+          <h1>My Tasks</h1>
           <p className="page-subtitle">
-            Manage and track all tasks across your projects
+            Tasks assigned to you across all projects
           </p>
         </div>
         <div className="title-btns">
@@ -36,9 +36,9 @@ export default async function TasksPage() {
         </div>
       </div>
 
-      <Suspense fallback={<TasksLoading />}>
-        <TasksPageContent />
+      <Suspense fallback={<DashboardLoading />}>
+        <MyTasksContent currentUser={user} />
       </Suspense>
-    </div>
+    </>
   )
 }

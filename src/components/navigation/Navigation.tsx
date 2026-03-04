@@ -44,10 +44,10 @@ export function Navigation() {
         <Link href="/clients" className={isActive("/clients") ? "active" : ""}>Clients</Link>
       </li>
       <li>
-        <Link href="/my-tasks" className={isActive("/my-tasks") ? "active" : ""}>My Tasks</Link>
+        <Link href="/tasks" className={isActive("/tasks") ? "active" : ""}>My Tasks</Link>
       </li>
       <li>
-        <Link href="/tasks" className={isActive("/tasks") ? "active" : ""}>All Tasks</Link>
+        <Link href="/dashboard" className={isActive("/dashboard") ? "active" : ""}>Dashboard</Link>
       </li>
       <li>
         <Link href="/users" className={isActive("/users") ? "active" : ""}>Team</Link>

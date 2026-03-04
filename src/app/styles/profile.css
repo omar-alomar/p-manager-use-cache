@@ -1,6 +1,159 @@
 /* ============================================================
-   PROFILE — User profile, client detail, team grid
+   PROFILE — User profile settings, client detail, team grid
    ============================================================ */
+
+/* ── Profile settings page ── */
+.profile-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-5);
+}
+
+.profile-header {
+  margin-bottom: var(--space-6);
+}
+
+.profile-header h1 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-1) 0;
+}
+
+.profile-header p {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.profile-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* ── Tabs ── */
+.profile-tabs {
+  display: flex;
+  gap: var(--space-1);
+  margin-bottom: var(--space-6);
+  border-bottom: 1px solid var(--border);
+}
+
+.tab-button {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color var(--transition), border-color var(--transition);
+  margin-bottom: -1px;
+}
+
+.tab-button:hover {
+  color: var(--text-primary);
+}
+
+.tab-button.active {
+  color: var(--primary-600);
+  border-bottom-color: var(--primary-600);
+}
+
+/* ── Profile form ── */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.profile-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.profile-form label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.profile-form input {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--neutral-0);
+  color: var(--text-primary);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.profile-form input:focus {
+  outline: none;
+  border-color: var(--primary-400);
+  box-shadow: 0 0 0 3px var(--primary-50);
+}
+
+.profile-form input.disabled-input,
+.profile-form input:disabled {
+  background: var(--neutral-100);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.form-note {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.profile-form .submit-button {
+  align-self: flex-start;
+  padding: var(--space-2) var(--space-5);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: #FFFFFF;
+  background: var(--primary-600);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.profile-form .submit-button:hover {
+  background: var(--primary-700);
+}
+
+.profile-form .submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Messages ── */
+.profile-container .error-message {
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
+  font-size: var(--font-size-sm);
+  color: var(--danger-text);
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  border-radius: 8px;
+}
+
+.profile-container .success-message {
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
+  font-size: var(--font-size-sm);
+  color: var(--success-text);
+  background: var(--success-bg);
+  border: 1px solid var(--success-border);
+  border-radius: 8px;
+}
 
 /* ── Team grid ── */
 .team-grid,
@@ -115,4 +268,259 @@
   gap: var(--space-2);
   font-size: var(--font-size-xs);
   color: var(--text-muted);
+}
+
+/* ============================================================
+   USER TASKS — Profile task overview section
+   ============================================================ */
+
+.user-tasks-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ── Tabs ── */
+.user-tasks-tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--neutral-100);
+  border-radius: 10px;
+  padding: 3px;
+}
+
+.user-tasks-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px var(--space-4);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: color var(--transition), background var(--transition), box-shadow var(--transition);
+}
+
+.user-tasks-tab:hover {
+  color: var(--text-secondary);
+}
+
+.user-tasks-tab.active {
+  color: var(--text-primary);
+  background: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.user-tasks-tab-count {
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  background: var(--neutral-200);
+  color: var(--text-muted);
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+  line-height: 1.5;
+}
+
+.user-tasks-tab.active .user-tasks-tab-count {
+  background: var(--primary-100);
+  color: var(--primary-700);
+}
+
+/* ── Task groups ── */
+.user-tasks-groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.user-tasks-group {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-xs);
+}
+
+.user-tasks-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: var(--neutral-50);
+  border-bottom: 1px solid var(--border);
+}
+
+.user-tasks-project-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+.user-tasks-project-link:hover {
+  color: var(--primary-600);
+}
+
+.user-tasks-project-link svg {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.user-tasks-no-project {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-muted);
+}
+
+.user-tasks-group-count {
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  background: var(--neutral-200);
+  color: var(--text-muted);
+  padding: 1px 8px;
+  border-radius: var(--radius-full);
+  line-height: 1.5;
+}
+
+/* ── Task list ── */
+.user-tasks-list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Task row ── */
+.user-task-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  text-decoration: none;
+  color: inherit;
+  border-bottom: 1px solid var(--neutral-100);
+  transition: background var(--transition);
+}
+
+.user-task-row:last-child {
+  border-bottom: none;
+}
+
+.user-task-row:hover {
+  background: var(--neutral-50);
+}
+
+.user-task-row--completed {
+  background: var(--success-bg);
+}
+
+.user-task-row--completed:hover {
+  background: #d1fae5;
+}
+
+/* ── Urgency dot ── */
+.user-task-urgency-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.user-task-urgency-dot.user-task-urgency--low {
+  background: var(--urgency-low-color);
+}
+
+.user-task-urgency-dot.user-task-urgency--medium {
+  background: var(--urgency-medium-color);
+}
+
+.user-task-urgency-dot.user-task-urgency--high {
+  background: var(--urgency-high-color);
+}
+
+.user-task-urgency-dot.user-task-urgency--critical {
+  background: var(--urgency-critical-color);
+}
+
+.user-task-row--completed .user-task-urgency-dot {
+  background: var(--success-500);
+}
+
+/* ── Task title ── */
+.user-task-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 13.5px;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+}
+
+.user-task-row--completed .user-task-title {
+  text-decoration: line-through;
+  color: var(--success-text);
+}
+
+/* ── Urgency badge ── */
+.user-task-urgency-badge {
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
+.user-task-urgency-badge.user-task-urgency--low {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.user-task-urgency-badge.user-task-urgency--medium {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+}
+
+.user-task-urgency-badge.user-task-urgency--high {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.user-task-urgency-badge.user-task-urgency--critical {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+/* ── Completed check icon ── */
+.user-task-check {
+  color: var(--success-text);
+  flex-shrink: 0;
+}
+
+/* ── Empty state ── */
+.user-tasks-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-8) var(--space-4);
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.user-tasks-empty p {
+  margin: 0;
 }

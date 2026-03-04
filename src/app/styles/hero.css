@@ -7,7 +7,7 @@
 .task-hero {
   background: #FFFFFF;
   border-bottom: 1px solid var(--border);
-  padding: 28px 32px;
+  padding: 32px 36px;
 }
 
 /* ── Project / Client Hero — card-style layout matching content-sections ── */
@@ -64,9 +64,9 @@
 .hero-badge {
   display: inline-flex;
   align-items: center;
-  padding: 2px 8px;
+  padding: 3px 10px;
   border-radius: var(--radius-full);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: var(--font-weight-semibold);
   background: var(--neutral-100);
   color: var(--text-muted);
@@ -139,7 +139,44 @@
   margin-top: 4px;
 }
 
-/* Row 3: stats bar */
+/* Hero inline details row (client page) */
+.hero-details-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-6);
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--border);
+}
+
+.hero-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hero-detail-label {
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hero-detail-value {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+}
+
+.hero-detail-link {
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+.hero-detail-link:hover {
+  color: var(--primary-600);
+}
+
+/* Stats bar */
 .hero-stats-bar {
   display: flex;
   align-items: center;
@@ -284,7 +321,7 @@
 }
 
 .hero-name {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 600;
   color: var(--text-primary);
   letter-spacing: -0.025em;
@@ -312,9 +349,9 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 8px;
+  padding: 4px 10px;
   border-radius: var(--radius-full);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: var(--font-weight-medium);
   background: var(--neutral-100);
   color: var(--neutral-600);
@@ -405,7 +442,7 @@
 
 .stat-label,
 .stat-card .stat-label {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--text-muted);
   font-weight: var(--font-weight-medium);
   text-transform: uppercase;
@@ -467,7 +504,7 @@
   font-size: var(--font-size-sm);
 }
 
-/* Task hero (simpler layout) */
+/* Task hero (simpler layout — legacy, kept for /tasks list page) */
 .task-hero {
   padding: var(--space-6) var(--space-6);
 }
@@ -480,6 +517,121 @@
   color: var(--text-primary);
   letter-spacing: -0.025em;
   margin: 0;
+}
+
+/* ── Task Detail Hero — card-style, matches project/client/user heroes ── */
+.task-detail-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: var(--space-6) var(--space-6) 0;
+  max-width: var(--content-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0;
+}
+
+/* Status circle button — replaces avatar in the hero */
+.task-detail-status-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  background: var(--neutral-50);
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition), transform var(--transition);
+}
+
+.task-detail-status-circle:hover {
+  border-color: var(--primary-300);
+  background: var(--primary-50);
+  transform: scale(1.04);
+}
+
+.task-detail-status-circle:hover svg {
+  opacity: 0.8 !important;
+  color: var(--primary-600);
+}
+
+.task-detail-status-circle.is-completed {
+  background: var(--success-bg);
+  border-color: var(--success-border);
+  color: var(--success-text);
+}
+
+.task-detail-status-circle.is-completed:hover {
+  background: #d1fae5;
+  border-color: var(--success-500);
+}
+
+.task-detail-status-circle:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Completed title strikethrough */
+.task-title-completed {
+  text-decoration: line-through;
+  color: var(--text-muted) !important;
+}
+
+/* Status tag variants */
+.hero-tag.task-status-active {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+  border-color: var(--warning-border);
+}
+
+.hero-tag.task-status-done {
+  background: var(--success-bg);
+  color: var(--success-text);
+  border-color: var(--success-border);
+}
+
+/* Urgency tag variants */
+.hero-tag.task-urgency-tag.urgency-low {
+  background: var(--success-bg);
+  color: var(--success-text);
+  border-color: var(--success-border);
+}
+
+.hero-tag.task-urgency-tag.urgency-medium {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+  border-color: var(--warning-border);
+}
+
+.hero-tag.task-urgency-tag.urgency-high {
+  background: #fff7ed;
+  color: #c2410c;
+  border-color: #fed7aa;
+}
+
+.hero-tag.task-urgency-tag.urgency-critical {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  border-color: var(--danger-border);
+}
+
+/* Danger outline button */
+.btn-danger-outline {
+  color: var(--text-muted);
+  border-color: var(--border);
+}
+
+.btn-danger-outline:hover {
+  color: var(--danger-text);
+  border-color: var(--danger-border);
+  background: var(--danger-bg);
 }
 
 /* Stat cards in task stats bar */
@@ -564,14 +716,23 @@
 .detail-grid,
 .project-details-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--space-5);
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-3);
 }
 
 .detail-item {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 4px;
+  padding: var(--space-3);
+  background: var(--neutral-50);
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: border-color var(--transition);
+}
+
+.detail-item:hover {
+  border-color: var(--neutral-200);
 }
 
 .detail-item.full-width { grid-column: 1 / -1; }
@@ -604,11 +765,11 @@
 }
 
 .detail-label {
-  font-size: var(--font-size-xs);
+  font-size: 12px;
   font-weight: var(--font-weight-semibold);
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.06em;
 }
 
 .detail-value {
@@ -639,3 +800,30 @@
 }
 .client-link:hover,
 .user-link:hover { color: var(--primary-600); text-decoration: underline; }
+
+/* ── Project page archived grey-out ── */
+.project-page-archived .project-content-grid,
+.project-page-archived .project-detail-body {
+  opacity: 0.45;
+  filter: grayscale(0.6);
+  pointer-events: none;
+  transition: opacity 0.4s ease, filter 0.4s ease;
+}
+
+.project-page-archived .project-hero .hero-body,
+.project-page-archived .project-hero .hero-stats-bar {
+  opacity: 0.5;
+  filter: grayscale(0.5);
+  transition: opacity 0.4s ease, filter 0.4s ease;
+}
+
+.project-page-archived .project-detail-body .comment-thread {
+  pointer-events: auto;
+}
+
+/* Keep hero actions interactive so user can unarchive */
+.project-page-archived .hero-actions {
+  opacity: 1;
+  filter: none;
+  pointer-events: auto;
+}

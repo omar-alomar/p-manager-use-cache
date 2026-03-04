@@ -100,7 +100,7 @@ export async function deleteTaskAction(taskId: number | string) {
 
     revalidateTaskPaths({ projectId: task.projectId })
 
-    return { success: true, message: 'Task deleted successfully', redirectTo: "/tasks" }
+    return { success: true, message: 'Task deleted successfully', redirectTo: "/dashboard" }
   } catch (error) {
     console.error('Error deleting task:', error)
     return { success: false, message: 'Failed to delete task' }

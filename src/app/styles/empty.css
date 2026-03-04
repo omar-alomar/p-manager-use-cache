@@ -45,3 +45,11 @@
   line-height: 1.6;
   max-width: 300px;
 }
+
+/* Inline variant — no border box, lighter padding, sits naturally in content flow */
+.empty-state.empty-state--inline {
+  border: none;
+  background: transparent;
+  max-width: none;
+  padding: var(--space-8) var(--space-4);
+}

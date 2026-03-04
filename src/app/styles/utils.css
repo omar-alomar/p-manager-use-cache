@@ -53,6 +53,19 @@
     grid-template-columns: 1fr;
   }
 
+  .project-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .project-detail-divider {
+    height: 1px;
+    width: 100%;
+  }
+
+  .project-detail-col:first-child {
+    padding-bottom: 0;
+  }
+
   .task-stats {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -76,6 +89,15 @@
 
   .project-content-grid,
   .task-content {
+    padding: var(--space-4);
+  }
+
+  .project-detail-body {
+    margin-left: var(--space-4);
+    margin-right: var(--space-4);
+  }
+
+  .project-detail-col {
     padding: var(--space-4);
   }
 

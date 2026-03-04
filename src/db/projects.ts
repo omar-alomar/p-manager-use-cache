@@ -93,13 +93,12 @@ export async function getProjectsWithUserTasks(userId: string | number) {
 
   await wait(500)
   
-  // Get projects where the user is either the manager OR has tasks assigned (active only)
+  // Get projects where the user is either the manager OR has tasks assigned
   return prisma.project.findMany({
     where: {
-      archived: false,
       OR: [
         { userId: Number(userId) }, // Projects where user is the manager
-        { 
+        {
           tasks: {
             some: {
               userId: Number(userId) // Projects where user has tasks assigned

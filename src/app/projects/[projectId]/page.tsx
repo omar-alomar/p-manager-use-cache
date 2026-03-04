@@ -72,166 +72,100 @@ export default async function ProjectPage({
         <ProjectHero projectId={projectId} />
       </Suspense>
 
-      <div className="project-content-grid">
-        {/* Project Details Section */}
-        <Suspense
-          fallback={
-            <div className="content-section">
-              <div className="section-header">
-                <div className="section-icon skeleton-icon"></div>
-                <div className="section-title-group">
-                  <div className="skeleton-heading" style={{ width: '45%' }}></div>
-                  <div className="skeleton-text short" style={{ marginTop: 4 }}></div>
-                </div>
-              </div>
-              <div className="section-content">
-                <div className="skeleton-detail-grid">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="skeleton-detail-item">
-                      <div className="skeleton-text short"></div>
-                      <div className="skeleton" style={{ width: '70%', marginTop: 6 }}></div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          }
-        >
-          <div className="content-section">
-            <div className="section-header">
-              <div className="section-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                  <circle cx="12" cy="7" r="4"/>
-                </svg>
-              </div>
-              <div className="section-title-group">
-                <h2 className="section-title">Project Details</h2>
-                <p className="section-subtitle">Project information and metadata</p>
-              </div>
-            </div>
-            <div className="section-content">
-              <ProjectDetails projectId={projectId} />
-            </div>
-          </div>
-        </Suspense>
-
-        {/* Tasks Section */}
-        <Suspense
-          fallback={
-            <div className="content-section">
-              <div className="section-header">
-                <div className="section-icon skeleton-icon"></div>
-                <div className="section-title-group">
-                  <div className="skeleton-heading" style={{ width: '30%' }}></div>
-                  <div className="skeleton-text short" style={{ marginTop: 4 }}></div>
-                </div>
-              </div>
-              <div className="section-content">
-                <div className="skeleton-tasks-list">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="skeleton-task-row">
-                      <div className="skeleton-checkbox"></div>
-                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' as const, gap: 4 }}>
-                        <div className="skeleton" style={{ width: `${70 - i * 12}%` }}></div>
-                        <div className="skeleton-text" style={{ width: '30%' }}></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          }
-        >
-          <div className="content-section">
-            <div className="section-header">
-              <div className="section-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                  <polyline points="22,4 12,14.01 9,11.01"/>
-                </svg>
-              </div>
-              <div className="section-title-group">
-                <h2 className="section-title">Tasks</h2>
-                <p className="section-subtitle">Project task management</p>
-              </div>
-              <div className="section-actions">
-                <AddTaskToProjectButton projectId={projectId} />
-              </div>
-            </div>
-            <div className="section-content">
-              <Tasks projectId={projectId} />
-            </div>
-          </div>
-        </Suspense>
-
-        {/* Comments Section */}
-        <Suspense
-          fallback={
-            <div className="content-section">
-              <div className="section-header">
-                <div className="section-icon skeleton-icon"></div>
-                <div className="section-title-group">
-                  <div className="skeleton-heading" style={{ width: '50%' }}></div>
-                  <div className="skeleton-text short" style={{ marginTop: 4 }}></div>
-                </div>
-              </div>
-              <div className="section-content">
-                <div className="skeleton-comments-list">
-                  {[1, 2].map((i) => (
-                    <div key={i} className="skeleton-comment-row">
-                      <div className="skeleton-avatar"></div>
-                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' as const, gap: 6 }}>
-                        <div className="skeleton-text" style={{ width: '25%' }}></div>
-                        <div className="skeleton" style={{ width: `${85 - i * 20}%` }}></div>
-                        <div className="skeleton-text" style={{ width: `${60 - i * 15}%` }}></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          }
-        >
-          <div className="content-section">
-            <div className="section-header">
-              <div className="section-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                </svg>
-              </div>
-              <div className="section-title-group">
-                <h2 className="section-title">Project Comments</h2>
-                <p className="section-subtitle">Share feedback and discuss this project</p>
-              </div>
-            </div>
-            <div className="section-content">
-              <CommentForm projectId={projectId} />
-
-              <div className="comments-divider">
-                <span>Recent Comments</span>
-              </div>
-
-              <Suspense
-                fallback={
-                  <div className="skeleton-comments-list">
-                    {[1, 2].map((i) => (
-                      <div key={i} className="skeleton-comment-row">
-                        <div className="skeleton-avatar"></div>
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' as const, gap: 6 }}>
-                          <div className="skeleton-text" style={{ width: '25%' }}></div>
-                          <div className="skeleton" style={{ width: `${85 - i * 20}%` }}></div>
-                        </div>
+      <div className="project-detail-body">
+        {/* Details + Tasks — two-column open layout */}
+        <div className="project-detail-grid">
+          {/* Left column: Details */}
+          <div className="project-detail-col">
+            <Suspense
+              fallback={
+                <div className="open-section">
+                  <div className="skeleton" style={{ width: 100, height: 14, marginBottom: 16 }}></div>
+                  <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
+                    {[1, 2].map(i => (
+                      <div key={i}>
+                        <div className="skeleton" style={{ width: 80, height: 11, marginBottom: 6 }}></div>
+                        <div className="skeleton" style={{ width: 140, height: 15 }}></div>
                       </div>
                     ))}
                   </div>
-                }
-              >
-                <Comments projectId={projectId} />
-              </Suspense>
-            </div>
+                </div>
+              }
+            >
+              <div className="open-section">
+                <h3 className="open-section-title">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
+                  Details
+                </h3>
+                <ProjectDetails projectId={projectId} />
+              </div>
+            </Suspense>
           </div>
-        </Suspense>
+
+          {/* Vertical divider */}
+          <div className="project-detail-divider" />
+
+          {/* Right column: Tasks */}
+          <div className="project-detail-col">
+            <Suspense
+              fallback={
+                <div className="open-section">
+                  <div className="skeleton" style={{ width: 60, height: 14, marginBottom: 16 }}></div>
+                  <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 8 }}>
+                    {[1, 2, 3].map(i => (
+                      <div key={i} className="skeleton" style={{ height: 52, borderRadius: 10 }}></div>
+                    ))}
+                  </div>
+                </div>
+              }
+            >
+              <div className="open-section">
+                <div className="open-section-header">
+                  <h3 className="open-section-title">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                      <polyline points="22,4 12,14.01 9,11.01"/>
+                    </svg>
+                    Tasks
+                  </h3>
+                  <AddTaskToProjectButton projectId={projectId} />
+                </div>
+                <Tasks projectId={projectId} />
+              </div>
+            </Suspense>
+          </div>
+        </div>
+
+        {/* Comments */}
+        <div className="comment-thread">
+          <h3 className="comment-thread-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+            Comments
+          </h3>
+          <CommentForm projectId={projectId} />
+          <Suspense
+            fallback={
+              <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 12 }}>
+                {[1, 2].map(i => (
+                  <div key={i} style={{ display: 'flex', gap: 12 }}>
+                    <div className="skeleton" style={{ width: 30, height: 30, borderRadius: '50%', flexShrink: 0 }}></div>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column' as const, gap: 4 }}>
+                      <div className="skeleton" style={{ width: '30%', height: 13 }}></div>
+                      <div className="skeleton" style={{ width: `${80 - i * 20}%`, height: 13 }}></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            }
+          >
+            <Comments projectId={projectId} />
+          </Suspense>
+        </div>
       </div>
     </div>
   )
@@ -541,15 +475,15 @@ async function Tasks({ projectId }: { projectId: string }) {
     
     if (tasks.length === 0) {
       return (
-        <div className="empty-state">
+        <div className="empty-state empty-state--inline">
           <div className="empty-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
               <polyline points="22,4 12,14.01 9,11.01"/>
             </svg>
           </div>
           <h3 className="empty-title">No tasks yet</h3>
-          <p className="empty-description">Get started by creating your first task for this project.</p>
+          <p className="empty-description">Create your first task for this project.</p>
           <ProjectEmptyStateActions projectId={projectId} />
         </div>
       )
@@ -597,7 +531,7 @@ async function Comments({ projectId }: { projectId: string }) {
 
     if (comments.length === 0) {
       return (
-        <div className="empty-state">
+        <div className="empty-state empty-state--inline">
           <div className="empty-icon">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>

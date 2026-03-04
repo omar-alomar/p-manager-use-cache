@@ -48,5 +48,9 @@ export function useSessionSort<K extends string>(
     })
   }
 
-  return { sortConfig, handleSort } as const
+  function resetSort() {
+    setSortConfig(defaultConfig)
+  }
+
+  return { sortConfig, handleSort, resetSort } as const
 }

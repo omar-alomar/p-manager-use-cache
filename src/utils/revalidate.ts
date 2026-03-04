@@ -5,8 +5,8 @@ export function revalidateTaskPaths(opts?: { projectId?: number | null; taskId?:
     revalidatePath(`/projects/${opts.projectId}`)
   }
   revalidatePath('/projects')
+  revalidatePath('/dashboard')
   revalidatePath('/tasks')
-  revalidatePath('/my-tasks')
   if (opts?.taskId) {
     revalidatePath(`/tasks/${opts.taskId}`)
   }

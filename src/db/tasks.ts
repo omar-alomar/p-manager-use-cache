@@ -12,7 +12,8 @@ export async function getTasks() {
   return prisma.task.findMany({
     include: {
       Project: true,
-      User: true
+      User: true,
+      AssignedBy: true
     },
     orderBy: [
       { createdAt: 'desc' }

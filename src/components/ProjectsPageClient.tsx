@@ -41,7 +41,7 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
   const [search, setSearch] = useState("")
   const [projectManagerFilter, setProjectManagerFilter] = useState<number | null>(null)
   const [showArchived, setShowArchived] = useState(false)
-  const { sortConfig, handleSort } = useSessionSort<'title' | 'mbaNumber' | 'userId' | 'milestone'>('projectsSortConfig')
+  const { sortConfig, handleSort, resetSort } = useSessionSort<'title' | 'mbaNumber' | 'userId' | 'milestone'>('projectsSortConfig')
 
   // Create a map of users for quick lookup
   const userMap = useMemo(() => {
@@ -210,6 +210,23 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
         </div>
 
         <div className="filter-group filter-group-right">
+          {(search || projectManagerFilter !== null || (sortConfig.key !== null && sortConfig.direction !== 'none')) && (
+            <button
+              type="button"
+              className="filter-reset-btn"
+              title="Reset filters"
+              onClick={() => {
+                setSearch("")
+                setProjectManagerFilter(null)
+                resetSort()
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 12a9 9 0 1 1 9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                <path d="M3 22v-6h6"/>
+              </svg>
+            </button>
+          )}
           <button
             type="button"
             className={`btn-view-archived${showArchived ? " btn-view-archived--active" : ""}`}

@@ -65,7 +65,7 @@ export async function adminDeleteTaskAction(taskId: number | string) {
   
   // Revalidate paths
   revalidatePath('/admin')
-  revalidatePath('/tasks')
+  revalidatePath('/dashboard')
   revalidatePath('/projects')
   revalidatePath('/')
   
