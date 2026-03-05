@@ -1,7 +1,7 @@
 # Mildenberg Project Platform — Claude Instructions
 
 ## Project Overview
-Internal project management platform for the Mildenberg team. Tracks projects, tasks, clients, milestones, and team collaboration. Current version: **α 1.1**.
+Internal project management platform for the Mildenberg team. Tracks projects, tasks, clients, milestones, and team collaboration. Current version: **α 1.1** (tracked via `src/constants/version.ts`).
 
 ## Tech Stack
 - **Framework**: Next.js 15 (canary `15.2.0-canary.56`), React 19, TypeScript
@@ -15,10 +15,12 @@ Internal project management platform for the Mildenberg team. Tracks projects, t
 src/
 ├── actions/       # Next.js server actions ("use server") — all mutations go here
 ├── app/           # Next.js App Router pages and API routes
-│   └── styles/    # Modular CSS files (see Design System section)
+│   ├── styles/    # Modular CSS files (see Design System section)
+│   ├── changelog/ # Version changelog page
+│   └── dashboard/ # Team workload dashboard
 ├── auth/          # Session management, password hashing, currentUser helper
 ├── components/    # React components (admin/, auth/, navigation/ subdirs)
-├── constants/     # Shared constants — urgency.ts (URGENCY_OPTIONS, URGENCY_SELECT_OPTIONS, URGENCY_ORDER)
+├── constants/     # Shared constants — urgency.ts, version.ts (APP_VERSION)
 ├── contexts/      # React contexts (NotificationContext, TaskFilterContext)
 ├── db/            # Database query functions (projects, tasks, users, etc.)
 ├── hooks/         # Custom React hooks — useSessionSort, useNotifications
@@ -26,7 +28,7 @@ src/
 ├── schemas/       # Zod validation schemas (taskSchema, projectSchema, milestoneSchema + parsers)
 ├── services/      # notificationService.ts
 ├── types/         # Shared TypeScript types — TaskWithRelations, ActionResult
-└── utils/         # dateUtils, mentions, milestoneUtils, wait, revalidate
+└── utils/         # dateUtils, mentions, milestoneUtils, wait, revalidate, avatarColor
 ```
 
 ## Design System
@@ -64,6 +66,8 @@ Styles are split into modular files imported via `styles.css`:
 | `profile.css` | User profile page |
 | `skeleton.css` | Loading skeletons |
 | `empty.css` | Empty state illustrations |
+| `dashboard.css` | Team dashboard — KPI cards, filter bar, task sections |
+| `changelog.css` | Changelog page and enchanted text effects |
 | `utils.css` | Utility classes |
 
 ### UI Patterns
@@ -72,6 +76,10 @@ Styles are split into modular files imported via `styles.css`:
 - **Inline editing**: Project detail fields use `InlineEditableField` for in-place edits.
 - **Milestone color coding**: Date inputs shaded by urgency — `getMilestoneColorClass()` returns `milestone-urgent` (≤14 days), `milestone-warning` (≤30 days), `milestone-safe` (>30 days).
 - **My Tasks resizable panels**: Three-column layout (`react-resizable-panels`) for In Progress / Completed / Assigned to others. Headers are color-tinted by category (warning/success/primary). Panels collapse when dragged below `MIN_SIZE` threshold or when the header is clicked (uses `panelRef.collapse()`/`expand()`). A reset icon in the filter bar restores default widths via `groupRef.setLayout()` and expands all collapsed panels. The `layoutDirty` flag tracks whether any panel has been resized.
+- **Quick Add Task**: `QuickAddTaskModal` supports preset user/project for contextual task creation from dashboard, user detail, and client detail pages.
+- **Team Dashboard**: KPI cards (active tasks, critical/high count, completion rate), filterable task list, upcoming milestones, and recent activity. Server component (`DashboardContent`) fetches data, client component (`DashboardClient`) handles interactivity.
+- **Version Banner**: `VersionBanner` displays on first login after a version bump. Users are redirected to `/changelog` if they haven't seen the current version (`getPostLoginRedirect()`). Version is tracked per user via `lastSeenVersion` field.
+- **Avatar Colors**: Hash-based consistent color assignment per user via `src/utils/avatarColor.ts` (8 color classes `avatar-color-0`–`avatar-color-7`).
 
 ## Key Conventions
 
@@ -95,7 +103,16 @@ Styles are split into modular files imported via `styles.css`:
   - Production: `prod-session-id` cookie, `prod:session` Redis prefix, DB 0
   - Staging: `staging-session-id` cookie, `staging:session` Redis prefix, DB 1
   - Development: `dev-session-id` cookie, `dev:session` Redis prefix, DB 2
+- Redis key prefix includes `APP_VERSION` — sessions are automatically invalidated on version bumps
 - Redis is optional — auth gracefully degrades if Redis is unavailable (session still set via cookie)
+
+### Version Tracking
+- `APP_VERSION` exported from `src/constants/version.ts` (currently `"1.1"`)
+- `User.lastSeenVersion` field tracks which version each user has seen
+- On login, `getPostLoginRedirect()` checks if user has seen the current version; if not, redirects to `/changelog`
+- `markVersionSeen()` updates the user's `lastSeenVersion` after viewing changelog
+- `VersionBanner` component in layout shows update notification until dismissed
+- `clearInvalidSession()` handles stale sessions after version bumps
 
 ### Real-time Notifications
 - `NotificationService` (`src/services/notificationService.ts`) publishes via Redis Pub/Sub
@@ -108,6 +125,7 @@ Styles are split into modular files imported via `styles.css`:
 - Parsed from comment bodies using `src/utils/mentions.ts`
 - `parseMentions()` + `extractMentionedUsernames()` → `createMentions()` → `sendMentionNotification()`
 - Stored in `Mention` and `Notification` DB models as well as Redis for real-time delivery
+- `MentionedUser` component resolves @mentions to profile links via `/api/users/by-name` endpoint
 
 ## Environment Variables
 ```
@@ -125,12 +143,12 @@ SKIP_REDIS=1        # Set to skip Redis (e.g. in CI)
 ## Database Models Summary
 | Model | Notable fields |
 |---|---|
-| `User` | id, email, name, password, salt, role (user\|admin) |
+| `User` | id, email, name, password, salt, role (user\|admin), lastSeenVersion |
 | `Project` | title, clientId, body, userId (manager), archived, milestone, mbaNumber, coFileNumbers, dldReviewer |
 | `Task` | title, completed, urgency (LOW\|MEDIUM\|HIGH\|CRITICAL), userId, assignedById, projectId |
 | `Client` | name, companyName, email, phone, address |
 | `Milestone` | date, item, completed, projectId |
-| `Comment` | body, userId, projectId?, taskId? |
+| `Comment` | body, userId, projectId?, taskId?, email |
 | `Mention` | commentId, userId (unique per comment+user) |
 | `Notification` | mentionId, userId, type, message, read |
 
@@ -145,8 +163,33 @@ npx prisma db push       # Apply schema changes
 npx prisma generate      # Regenerate Prisma client
 ```
 
+## API Routes
+| Route | Method | Purpose |
+|---|---|---|
+| `/api/notifications/stream` | GET | SSE endpoint for real-time notifications (`?userId=<id>`) |
+| `/api/notifications/user/[userId]` | GET | Fetch stored notifications for a user |
+| `/api/notifications/demo` | POST | Demo notification trigger |
+| `/api/users/by-name` | GET | Resolve username to user ID (used by `MentionedUser` component) |
+| `/api/test-notifications` | POST | Test notification endpoint |
+
+## App Pages
+| Route | Description |
+|---|---|
+| `/projects` | Main project list with filtering, sorting, inline editing |
+| `/projects/[projectId]` | Project detail with inline editable fields, milestones, comments |
+| `/projects/new`, `/projects/[id]/edit` | Project create/edit forms |
+| `/dashboard` | Team workload dashboard — KPIs, task list, milestones, activity |
+| `/tasks`, `/tasks/[taskId]` | Task list and detail views |
+| `/my-tasks` | Personal task view with resizable panels |
+| `/clients`, `/clients/[clientId]` | Client list and detail |
+| `/users`, `/users/[userId]` | User directory and profiles |
+| `/admin` | System stats + manage users/projects/tasks/clients |
+| `/changelog` | Version changelog with feature highlights |
+| `/login`, `/signup`, `/profile` | Auth and profile pages |
+
 ## Known Issues / Quirks
 - `docker-compose.yml` does not exist here — deployment config lives in a separate folder
 - `@azure/msal-node` is installed for future Azure AD auth (not yet implemented)
 - The `wait(500)` calls in DB functions are intentional artificial delays for loading UX
 - Zod v4 is used — `required_error` param no longer exists; use `error:` instead (e.g. `z.number({ error: "Required" })`)
+- `EnchantedText` component (`src/components/EnchantedText.tsx`) is a decorative Minecraft enchanting table-style terminal effect used on the changelog page — purely cosmetic, uses Unicode glyphs (SGA, Elder Futhark, Katakana)

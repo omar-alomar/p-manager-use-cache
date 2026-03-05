@@ -1,0 +1,211 @@
+/* ── Changelog ── */
+
+/* Enchanted text — Matrix / Minecraft enchanting table terminal strip */
+.enchanted-strip {
+  position: relative;
+  margin-top: 2px;
+  margin-bottom: -4px;
+  width: fit-content;
+  cursor: pointer;
+}
+
+.enchanted-text {
+  display: flex;
+  gap: 6px;
+  font-family: "Courier New", monospace;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  user-select: none;
+  height: 14px;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.enchanted-cursor {
+  color: #8B5CF6;
+  font-weight: bold;
+  font-size: 13px;
+  text-shadow: 0 0 4px rgba(139, 92, 246, 0.3);
+  animation: enchant-blink 1s step-end infinite;
+  flex-shrink: 0;
+}
+
+.enchanted-chars {
+  display: flex;
+  gap: 0;
+}
+
+@keyframes enchant-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.enchanted-char {
+  color: #6366F1;
+  opacity: 0.5;
+  text-shadow:
+    0 0 4px rgba(99, 102, 241, 0.22),
+    0 0 10px rgba(139, 92, 246, 0.08);
+  animation: enchant-breathe ease-in-out infinite alternate;
+  display: inline-block;
+  width: 7px;
+  text-align: center;
+  transition: opacity 0.1s ease;
+}
+
+/* Flash class applied on character swap */
+.enchanted-char.enchanted-flash {
+  opacity: 1;
+  color: #8B5CF6;
+  text-shadow:
+    0 0 6px rgba(139, 92, 246, 0.8),
+    0 0 16px rgba(99, 102, 241, 0.4);
+  animation: enchant-fade 0.6s ease-out forwards;
+}
+
+/* CRT scanline overlay (kept for dark-bg variant) */
+.enchanted-scanline {
+  display: none;
+}
+
+@keyframes enchant-breathe {
+  0%   { opacity: 0.3; }
+  100% { opacity: 0.65; }
+}
+
+@keyframes enchant-fade {
+  0%   { opacity: 1; color: #8B5CF6; }
+  100% { opacity: 0.5; color: #6366F1; }
+}
+
+/* Wave — each char lights up sequentially on click */
+.enchanted-char.enchanted-wave {
+  opacity: 1;
+  color: #7C3AED;
+  text-shadow:
+    0 0 8px rgba(124, 58, 237, 0.8),
+    0 0 20px rgba(99, 102, 241, 0.4);
+  transition: all 0.08s ease-out;
+  animation: none;
+}
+
+/* Burst — all chars flash bright after wave */
+.enchanted-char.enchanted-burst {
+  opacity: 1;
+  color: #4F46E5;
+  text-shadow:
+    0 0 8px rgba(79, 70, 229, 0.9),
+    0 0 24px rgba(139, 92, 246, 0.6),
+    0 0 40px rgba(99, 102, 241, 0.3);
+  animation: enchant-burst-fade 0.6s ease-out forwards;
+}
+
+@keyframes enchant-burst-fade {
+  0%   { opacity: 1; color: #4F46E5; }
+  40%  { opacity: 0.8; color: #7C3AED; }
+  100% { opacity: 0.5; color: #6366F1; }
+}
+
+.changelog-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 100%;
+}
+
+.changelog-entry {
+  background: #fff;
+  border: 1px solid var(--neutral-200);
+  border-radius: 12px;
+  padding: 28px 32px;
+}
+
+.changelog-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.changelog-version {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary-600);
+  background: var(--primary-50);
+  padding: 3px 10px;
+  border-radius: 5px;
+  letter-spacing: 0.04em;
+  border: 1px solid var(--primary-100);
+}
+
+.changelog-date {
+  font-size: 13px;
+  color: var(--neutral-500);
+}
+
+.changelog-summary {
+  font-size: 15px;
+  color: var(--neutral-700);
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+.changelog-changes {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.changelog-changes li {
+  font-size: 14px;
+  color: var(--neutral-600);
+  padding-left: 18px;
+  position: relative;
+  line-height: 1.5;
+}
+
+.changelog-changes a {
+  color: var(--primary-600);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--primary-300);
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+.changelog-changes a:hover {
+  color: var(--primary-700);
+  text-decoration-color: var(--primary-600);
+}
+
+.changelog-changes li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary-400);
+}
+
+.changelog-media {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.changelog-media img {
+  max-width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--neutral-200);
+}
+
+.changelog-media-sm img {
+  max-width: 480px;
+}

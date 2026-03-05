@@ -57,23 +57,23 @@
   flex-shrink: 0;
 }
 
+.nav-title-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
 .nav-title-link {
   display: flex;
   align-items: center;
   gap: var(--space-2);
   text-decoration: none;
-}
-
-.nav-logo {
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  color: #FFFFFF;
   position: relative;
   padding-bottom: 4px;
 }
 
-.nav-logo::after {
+.nav-title-link::after {
   content: "";
   position: absolute;
   bottom: 0;
@@ -83,11 +83,85 @@
   background: var(--violet-600);
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 0.25s ease;
+  transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) 0.08s;
 }
 
-.nav-title-link:hover .nav-logo::after {
+.nav-title-link:hover::after {
   transform: scaleX(1);
+}
+
+/* ── Logo icon ── */
+.nav-logo-icon {
+  width: 20px;
+  height: 20px;
+  opacity: 0.85;
+  flex-shrink: 0;
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+/* Dash setup — fully visible at rest */
+.logo-border {
+  stroke-dasharray: 592;
+  stroke-dashoffset: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.logo-line-1, .logo-line-3 { stroke-dasharray: 96; stroke-dashoffset: 0; }
+.logo-line-2, .logo-line-4 { stroke-dasharray: 84; stroke-dashoffset: 0; }
+
+/* ── Keyframes ──
+   Border: gentle breathe (scale pulse) while lines do the work.
+   Lines: smooth single-pass wipe-through. Offset cycles 0 → −2×length
+   so the dash slides off one end and back on from the other in one
+   continuous motion. ease-in-out keeps the "invisible" midpoint fast
+   and the visible endpoints slow — feels like a fluid light trace.
+   A brief violet flash as the line re-emerges adds a subtle glow trail. */
+
+@keyframes logo-breathe {
+  0%   { transform: scale(1); opacity: 1; }
+  40%  { transform: scale(1.06); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes logo-wipe-96 {
+  0%   { stroke-dashoffset: 0;    stroke: white; }
+  48%  { stroke: white; }
+  52%  { stroke: var(--violet-400); }
+  100% { stroke-dashoffset: -192; stroke: white; }
+}
+@keyframes logo-wipe-84 {
+  0%   { stroke-dashoffset: 0;    stroke: white; }
+  48%  { stroke: white; }
+  52%  { stroke: var(--violet-400); }
+  100% { stroke-dashoffset: -168; stroke: white; }
+}
+
+/* ── Hover: staggered spiral wipe + glow ── */
+.nav-title-link:hover .nav-logo-icon {
+  opacity: 1;
+  filter: drop-shadow(0 0 6px rgba(139, 92, 246, 0.4));
+}
+.nav-title-link:hover .logo-border {
+  animation: logo-breathe 0.55s ease-in-out;
+}
+.nav-title-link:hover .logo-line-1 {
+  animation: logo-wipe-96 0.5s ease-in-out 0.03s;
+}
+.nav-title-link:hover .logo-line-2 {
+  animation: logo-wipe-84 0.5s ease-in-out 0.07s;
+}
+.nav-title-link:hover .logo-line-3 {
+  animation: logo-wipe-96 0.5s ease-in-out 0.11s;
+}
+.nav-title-link:hover .logo-line-4 {
+  animation: logo-wipe-84 0.5s ease-in-out 0.15s;
+}
+
+/* ── Text ── */
+.nav-logo {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #FFFFFF;
 }
 
 .nav-subtitle {
@@ -100,7 +174,14 @@
   letter-spacing: 0.06em;
   line-height: 1;
   text-transform: none;
+  text-decoration: none;
   border: 1px solid rgba(99, 102, 241, 0.15);
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+
+.nav-subtitle:hover {
+  background: rgba(79, 70, 229, 0.3);
+  border-color: rgba(99, 102, 241, 0.3);
 }
 
 /* ── Center nav links ── */

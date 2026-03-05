@@ -2,6 +2,7 @@
 import { z } from "zod";
 import crypto from "crypto";
 import { getRedis } from "../redis/redis";
+import { APP_VERSION } from "@/constants/version";
 
 export const userRoles = ["user", "admin"] as const;
 
@@ -17,12 +18,12 @@ const getCookieSessionKey = () => {
 };
 
 // Environment-specific Redis key prefix to prevent collisions between prod/staging
+// Includes APP_VERSION so bumping the version invalidates all existing sessions
 const getRedisKeyPrefix = () => {
   const env = process.env.NODE_ENV || 'development';
-  // Handle custom environment names like 'staging' that aren't in NODE_ENV types
-  if (env === 'production') return 'prod:session';
-  if (env.includes('staging')) return 'staging:session';
-  return 'dev:session';
+  if (env === 'production') return `prod:session:v${APP_VERSION}`;
+  if (env.includes('staging')) return `staging:session:v${APP_VERSION}`;
+  return `dev:session:v${APP_VERSION}`;
 };
 
 const COOKIE_SESSION_KEY = getCookieSessionKey();

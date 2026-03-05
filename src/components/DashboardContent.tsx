@@ -69,7 +69,7 @@ export async function DashboardContent() {
   // ── Recent activity (kept as-is) ──
   const recentActivity: DashboardData["recentActivity"] = [...tasks]
     .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-    .slice(0, 6)
+    .slice(0, 20)
     .map((t) => ({
       id: t.id,
       title: t.title,

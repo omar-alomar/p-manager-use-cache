@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" fill="none">
+  <!-- Outer square -->
+  <rect x="16" y="16" width="148" height="148" rx="4" stroke="white" stroke-width="14"/>
+
+  <!-- Vertical divider left -->
+  <line x1="68" y1="16" x2="68" y2="100" stroke="white" stroke-width="14"/>
+
+  <!-- Vertical divider right -->
+  <line x1="112" y1="80" x2="112" y2="164" stroke="white" stroke-width="14"/>
+
+  <!-- Horizontal divider top -->
+  <line x1="68" y1="68" x2="164" y2="68" stroke="white" stroke-width="14"/>
+
+  <!-- Horizontal divider bottom -->
+  <line x1="16" y1="112" x2="112" y2="112" stroke="white" stroke-width="14"/>
+</svg>

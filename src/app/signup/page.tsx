@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { AuthCard } from "@/components/auth/AuthCard"
 import { SignupForm } from "@/components/auth/SignupForm"
 import Link from "next/link"
-import { signUp } from "@/actions/auth"
+import { signUp, getPostLoginRedirect } from "@/actions/auth"
 import { useAuth } from "@/components/auth/AuthContext"
 
 export default function SignupPage() {
@@ -36,8 +36,9 @@ export default function SignupPage() {
         // signUp returns an error message if something went wrong
         setError(result)
       } else {
-        // Signup was successful, redirect immediately
-        router.push("/projects")
+        // Signup was successful, redirect to changelog for new users
+        const redirect = await getPostLoginRedirect()
+        router.push(redirect)
       }
       
     } catch {

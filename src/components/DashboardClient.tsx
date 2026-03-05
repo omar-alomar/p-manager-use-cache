@@ -1,10 +1,8 @@
 "use client"
 
-import { useState, useMemo, useCallback } from "react"
+import { useState, useMemo, useCallback, useRef } from "react"
 import { TaskItem } from "./TaskItem"
-import { SearchableSelect } from "./SearchableSelect"
 import { QuickAddTaskModal, type CreatedTask } from "./QuickAddTaskModal"
-import { URGENCY_FILTER_OPTIONS } from "@/constants/urgency"
 
 // ── Serialized task shape from server ──
 interface SerializedTask {
@@ -83,11 +81,15 @@ function getInitials(name: string): string {
 
 export function DashboardClient({ data }: { data: DashboardData }) {
   const [searchQuery, setSearchQuery] = useState("")
-  const [memberFilter, setMemberFilter] = useState<string | number | undefined>("all")
-  const [urgencyFilter, setUrgencyFilter] = useState<string | number | undefined>("all")
+  const [urgencyFilter, setUrgencyFilter] = useState<Set<string>>(new Set())
   const [showCompleted, setShowCompleted] = useState(false)
   const [localTasks, setLocalTasks] = useState(data.tasks)
   const [addTaskFor, setAddTaskFor] = useState<{ id: number; name: string } | null>(null)
+  const teamBoardRef = useRef<HTMLDivElement>(null)
+
+  const scrollToBoard = useCallback(() => {
+    teamBoardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }, [])
 
   // Handle new task created from QuickAddTaskModal
   const handleTaskCreated = useCallback((task: CreatedTask) => {
@@ -115,15 +117,12 @@ export function DashboardClient({ data }: { data: DashboardData }) {
         const q = searchQuery.toLowerCase()
         if (!t.title.toLowerCase().includes(q) && !t.projectTitle.toLowerCase().includes(q) && !t.userName.toLowerCase().includes(q)) return false
       }
-      if (memberFilter && memberFilter !== "all") {
-        if (t.userId !== Number(memberFilter)) return false
-      }
-      if (urgencyFilter && urgencyFilter !== "all") {
-        if (t.urgency.toLowerCase() !== String(urgencyFilter).toLowerCase()) return false
+      if (urgencyFilter.size > 0) {
+        if (!urgencyFilter.has(t.urgency.toLowerCase())) return false
       }
       return true
     })
-  }, [localTasks, searchQuery, memberFilter, urgencyFilter, showCompleted])
+  }, [localTasks, searchQuery, urgencyFilter, showCompleted])
 
   // Group by user — sorted by busiest first
   const { columns, idleUsers } = useMemo(() => {
@@ -148,28 +147,58 @@ export function DashboardClient({ data }: { data: DashboardData }) {
     return { columns: cols, idleUsers: idle }
   }, [filteredTasks, data.users])
 
-  // Member filter options
-  const memberOptions = useMemo(
-    () => [{ value: "all" as string | number, label: "All Members" }, ...data.users.map((u) => ({ value: u.id as string | number, label: u.name }))],
-    [data.users]
-  )
+  const toggleUrgency = useCallback((level: string) => {
+    setUrgencyFilter((prev) => {
+      const next = new Set(prev)
+      if (next.has(level)) {
+        next.delete(level)
+      } else {
+        next.add(level)
+      }
+      return next
+    })
+  }, [])
+
+  const hasActiveFilters = searchQuery || urgencyFilter.size > 0 || showCompleted
+
+  const resetAllFilters = useCallback(() => {
+    setSearchQuery("")
+    setUrgencyFilter(new Set())
+    setShowCompleted(false)
+  }, [])
 
   return (
     <div className="dashboard-page">
       {/* ── KPI Stats Bar ── */}
       <div className="dashboard-kpi-bar">
-        <div className="dashboard-kpi-card">
+        <button
+          type="button"
+          className="dashboard-kpi-card dashboard-kpi-card--clickable"
+          onClick={() => {
+            resetAllFilters()
+            scrollToBoard()
+          }}
+        >
           <span className="dashboard-kpi-label">Active Tasks</span>
           <span className="dashboard-kpi-value kpi-primary">{data.activeTasks}</span>
           <span className="dashboard-kpi-sub">across all projects</span>
-        </div>
-        <div className="dashboard-kpi-card">
+        </button>
+        <button
+          type="button"
+          className="dashboard-kpi-card dashboard-kpi-card--clickable"
+          onClick={() => {
+            setSearchQuery("")
+            setShowCompleted(false)
+            setUrgencyFilter(new Set(["critical", "high"]))
+            scrollToBoard()
+          }}
+        >
           <span className="dashboard-kpi-label">Urgent</span>
           <span className={`dashboard-kpi-value ${data.criticalHighTasks > 0 ? "kpi-danger" : ""}`}>
             {data.criticalHighTasks}
           </span>
           <span className="dashboard-kpi-sub">critical + high</span>
-        </div>
+        </button>
         <div className="dashboard-kpi-card">
           <span className="dashboard-kpi-label">Completion Rate</span>
           <span className={`dashboard-kpi-value ${data.completionRate >= 70 ? "kpi-success" : ""}`}>
@@ -244,52 +273,49 @@ export function DashboardClient({ data }: { data: DashboardData }) {
             className="dashboard-filter-input"
           />
         </div>
-        <div className="dashboard-filter-select">
-          <SearchableSelect
-            options={memberOptions}
-            value={memberFilter}
-            onChange={setMemberFilter}
-            placeholder="All Members"
-          />
-        </div>
-        <div className="dashboard-filter-select">
-          <SearchableSelect
-            options={URGENCY_FILTER_OPTIONS as unknown as { value: string | number; label: string }[]}
-            value={urgencyFilter}
-            onChange={setUrgencyFilter}
-            placeholder="All Urgency"
-          />
-        </div>
-        <button
-          type="button"
-          className={`dashboard-completed-toggle ${showCompleted ? "active" : ""}`}
-          onClick={() => setShowCompleted(!showCompleted)}
-        >
-          {showCompleted ? "Showing completed" : "Completed hidden"}
-        </button>
-        {(searchQuery || (memberFilter && memberFilter !== "all") || (urgencyFilter && urgencyFilter !== "all") || showCompleted) && (
-          <button
-            type="button"
-            className="filter-reset-btn dashboard-filter-reset"
-            title="Reset filters"
-            onClick={() => {
-              setSearchQuery("")
-              setMemberFilter("all")
-              setUrgencyFilter("all")
-              setShowCompleted(false)
-            }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 12a9 9 0 1 1 9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
-              <path d="M3 22v-6h6"/>
-            </svg>
-          </button>
-        )}
       </div>
 
       {/* ── Team Board ── */}
-      <div className="dashboard-section dashboard-team-board-section">
-        <h3 className="dashboard-section-title">Team Board</h3>
+      <div ref={teamBoardRef} className="dashboard-section dashboard-team-board-section">
+        <div className="dashboard-team-board-header">
+          <h3 className="dashboard-section-title">Team Board</h3>
+          <div className="board-controls">
+            <div className="urgency-pills">
+              {(["low", "medium", "high", "critical"] as const).map((level) => (
+                <button
+                  key={level}
+                  type="button"
+                  className={`urgency-pill urgency-pill--${level}${urgencyFilter.has(level) ? " active" : ""}`}
+                  onClick={() => toggleUrgency(level)}
+                >
+                  {level.charAt(0).toUpperCase() + level.slice(1)}
+                </button>
+              ))}
+              <span className="board-controls-divider" />
+              <button
+                type="button"
+                className={`urgency-pill urgency-pill--completed${showCompleted ? " active" : ""}`}
+                onClick={() => setShowCompleted(!showCompleted)}
+              >
+                {showCompleted ? "Showing completed" : "Show completed"}
+              </button>
+              {hasActiveFilters && (
+                <button
+                  type="button"
+                  className="urgency-pill urgency-pill--reset"
+                  title="Reset all filters"
+                  onClick={resetAllFilters}
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 6 6 18"/>
+                    <path d="m6 6 12 12"/>
+                  </svg>
+                  Reset
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
         {columns.length === 0 ? (
           <div className="dashboard-empty">No tasks match the current filters</div>
         ) : (

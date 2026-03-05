@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { AuthCard } from "@/components/auth/AuthCard"
 import { LoginForm } from "@/components/auth/LoginForm"
 import Link from "next/link"
-import { signIn } from "@/actions/auth"
+import { signIn, getPostLoginRedirect } from "@/actions/auth"
 import { useAuth } from "@/components/auth/AuthContext"
 
 export default function LoginPage() {
@@ -38,7 +38,8 @@ export default function LoginPage() {
       } else {
         // Login was successful, refresh auth state and redirect
         await checkAuth()
-        router.push("/projects")
+        const redirect = await getPostLoginRedirect()
+        router.push(redirect)
       }
       
     } catch {

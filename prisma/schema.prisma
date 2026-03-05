@@ -52,6 +52,7 @@ model User {
   assignedTasks Task[] @relation("TaskAssignedBy")
   comments Comment[]
   mentions Mention[]
+  lastSeenVersion String?
   notifications Notification[]
 }
 

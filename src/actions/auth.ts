@@ -13,6 +13,7 @@ import { createUserSession, removeUserFromSession } from "../auth/session"
 import { getCurrentUser } from "../auth/currentUser"
 import { Role } from "@prisma/client"
 import { revalidateTag, revalidatePath } from "next/cache"
+import { APP_VERSION } from "@/constants/version"
 
 
 export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
@@ -172,6 +173,36 @@ export async function changePassword(unsafeData: z.infer<typeof changePasswordSc
   } catch (error) {
     console.error("Change password error:", error)
     return "Failed to change password"
+  }
+}
+
+export async function getPostLoginRedirect(): Promise<string> {
+  try {
+    const currentUser = await getCurrentUser({ redirectIfNotFound: true })
+    const user = await prisma.user.findUnique({
+      where: { id: currentUser.id },
+      select: { lastSeenVersion: true }
+    })
+    if (!user || user.lastSeenVersion !== APP_VERSION) {
+      return "/changelog"
+    }
+    return "/projects"
+  } catch {
+    return "/projects"
+  }
+}
+
+export async function markVersionSeen() {
+  try {
+    const currentUser = await getCurrentUser({ redirectIfNotFound: true })
+    await prisma.user.update({
+      where: { id: currentUser.id },
+      data: { lastSeenVersion: APP_VERSION }
+    })
+    return null
+  } catch (error) {
+    console.error("markVersionSeen error:", error)
+    return "Failed to mark version as seen"
   }
 }
 
