@@ -233,6 +233,103 @@
   font-size: var(--font-size-xs);
 }
 
+/* Active tasks cell */
+.active-tasks {
+  text-align: center;
+  vertical-align: middle;
+  min-width: 50px;
+}
+
+.active-tasks-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.active-task-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: var(--radius-full);
+  background: var(--primary-100);
+  color: var(--primary-700);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+  transition: background var(--transition);
+}
+.active-task-count:hover {
+  background: var(--primary-200);
+  color: var(--primary-800);
+}
+
+.active-task-count-zero {
+  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+}
+
+/* Hover popover (portalled to body, fixed positioning) */
+.active-tasks-popover {
+  position: fixed;
+  z-index: 9999;
+  width: 280px;
+  max-height: 320px;
+  transform: translateY(calc(-100% - 10px));
+  background: var(--neutral-0);
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.active-tasks-popover-header {
+  padding: 10px 14px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid var(--neutral-100);
+}
+
+.active-tasks-popover-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+  overflow-y: auto;
+  max-height: 268px;
+}
+
+.active-tasks-popover-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 14px;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.active-tasks-popover-urgency {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--warning-500);
+}
+.active-tasks-popover-urgency.low { background: var(--success-500); }
+.active-tasks-popover-urgency.medium { background: var(--warning-500); }
+.active-tasks-popover-urgency.high { background: hsl(25, 95%, 45%); }
+.active-tasks-popover-urgency.critical { background: var(--error-500); }
+
+.active-tasks-popover-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* MBA number cell */
 .mba-number {
   min-width: 80px;

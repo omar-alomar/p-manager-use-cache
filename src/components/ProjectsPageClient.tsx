@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo, useEffect, useRef, useCallback } from "react"
+import { createPortal } from "react-dom"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { setProjectArchivedAction } from "@/actions/projects"
@@ -24,6 +25,7 @@ interface Project {
   coFileNumbers: string
   dldReviewer: string
   userId: number
+  activeTasks?: { id: number; title: string; urgency: string | null }[]
 }
 
 interface User {
@@ -291,8 +293,8 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
                   </span>
                 )}
               </th>
-              <th 
-                className="sortable-header" 
+              <th
+                className="sortable-header"
                 onClick={() => handleSort('milestone')}
                 style={{ cursor: 'pointer', userSelect: 'none' }}
               >
@@ -303,6 +305,7 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
                   </span>
                 )}
               </th>
+              <th>TASKS</th>
               <th>OVERVIEW</th>
             </tr>
           </thead>
@@ -600,6 +603,7 @@ function ProjectRow({
           )
         })()}
       </td>
+      <TasksCell project={project} slideStyle={slideStyle} isDraggingRef={isDraggingRef} />
       <td className="comments row-slideable" style={slideStyle}>
         <div
           className={`archive-reveal-indicator${isArchiveReady ? " archive-reveal-ready" : ""}`}
@@ -618,5 +622,74 @@ function ProjectRow({
         />
       </td>
     </tr>
+  )
+}
+
+function TasksCell({
+  project,
+  slideStyle,
+  isDraggingRef,
+}: {
+  project: Project
+  slideStyle: React.CSSProperties
+  isDraggingRef: React.RefObject<boolean>
+}) {
+  const pillRef = useRef<HTMLAnchorElement>(null)
+  const [popover, setPopover] = useState<{ top: number; left: number } | null>(null)
+
+  const showPopover = useCallback(() => {
+    const el = pillRef.current
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    setPopover({ top: rect.top, left: rect.left + rect.width / 2 })
+  }, [])
+
+  const hidePopover = useCallback(() => setPopover(null), [])
+
+  const tasks = project.activeTasks
+  if (!tasks || tasks.length === 0) {
+    return (
+      <td className="active-tasks row-slideable" style={slideStyle}>
+        <span className="active-task-count-zero">0</span>
+      </td>
+    )
+  }
+
+  return (
+    <td className="active-tasks row-slideable" style={slideStyle}>
+      <div
+        className="active-tasks-wrapper"
+        onMouseEnter={showPopover}
+        onMouseLeave={hidePopover}
+      >
+        <Link
+          ref={pillRef}
+          href={`/projects/${project.id}#tasks`}
+          className="active-task-count"
+          onClick={(e) => isDraggingRef.current && e.preventDefault()}
+        >
+          {tasks.length}
+        </Link>
+        {popover && createPortal(
+          <div
+            className="active-tasks-popover"
+            style={{ top: popover.top, left: popover.left }}
+          >
+            <div className="active-tasks-popover-header">
+              Active tasks ({tasks.length})
+            </div>
+            <ul className="active-tasks-popover-list">
+              {tasks.map(task => (
+                <li key={task.id} className="active-tasks-popover-item">
+                  <span className={`active-tasks-popover-urgency ${task.urgency?.toLowerCase() || 'medium'}`} />
+                  <span className="active-tasks-popover-title">{task.title}</span>
+                </li>
+              ))}
+            </ul>
+          </div>,
+          document.body
+        )}
+      </div>
+    </td>
   )
 }

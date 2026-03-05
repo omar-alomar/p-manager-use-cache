@@ -30,7 +30,8 @@ export default async function ProjectsPage() {
     ...project,
     client: project.clientRef?.name || 'No Client',
     clientId: project.clientRef?.id || null,
-    clientCompany: project.clientRef?.companyName || null
+    clientCompany: project.clientRef?.companyName || null,
+    activeTasks: project.tasks
   }))
 
   const activeProjects = projects.filter(p => !p.archived)
@@ -67,6 +68,7 @@ function ProjectsTableSkeleton() {
             <th>Co File #&apos;s</th>
             <th>P<br />MGR</th>
             <th>MILESTONE<br />DATE</th>
+            <th>TASKS</th>
             <th>OVERVIEW</th>
           </tr>
         </thead>
@@ -74,6 +76,7 @@ function ProjectsTableSkeleton() {
           {Array.from({ length: 5 }).map((_, i) => (
             <tr key={i}>
               <td><Skeleton /></td>
+              <td><Skeleton short /></td>
               <td><Skeleton short /></td>
               <td><Skeleton short /></td>
               <td><Skeleton short /></td>

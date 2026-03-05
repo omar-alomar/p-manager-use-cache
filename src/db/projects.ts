@@ -31,7 +31,7 @@ export async function getProjects({
     where.archived = false
   }
 
-  return prisma.project.findMany({ 
+  return prisma.project.findMany({
     where,
     include: {
       clientRef: true,
@@ -39,6 +39,11 @@ export async function getProjects({
         orderBy: {
           date: 'asc'
         }
+      },
+      tasks: {
+        where: { completed: false },
+        select: { id: true, title: true, urgency: true },
+        orderBy: { createdAt: 'desc' }
       }
     }
   })
