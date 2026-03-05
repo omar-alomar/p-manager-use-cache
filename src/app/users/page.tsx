@@ -3,12 +3,11 @@ import { getCurrentUser } from "@/auth/currentUser"
 import { getUsers } from "@/db/users"
 import Link from "next/link"
 import { Role } from "@prisma/client"
+import { avatarColorClass } from "@/utils/avatarColor"
 
 export default async function UsersPage() {
-  // Check if user is authenticated
   const user = await getCurrentUser()
-  
-  // Redirect to login if not authenticated
+
   if (!user) {
     redirect("/login")
   }
@@ -24,79 +23,75 @@ export default async function UsersPage() {
           </p>
         </div>
       </div>
-      <div className="team-grid">
-        {users.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-state-icon">👥</div>
-            <h3>No Team Members Yet</h3>
-            <p>Get started by adding your first team member.</p>
-          </div>
-        ) : (
-          users.map(user => (
-            <div key={user.id} className="team-card">
-              <Link href={`users/${user.id.toString()}`} className="team-card-clickable">
-                <div className="team-card-header">
-                  <div className="user-avatar">
-                    {user.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+
+      {users.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-state-icon">👥</div>
+          <h3>No Team Members Yet</h3>
+          <p>Get started by adding your first team member.</p>
+        </div>
+      ) : (
+        <div className="team-grid">
+          {users.map(u => {
+            const initials = u.name.split(' ').map(n => n[0]).join('').toUpperCase()
+            const projectCount = u.projects?.length || 0
+            const taskCount = u.tasks?.length || 0
+            const isAdmin = u.role === Role.admin
+            const colorClass = avatarColorClass(u.name)
+
+            return (
+              <Link key={u.id} href={`users/${u.id.toString()}`} className="team-card">
+                <div className="team-card-top">
+                  <div className={`team-card-avatar ${colorClass}`}>
+                    {initials}
                   </div>
-                  <div className="user-info">
-                    <h3 className="user-name">{user.name}</h3>
-                    <div className="user-email">{user.email}</div>
+                  <div className="team-card-identity">
+                    <span className="team-card-name">{u.name}</span>
+                    <span className="team-card-email">{u.email}</span>
+                  </div>
+                  {isAdmin && <span className="team-card-role">Admin</span>}
+                </div>
+
+                <div className="team-card-stats">
+                  <div className="team-card-stat">
+                    <span className="team-card-stat-value">{projectCount}</span>
+                    <span className="team-card-stat-label">Projects</span>
+                  </div>
+                  <div className="team-card-stat-divider" />
+                  <div className="team-card-stat">
+                    <span className="team-card-stat-value">{taskCount}</span>
+                    <span className="team-card-stat-label">Tasks</span>
                   </div>
                 </div>
-                <div className="team-card-body">
-                  <div className="user-metrics">
-                    <div className="metric">
-                      <span className="metric-value">{user.projects?.length || 0}</span>
-                      <span className="metric-label">Projects</span>
-                    </div>
-                    <div className="metric">
-                      <span className="metric-value">{user.tasks?.length || 0}</span>
-                      <span className="metric-label">Tasks</span>
-                    </div>
+
+                {u.projects && u.projects.length > 0 && (
+                  <div className="team-card-projects">
+                    {u.projects.slice(0, 3).map(project => (
+                      <span key={project.id} className="team-card-project">
+                        {project.title}
+                      </span>
+                    ))}
+                    {u.projects.length > 3 && (
+                      <span className="team-card-project team-card-project-more">
+                        +{u.projects.length - 3} more
+                      </span>
+                    )}
                   </div>
-                  
-                  {user.projects && user.projects.length > 0 && (
-                    <div className="user-projects">
-                      <div className="projects-header">
-                        <span className="projects-title">Projects</span>
-                      </div>
-                      <div className="projects-list">
-                        {user.projects.slice(0, 2).map(project => (
-                          <div key={project.id} className="project-item">
-                            <div className="project-dot"></div>
-                            <div className="project-info">
-                              <div className="project-name">{project.title}</div>
-                            </div>
-                          </div>
-                        ))}
-                        {user.projects.length > 2 && (
-                          <div className="project-item project-more">
-                            <div className="project-dot"></div>
-                            <div className="project-info">
-                              <div className="project-name">+{user.projects.length - 2} more</div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div className="user-meta">
-                    <span className="join-date">Joined {new Date(user.createdAt).toLocaleDateString()}</span>
-                    <div className="meta-right">
-                      <div className={`user-role-badge role-${user.role || 'default'}`}>
-                        {user.role || Role.user}
-                      </div>
-                      <span className="click-hint">→</span>
-                    </div>
-                  </div>
+                )}
+
+                <div className="team-card-footer">
+                  <span className="team-card-joined">
+                    Joined {new Date(u.createdAt).toLocaleDateString()}
+                  </span>
+                  <svg className="team-card-arrow" width="14" height="14" viewBox="0 0 16 16" fill="none">
+                    <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
                 </div>
               </Link>
-            </div>
-          ))
-        )}
-      </div>
+            )
+          })}
+        </div>
+      )}
     </>
   )
 }

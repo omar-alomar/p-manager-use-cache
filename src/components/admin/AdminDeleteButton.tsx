@@ -10,45 +10,43 @@ interface AdminDeleteButtonProps {
   onDelete: (id: number) => Promise<void>
 }
 
-export function AdminDeleteButton({ 
-  itemId, 
-  itemName, 
-  itemType, 
-  onDelete 
+export function AdminDeleteButton({
+  itemId,
+  itemName,
+  itemType,
+  onDelete
 }: AdminDeleteButtonProps) {
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
-  
+
   const handleDelete = () => {
     if (!confirm(`Are you sure you want to delete this ${itemType} "${itemName}"? This action cannot be undone.`)) {
       return
     }
-    
+
     startTransition(async () => {
       await onDelete(itemId)
       router.refresh()
     })
   }
-  
+
   return (
     <button
       disabled={isPending}
-      className="admin-delete-btn"
+      className="admin-action-btn admin-action-btn--danger"
       onClick={handleDelete}
       title={`Delete ${itemType}: ${itemName}`}
       aria-label={`Delete ${itemType}: ${itemName}`}
     >
       {isPending ? (
-        <div className="admin-delete-btn-spinner">
-          <div className="spinner-ring"></div>
-        </div>
+        <div className="spinner-ring" style={{ width: 14, height: 14 }}></div>
       ) : (
-        <svg 
-          width="16" 
-          height="16" 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"

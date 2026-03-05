@@ -163,6 +163,19 @@
   }
 }
 
+/* ============================================================
+   AVATAR COLOR PALETTE — name-hashed, applied globally
+   High specificity to override component-level bg/color.
+   ============================================================ */
+.avatar-color-0.avatar-color-0 { background: #E0E7FF; color: #3730A3; border-color: #C7D2FE; } /* indigo */
+.avatar-color-1.avatar-color-1 { background: #EDE9FE; color: #5B21B6; border-color: #DDD6FE; } /* violet */
+.avatar-color-2.avatar-color-2 { background: #DBEAFE; color: #1E40AF; border-color: #BFDBFE; } /* blue */
+.avatar-color-3.avatar-color-3 { background: #D1FAE5; color: #065F46; border-color: #A7F3D0; } /* emerald */
+.avatar-color-4.avatar-color-4 { background: #FEE2E2; color: #991B1B; border-color: #FECACA; } /* rose */
+.avatar-color-5.avatar-color-5 { background: #FEF3C7; color: #92400E; border-color: #FDE68A; } /* amber */
+.avatar-color-6.avatar-color-6 { background: #CFFAFE; color: #155E75; border-color: #A5F3FC; } /* cyan */
+.avatar-color-7.avatar-color-7 { background: #FCE7F3; color: #9D174D; border-color: #FBCFE8; } /* pink */
+
 @media (max-width: 480px) {
   .task-stats {
     grid-template-columns: repeat(2, 1fr);

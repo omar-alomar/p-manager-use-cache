@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useActionState } from "react"
 import { createPortal } from "react-dom"
 import { createTaskAction } from "@/actions/tasks"
@@ -10,9 +10,23 @@ import { FormGroup } from "./FormGroup"
 import { SearchableSelect } from "./SearchableSelect"
 import { URGENCY_SELECT_OPTIONS } from "@/constants/urgency"
 
+export interface CreatedTask {
+  id: number
+  title: string
+  completed: boolean
+  urgency: string
+  userId: number
+  userName: string
+  projectId: number | null
+  projectTitle: string
+  createdAt: string
+  updatedAt: string
+}
+
 interface QuickAddTaskModalProps {
   isOpen: boolean
   onClose: () => void
+  onTaskCreated?: (task: CreatedTask) => void
   presetUserId?: number
   presetUserName?: string
   presetProjectId?: number
@@ -24,6 +38,7 @@ interface QuickAddTaskModalProps {
 function QuickAddTaskDrawerContent({
   isOpen,
   onClose,
+  onTaskCreated,
   presetUserId,
   presetUserName,
   presetProjectId,
@@ -39,6 +54,7 @@ function QuickAddTaskDrawerContent({
   const [selectedProjectId, setSelectedProjectId] = useState<number | undefined>(presetProjectId)
   const [selectedUrgency, setSelectedUrgency] = useState<string>('MEDIUM')
   const [errors, formAction, pending] = useActionState(createTaskAction, {})
+  const lastTitleRef = useRef('')
 
   useEffect(() => {
     setIsMounted(true)
@@ -74,9 +90,28 @@ function QuickAddTaskDrawerContent({
 
   useEffect(() => {
     if (errors && 'success' in errors && errors.success) {
+      if (onTaskCreated && 'taskId' in errors && typeof errors.taskId === 'number') {
+        const userId = selectedUserId ?? presetUserId ?? 0
+        const projectId = selectedProjectId && selectedProjectId !== 0 ? selectedProjectId : null
+        const userName = (propUsers ?? users).find(u => u.id === userId)?.name ?? ''
+        const projectTitle = projectId ? ((propProjects ?? projects).find(p => p.id === projectId)?.title ?? '') : ''
+        const now = new Date().toISOString()
+        onTaskCreated({
+          id: errors.taskId,
+          title: lastTitleRef.current,
+          completed: false,
+          urgency: selectedUrgency,
+          userId,
+          userName,
+          projectId,
+          projectTitle,
+          createdAt: now,
+          updatedAt: now,
+        })
+      }
       onClose()
     }
-  }, [errors, onClose])
+  }, [errors, onClose, onTaskCreated, selectedUserId, presetUserId, selectedProjectId, selectedUrgency, propUsers, users, propProjects, projects])
 
   useEffect(() => {
     if (!isOpen) return
@@ -133,6 +168,7 @@ function QuickAddTaskDrawerContent({
                 id="task-title"
                 placeholder="Enter task title..."
                 autoFocus
+                onChange={(e) => { lastTitleRef.current = e.target.value }}
               />
             </FormGroup>
 

@@ -26,9 +26,9 @@ export default async function MyTasksPage() {
     <>
       <div className="page-title">
         <div className="title-content">
-          <h1>My Tasks</h1>
+          <h1>Tasks</h1>
           <p className="page-subtitle">
-            Tasks assigned to you across all projects
+            Your tasks across all projects
           </p>
         </div>
         <div className="title-btns">

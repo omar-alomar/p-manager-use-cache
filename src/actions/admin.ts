@@ -38,7 +38,14 @@ export async function getAllUsersAction() {
 }
 
 export async function getAllProjectsAction() {
-  return getProjects({})
+  const projects = await getProjects({})
+  // Fetch user names for manager display
+  const users = await getUsers()
+  const userMap = new Map(users.map(u => [u.id, u.name]))
+  return projects.map(p => ({
+    ...p,
+    managerName: userMap.get(p.userId) || 'Unknown'
+  }))
 }
 
 export async function getAllTasksAction() {

@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { TaskItem } from "./TaskItem"
 import type { TaskWithRelations } from "@/types"
+import { avatarColorClass } from "@/utils/avatarColor"
 
 interface UserTaskSectionProps {
   user: { id: number; name: string }
@@ -39,7 +40,7 @@ export function UserTaskSection({
         style={{ cursor: 'pointer' }}
       >
         <div className="user-info">
-          <div className="user-avatar">
+          <div className={`user-avatar ${avatarColorClass(user.name)}`}>
             <span className="user-initials">
               {user.name.split(' ').map(n => n[0]).join('').toUpperCase()}
             </span>

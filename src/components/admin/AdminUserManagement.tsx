@@ -34,14 +34,27 @@ export function AdminUserManagement({ users }: AdminUserManagementProps) {
   }
 
   return (
-    <div className="admin-section">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-        <h2 className="section-title">User Management</h2>
+    <div className="admin-section-card">
+      <div className="admin-section-card-header">
+        <div className="admin-section-card-title-group">
+          <div className="admin-section-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div>
+            <h2 className="admin-section-card-title">User Management</h2>
+            <p className="admin-section-card-subtitle">{users.length} user{users.length !== 1 ? 's' : ''} registered</p>
+          </div>
+        </div>
         <button
-          className="btn btn-primary"
+          className="btn btn-primary btn-sm"
           onClick={() => setIsModalOpen(true)}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <path d="M12 5v14M5 12h14"/>
           </svg>
           New User
@@ -53,81 +66,77 @@ export function AdminUserManagement({ users }: AdminUserManagementProps) {
           onUserCreated={handleUserCreated}
         />
       )}
-      <div className="admin-table-container">
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>User</th>
-              <th>Email</th>
-              <th>Password</th>
-              <th>Role</th>
-              <th>Projects</th>
-              <th>Tasks</th>
-              <th>Created</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.length === 0 ? (
+      <div className="admin-section-card-body">
+        {users.length === 0 ? (
+          <div className="admin-empty">
+            <p>No users found</p>
+          </div>
+        ) : (
+          <table className="admin-table">
+            <thead>
               <tr>
-                <td colSpan={8} className="empty-state">
-                  <div className="empty-content">
-                    <p>No users found</p>
-                  </div>
-                </td>
+                <th>User</th>
+                <th>Email</th>
+                <th>Password</th>
+                <th>Role</th>
+                <th>Projects</th>
+                <th>Tasks</th>
+                <th>Created</th>
+                <th></th>
               </tr>
-            ) : (
-              users.map(user => (
+            </thead>
+            <tbody>
+              {users.map(user => (
                 <tr key={user.id}>
-                  <td className="user-cell">
-                    <Link href={`/users/${user.id}`} className="user-link">
-                      <div className="user-name">{user.name}</div>
+                  <td>
+                    <Link href={`/users/${user.id}`} className="admin-cell-link">
+                      {user.name}
                     </Link>
                   </td>
-                  <td className="email-cell">
-                    <EditableEmail 
-                      userId={user.id} 
-                      initialEmail={user.email} 
-                      userName={user.name} 
+                  <td>
+                    <EditableEmail
+                      userId={user.id}
+                      initialEmail={user.email}
+                      userName={user.name}
                     />
                   </td>
-                  <td className="password-cell">
-                    <EditablePassword 
-                      userId={user.id} 
-                      userName={user.name} 
+                  <td>
+                    <EditablePassword
+                      userId={user.id}
+                      userName={user.name}
                     />
                   </td>
-                  <td className="role-cell">
+                  <td>
                     <UserRoleButton userId={user.id} currentRole={user.role} userName={user.name} />
                   </td>
-                  <td className="projects-cell">
-                    <span className="count-badge">{user.projects.length}</span>
+                  <td>
+                    <span className="admin-count">{user.projects.length}</span>
                   </td>
-                  <td className="tasks-cell">
-                    <span className="count-badge">{user.tasks.length}</span>
+                  <td>
+                    <span className="admin-count">{user.tasks.length}</span>
                   </td>
-                  <td className="created-cell">
+                  <td className="admin-cell-muted">
                     {new Date(user.createdAt).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'short',
                       day: 'numeric'
                     })}
                   </td>
-                  <td className="actions-cell">
-                                          <AdminDeleteButton
-                        itemId={user.id}
-                        itemName={user.name}
-                        itemType="user"
-                        onDelete={async (id) => {
-                          await deleteUserAction(id)
-                        }}
-                      />
+                  <td>
+                    <AdminDeleteButton
+                      itemId={user.id}
+                      itemName={user.name}
+                      itemType="user"
+                      onDelete={async (id) => {
+                        await deleteUserAction(id)
+                      }}
+                    />
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   )

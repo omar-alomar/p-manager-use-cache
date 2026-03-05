@@ -55,6 +55,7 @@ export async function DashboardContent() {
           id: ms.id,
           item: ms.item,
           date: ms.date.toISOString(),
+          projectId: p.id,
           projectTitle: p.title,
           daysUntil: diffDays,
           colorClass: getMilestoneColorClass(ms.date),

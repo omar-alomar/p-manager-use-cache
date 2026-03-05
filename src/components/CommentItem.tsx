@@ -6,6 +6,7 @@ import { useAuth } from "@/components/auth/AuthContext"
 import { formatDate } from "@/utils/dateUtils"
 import { CommentText } from "./CommentText"
 import { Role } from "@prisma/client"
+import { avatarColorClass } from "@/utils/avatarColor"
 
 interface Comment {
   id: number
@@ -67,7 +68,7 @@ export function CommentItem({ comment }: CommentItemProps) {
 
   return (
     <div className="comment-item">
-      <div className="author-avatar">
+      <div className={`author-avatar ${avatarColorClass(comment.user.name)}`}>
         <span style={{ fontSize: 11, fontWeight: 600 }}>{initials}</span>
       </div>
       <div className="comment-item-content">

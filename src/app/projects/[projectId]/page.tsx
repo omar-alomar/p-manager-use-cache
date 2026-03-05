@@ -8,6 +8,7 @@ import { Suspense } from "react"
 import { notFound, redirect } from "next/navigation"
 import { getCurrentUser } from "@/auth/currentUser"
 import { DeleteButton } from "./_DeleteButton"
+import { avatarColorClass } from "@/utils/avatarColor"
 import { getProjectTasks } from "@/db/tasks"
 import { TaskItem } from "@/components/TaskItem"
 import { EditableProjectField } from "@/components/EditableProjectField"
@@ -405,7 +406,7 @@ async function ProjectManagerAvatar({ projectId }: { projectId: string }) {
 
     return (
       <Link href={`/users/${user.id}`} className="avatar-link">
-        <div className="avatar-circle">
+        <div className={`avatar-circle ${avatarColorClass(user.name)}`}>
           <span className="avatar-text">{initials}</span>
         </div>
       </Link>

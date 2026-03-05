@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation"
 import { getCurrentUser } from "@/auth/currentUser"
 import { ProjectCard } from "@/components/ProjectCard"
 import { ClientHeroActions } from "@/components/ClientHeroActions"
+import { avatarColorClass } from "@/utils/avatarColor"
 import { ClientProjectsFilter } from "@/components/ClientProjectsFilter"
 
 export default async function ClientPage({
@@ -95,7 +96,7 @@ async function ClientHero({ clientId }: { clientId: string }) {
         <div className="hero-top-row">
           <div className="hero-identity">
             <div className="hero-avatar">
-              <div className="avatar-circle">
+              <div className={`avatar-circle ${avatarColorClass(client.name)}`}>
                 <span className="avatar-text">
                   {client.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
                 </span>

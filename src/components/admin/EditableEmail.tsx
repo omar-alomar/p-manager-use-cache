@@ -30,7 +30,6 @@ export function EditableEmail({ userId, initialEmail }: EditableEmailProps) {
       return
     }
 
-    // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
       setError("Invalid email format")
@@ -39,7 +38,7 @@ export function EditableEmail({ userId, initialEmail }: EditableEmailProps) {
 
     setIsUpdating(true)
     setError(null)
-    
+
     try {
       await updateUserEmailAction(userId, email)
       setIsEditing(false)
@@ -62,56 +61,33 @@ export function EditableEmail({ userId, initialEmail }: EditableEmailProps) {
     }
   }
 
-  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setEmail(e.target.value)
-    setError(null)
-  }
-
   if (isEditing) {
     return (
-      <div className="editable-email-wrapper">
+      <div className="admin-inline-edit">
         <input
           ref={inputRef}
           type="email"
           value={email}
-          onChange={handleInputChange}
+          onChange={(e) => { setEmail(e.target.value); setError(null) }}
           onBlur={handleSave}
           onKeyDown={handleKeyDown}
           disabled={isUpdating}
-          className="editable-email-input"
+          className="admin-inline-input"
           placeholder="Enter email..."
           style={{ opacity: isUpdating ? 0.5 : 1 }}
         />
-        {error && (
-          <div className="editable-email-error">
-            {error}
-          </div>
-        )}
-        <div className="editable-email-hint">
-          {isUpdating ? "Saving..." : "Press Enter to save, Esc to cancel"}
-        </div>
+        {error && <div className="admin-inline-error">{error}</div>}
       </div>
     )
   }
 
   return (
-    <div 
-      className="editable-email-text"
+    <span
+      className="admin-inline-text"
       onClick={() => setIsEditing(true)}
-      title="Click to edit email"
+      title="Click to edit"
     >
-      {email || <span className="editable-email-placeholder">Click to add email</span>}
-    </div>
+      {email}
+    </span>
   )
 }
-
-
-
-
-
-
-
-
-
-
-

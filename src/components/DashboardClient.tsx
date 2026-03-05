@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback } from "react"
 import { TaskItem } from "./TaskItem"
 import { SearchableSelect } from "./SearchableSelect"
-import { QuickAddTaskModal } from "./QuickAddTaskModal"
+import { QuickAddTaskModal, type CreatedTask } from "./QuickAddTaskModal"
 import { URGENCY_FILTER_OPTIONS } from "@/constants/urgency"
 
 // ── Serialized task shape from server ──
@@ -24,6 +24,7 @@ interface UpcomingMilestone {
   id: number
   item: string
   date: string
+  projectId: number
   projectTitle: string
   daysUntil: number
   colorClass: string
@@ -87,6 +88,11 @@ export function DashboardClient({ data }: { data: DashboardData }) {
   const [showCompleted, setShowCompleted] = useState(false)
   const [localTasks, setLocalTasks] = useState(data.tasks)
   const [addTaskFor, setAddTaskFor] = useState<{ id: number; name: string } | null>(null)
+
+  // Handle new task created from QuickAddTaskModal
+  const handleTaskCreated = useCallback((task: CreatedTask) => {
+    setLocalTasks((prev) => [task, ...prev])
+  }, [])
 
   // Handle task updates from TaskItem
   const handleTaskUpdate = useCallback((taskId: number, updates: { completed?: boolean; title?: string; deleted?: boolean }) => {
@@ -182,7 +188,7 @@ export function DashboardClient({ data }: { data: DashboardData }) {
           ) : (
             <div className="milestone-list">
               {data.upcomingMilestones.map((ms) => (
-                <div key={ms.id} className={`milestone-item ${ms.colorClass}`}>
+                <a key={ms.id} href={`/projects/${ms.projectId}`} className={`milestone-item ${ms.colorClass}`}>
                   <div className="milestone-item-content">
                     <div className="milestone-item-label">{ms.item}</div>
                     <div className="milestone-item-project">{ms.projectTitle}</div>
@@ -190,7 +196,7 @@ export function DashboardClient({ data }: { data: DashboardData }) {
                   <span className={`milestone-days-badge ${ms.colorClass}`}>
                     {ms.daysUntil <= 0 ? "Overdue" : `${ms.daysUntil}d`}
                   </span>
-                </div>
+                </a>
               ))}
             </div>
           )}
@@ -366,6 +372,7 @@ export function DashboardClient({ data }: { data: DashboardData }) {
       <QuickAddTaskModal
         isOpen={addTaskFor !== null}
         onClose={() => setAddTaskFor(null)}
+        onTaskCreated={handleTaskCreated}
         presetUserId={addTaskFor?.id}
         presetUserName={addTaskFor?.name}
         users={data.users}

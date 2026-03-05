@@ -8,6 +8,7 @@ import { EditableProjectField } from "@/components/EditableProjectField"
 import { formatDate } from "@/utils/dateUtils"
 import { getMilestoneColorClass, getNearestMilestoneDate } from "@/utils/milestoneUtils"
 import { useSessionSort } from "@/hooks/useSessionSort"
+import { avatarColorClass } from "@/utils/avatarColor"
 
 interface Project {
   id: number
@@ -541,7 +542,7 @@ function ProjectRow({
         {projectManager ? (
           <Link
             href={`/users/${projectManager.id}`}
-            className="pmgr-link"
+            className={`pmgr-link ${avatarColorClass(projectManager.name)}`}
             onClick={(e) => isDraggingRef.current && e.preventDefault()}
           >
             {projectManager.name.split(" ").map((n) => n[0]).join("")}

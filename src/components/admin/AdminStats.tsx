@@ -17,73 +17,61 @@ export function AdminStats({ stats }: AdminStatsProps) {
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
     if (element) {
-      const navbarHeight = 80 // Approximate navbar height
+      const navbarHeight = 80
       const elementPosition = element.offsetTop - navbarHeight
-      
-      window.scrollTo({
-        top: elementPosition,
-        behavior: 'smooth'
-      })
+      window.scrollTo({ top: elementPosition, behavior: 'smooth' })
     }
   }
 
+  const completionRate = stats.totalTasks > 0
+    ? Math.round((stats.completedTasks / stats.totalTasks) * 100)
+    : 0
+
   return (
-    <div className="admin-section">
-      <h2 className="section-title">System Overview</h2>
-      <div className="stats-grid">
-        <div 
-          className="stat-card stat-card-clickable" 
-          onClick={() => scrollToSection('user-management')}
-        >
-          <div className="stat-icon">👥</div>
-          <div className="stat-content">
-            <div className="stat-value">{stats.totalUsers}</div>
-            <div className="stat-label">Total Users</div>
-            <div className="stat-detail">
-              {stats.adminUsers} admin{stats.adminUsers !== 1 ? 's' : ''}, {stats.regularUsers} user{stats.regularUsers !== 1 ? 's' : ''}
-            </div>
-          </div>
+    <div className="admin-kpi-bar">
+      <button
+        type="button"
+        className="admin-kpi-card"
+        onClick={() => scrollToSection('user-management')}
+      >
+        <div className="admin-kpi-label">Users</div>
+        <div className="admin-kpi-value">{stats.totalUsers}</div>
+        <div className="admin-kpi-sub">
+          {stats.adminUsers} admin{stats.adminUsers !== 1 ? 's' : ''} &middot; {stats.regularUsers} member{stats.regularUsers !== 1 ? 's' : ''}
         </div>
+      </button>
 
-        <div 
-          className="stat-card stat-card-clickable" 
-          onClick={() => scrollToSection('client-management')}
-        >
-          <div className="stat-icon">🏢</div>
-          <div className="stat-content">
-            <div className="stat-value">{stats.totalClients}</div>
-            <div className="stat-label">Total Clients</div>
-            <div className="stat-detail">Registered clients</div>
-          </div>
+      <button
+        type="button"
+        className="admin-kpi-card"
+        onClick={() => scrollToSection('client-management')}
+      >
+        <div className="admin-kpi-label">Clients</div>
+        <div className="admin-kpi-value">{stats.totalClients}</div>
+        <div className="admin-kpi-sub">Registered clients</div>
+      </button>
+
+      <button
+        type="button"
+        className="admin-kpi-card"
+        onClick={() => scrollToSection('project-management')}
+      >
+        <div className="admin-kpi-label">Projects</div>
+        <div className="admin-kpi-value">{stats.totalProjects}</div>
+        <div className="admin-kpi-sub">Active projects</div>
+      </button>
+
+      <button
+        type="button"
+        className="admin-kpi-card"
+        onClick={() => scrollToSection('task-management')}
+      >
+        <div className="admin-kpi-label">Tasks</div>
+        <div className="admin-kpi-value">{stats.totalTasks}</div>
+        <div className="admin-kpi-sub">
+          {completionRate}% complete &middot; {stats.pendingTasks} pending
         </div>
-
-        <div 
-          className="stat-card stat-card-clickable" 
-          onClick={() => scrollToSection('project-management')}
-        >
-          <div className="stat-icon">📁</div>
-          <div className="stat-content">
-            <div className="stat-value">{stats.totalProjects}</div>
-            <div className="stat-label">Total Projects</div>
-            <div className="stat-detail">Active projects</div>
-          </div>
-        </div>
-
-        <div 
-          className="stat-card stat-card-clickable" 
-          onClick={() => scrollToSection('task-management')}
-        >
-          <div className="stat-icon">✅</div>
-          <div className="stat-content">
-            <div className="stat-value">{stats.totalTasks}</div>
-            <div className="stat-label">Total Tasks</div>
-            <div className="stat-detail">
-              {stats.completedTasks} completed, {stats.pendingTasks} pending
-            </div>
-          </div>
-        </div>
-
-      </div>
+      </button>
     </div>
   )
 }

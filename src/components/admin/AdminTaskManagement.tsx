@@ -27,83 +27,88 @@ interface AdminTaskManagementProps {
 }
 
 export function AdminTaskManagement({ tasks }: AdminTaskManagementProps) {
-  const handleDeleteTask = async (taskId: number) => {
-    await adminDeleteTaskAction(taskId)
-  }
-
   return (
-    <div className="admin-section">
-      <h2 className="section-title">Task Management</h2>
-      <div className="admin-table-container">
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>Task</th>
-              <th>Project</th>
-              <th>Assignee</th>
-              <th>Status</th>
-              <th>Created</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tasks.length === 0 ? (
+    <div className="admin-section-card">
+      <div className="admin-section-card-header">
+        <div className="admin-section-card-title-group">
+          <div className="admin-section-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 11l3 3L22 4"/>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            </svg>
+          </div>
+          <div>
+            <h2 className="admin-section-card-title">Task Management</h2>
+            <p className="admin-section-card-subtitle">
+              {tasks.length} task{tasks.length !== 1 ? 's' : ''} &middot; {tasks.filter(t => t.completed).length} completed
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="admin-section-card-body">
+        {tasks.length === 0 ? (
+          <div className="admin-empty">
+            <p>No tasks found</p>
+          </div>
+        ) : (
+          <table className="admin-table">
+            <thead>
               <tr>
-                <td colSpan={6} className="empty-state">
-                  <div className="empty-state-content">
-                    <div className="empty-state-icon">✅</div>
-                    <h3>No Tasks Found</h3>
-                    <p>No tasks have been created yet.</p>
-                  </div>
-                </td>
+                <th>Task</th>
+                <th>Project</th>
+                <th>Assignee</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th></th>
               </tr>
-            ) : (
-              tasks.map(task => (
+            </thead>
+            <tbody>
+              {tasks.map(task => (
                 <tr key={task.id}>
-                  <td className="task-cell">
-                    <div className="task-info">
-                      <div className="task-title">{task.title}</div>
-                      <div className="task-id">ID: {task.id}</div>
-                    </div>
+                  <td>
+                    <span className="admin-cell-primary">{task.title}</span>
                   </td>
-                  <td className="project-cell">
+                  <td>
                     {task.projectId ? (
-                      <Link href={`/projects/${task.projectId}`} className="project-link">
-                        <span className="project-name">{task.Project?.title || 'Unknown Project'}</span>
+                      <Link href={`/projects/${task.projectId}`} className="admin-cell-link">
+                        {task.Project?.title || 'Unknown'}
                       </Link>
                     ) : (
-                      <span className="project-name no-project">No Project</span>
+                      <span className="admin-cell-muted">No Project</span>
                     )}
                   </td>
-                  <td className="assignee-cell">
-                    <div className="assignee-info">
-                      <div className="assignee-name">{task.User?.name || 'Unknown User'}</div>
-                      <div className="assignee-id">ID: {task.userId}</div>
-                    </div>
+                  <td>
+                    <Link href={`/users/${task.userId}`} className="admin-cell-link">
+                      {task.User?.name || 'Unknown'}
+                    </Link>
                   </td>
-                  <td className="status-cell">
-                    <span className={`status-badge ${task.completed ? 'completed' : 'pending'}`}>
+                  <td>
+                    <span className={`admin-status-dot ${task.completed ? 'completed' : 'pending'}`}>
                       {task.completed ? 'Completed' : 'Pending'}
                     </span>
                   </td>
-                  <td className="date-cell">
-                    <span className="created-date">
-                      {new Date(task.createdAt).toLocaleDateString()}
-                    </span>
+                  <td className="admin-cell-muted">
+                    {new Date(task.createdAt).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                    })}
                   </td>
-                  <td className="actions-cell">
+                  <td>
                     <AdminDeleteButton
                       itemId={task.id}
                       itemName={task.title}
                       itemType="task"
-                      onDelete={handleDeleteTask}
+                      onDelete={async (id) => {
+                        await adminDeleteTaskAction(id)
+                      }}
                     />
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   )

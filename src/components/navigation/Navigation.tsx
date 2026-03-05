@@ -44,7 +44,7 @@ export function Navigation() {
         <Link href="/clients" className={isActive("/clients") ? "active" : ""}>Clients</Link>
       </li>
       <li>
-        <Link href="/tasks" className={isActive("/tasks") ? "active" : ""}>My Tasks</Link>
+        <Link href="/tasks" className={isActive("/tasks") ? "active" : ""}>Tasks</Link>
       </li>
       <li>
         <Link href="/dashboard" className={isActive("/dashboard") ? "active" : ""}>Dashboard</Link>

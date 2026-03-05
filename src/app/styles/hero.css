@@ -810,6 +810,7 @@
   transition: opacity 0.4s ease, filter 0.4s ease;
 }
 
+.project-page-archived .project-hero .hero-identity,
 .project-page-archived .project-hero .hero-body,
 .project-page-archived .project-hero .hero-stats-bar {
   opacity: 0.5;
@@ -823,7 +824,7 @@
 
 /* Keep hero actions interactive so user can unarchive */
 .project-page-archived .hero-actions {
-  opacity: 1;
-  filter: none;
+  opacity: 0.5;
+  filter: grayscale(0.5);
   pointer-events: auto;
 }

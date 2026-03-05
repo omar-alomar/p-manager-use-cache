@@ -155,74 +155,253 @@
   border-radius: 8px;
 }
 
-/* ── Team grid ── */
-.team-grid,
+/* ── Shared avatar/user-info (used by UserStatus, UserTaskSection, loading) ── */
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--primary-100), var(--primary-200));
+  color: var(--primary-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  flex-shrink: 0;
+  user-select: none;
+  letter-spacing: 0.5px;
+}
+
+.user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.user-email {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Clients grid (kept for clients page) ── */
 .clients-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--space-4);
 }
 
-/* ── Team card ── */
+/* ============================================================
+   TEAM CARDS — Reimagined profile card grid
+   ============================================================ */
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-4);
+}
+
+/* ── Card shell ── */
 .team-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
   background: #FFFFFF;
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: var(--space-4) var(--space-5);
-  display: flex;
-  gap: var(--space-3);
   text-decoration: none;
   color: inherit;
-  transition: border-color var(--transition), box-shadow var(--transition);
+  overflow: hidden;
+  transition: border-color var(--transition), box-shadow 180ms ease;
 }
 
 .team-card:hover {
-  border-color: var(--border-strong);
-  box-shadow: var(--shadow-sm);
+  border-color: var(--primary-200);
+  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.08);
   color: inherit;
 }
 
-/* Gradient avatar background — matches hero treatment */
+/* ── Top section: avatar + identity ── */
+.team-card-top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-5) 0;
+  position: relative;
+}
+
 .team-card-avatar {
-  width: 42px;
-  height: 42px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, var(--primary-100), var(--primary-200));
-  color: var(--primary-700);
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
   flex-shrink: 0;
-  border: 1px solid var(--primary-200);
   user-select: none;
+  letter-spacing: 0.3px;
+  /* default color — overridden by .avatar-color-N */
+  background: var(--primary-100);
+  color: var(--primary-700);
 }
 
-.team-card-info {
+/* Avatar palette — defined here, global overrides in utils.css */
+
+.team-card-identity {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
 }
 
 .team-card-name {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   color: var(--text-primary);
-  margin-bottom: 2px;
+  line-height: 1.3;
+  transition: color var(--transition);
 }
 
-.team-card-role {
-  font-size: var(--font-size-xs);
-  color: var(--text-muted);
+.team-card:hover .team-card-name {
+  color: var(--primary-600);
 }
 
 .team-card-email {
-  font-size: var(--font-size-xs);
+  font-size: 11px;
   color: var(--text-muted);
-  margin-top: 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.team-card-role {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-4);
+  font-size: 10px;
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--primary-600);
+  background: var(--primary-50);
+  border: 1px solid var(--primary-100);
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+  line-height: 1.6;
+}
+
+/* ── Stats row ── */
+.team-card-stats {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: var(--space-4) var(--space-5) 0;
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--neutral-100);
+  border-bottom: 1px solid var(--neutral-100);
+}
+
+.team-card-stat {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 5px;
+}
+
+.team-card-stat-value {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.team-card-stat-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+}
+
+.team-card-stat-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--neutral-200);
+  flex-shrink: 0;
+}
+
+/* ── Project tags ── */
+.team-card-projects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: var(--space-3) var(--space-5) 0;
+}
+
+.team-card-project {
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  background: var(--neutral-50);
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.team-card-project-more {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-muted);
+}
+
+/* ── Footer ── */
+.team-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-5) var(--space-4);
+  margin-top: auto;
+}
+
+.team-card-joined {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.team-card-arrow {
+  color: var(--neutral-300);
+  transition: color var(--transition), transform var(--transition);
+  flex-shrink: 0;
+}
+
+.team-card:hover .team-card-arrow {
+  color: var(--primary-500);
+  transform: translateX(2px);
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .team-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ── Client card ── */

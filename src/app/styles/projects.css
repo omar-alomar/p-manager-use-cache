@@ -151,6 +151,8 @@
 .projects-table-container--archived .projects-table td { color: var(--text-muted); }
 .projects-table-container--archived .project-name-link { color: var(--text-muted); }
 .projects-table-container--archived .project-name-link:hover { color: var(--text-secondary); }
+.projects-table-container--archived .pmgr-link { background: var(--neutral-200); color: var(--text-muted); }
+.projects-table-container--archived .pmgr-link:hover { background: var(--neutral-300); color: var(--text-secondary); }
 
 /* Dragging overrides in archive mode */
 .projects-table-container--archived .projects-table tbody tr.project-row-dragging .row-slideable { background: var(--neutral-50); }

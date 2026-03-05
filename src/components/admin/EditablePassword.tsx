@@ -28,20 +28,18 @@ export function EditablePassword({ userId }: EditablePasswordProps) {
       setError("Password is required")
       return
     }
-
     if (password.length < 8) {
-      setError("Password must be at least 8 characters long")
+      setError("Min 8 characters")
       return
     }
-
     if (password !== confirmPassword) {
-      setError("Passwords do not match")
+      setError("Passwords don't match")
       return
     }
 
     setIsUpdating(true)
     setError(null)
-    
+
     try {
       const salt = generateSalt()
       const hashedPassword = await hashPassword(password, salt)
@@ -68,53 +66,39 @@ export function EditablePassword({ userId }: EditablePasswordProps) {
     }
   }
 
-  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const { name, value } = e.target
-    if (name === 'password') {
-      setPassword(value)
-    } else {
-      setConfirmPassword(value)
-    }
-    setError(null)
-  }
-
   if (isEditing) {
     return (
-      <div className="editable-password-wrapper">
+      <div className="admin-inline-edit">
         <input
           ref={inputRef}
           type="password"
           name="password"
           value={password}
-          onChange={handleInputChange}
+          onChange={(e) => { setPassword(e.target.value); setError(null) }}
           onKeyDown={handleKeyDown}
           disabled={isUpdating}
-          className="editable-password-input"
-          placeholder="Enter new password..."
+          className="admin-inline-input"
+          placeholder="New password..."
           style={{ opacity: isUpdating ? 0.5 : 1 }}
         />
         <input
           type="password"
           name="confirmPassword"
           value={confirmPassword}
-          onChange={handleInputChange}
+          onChange={(e) => { setConfirmPassword(e.target.value); setError(null) }}
           onKeyDown={handleKeyDown}
           disabled={isUpdating}
-          className="editable-password-input"
-          placeholder="Confirm new password..."
+          className="admin-inline-input"
+          placeholder="Confirm..."
           style={{ opacity: isUpdating ? 0.5 : 1 }}
         />
-        {error && (
-          <div className="editable-password-error">
-            {error}
-          </div>
-        )}
-        <div className="editable-password-actions">
+        {error && <div className="admin-inline-error">{error}</div>}
+        <div className="admin-inline-actions">
           <button
             type="button"
             onClick={handleSave}
             disabled={isUpdating || !password || !confirmPassword}
-            className="btn btn-sm"
+            className="btn btn-primary btn-sm"
           >
             {isUpdating ? "Saving..." : "Save"}
           </button>
@@ -137,23 +121,12 @@ export function EditablePassword({ userId }: EditablePasswordProps) {
   }
 
   return (
-    <button 
-      className="editable-password-button"
+    <button
+      className="admin-pw-btn"
       onClick={() => setIsEditing(true)}
       title="Click to change password"
     >
-      Change Password
+      Change
     </button>
   )
 }
-
-
-
-
-
-
-
-
-
-
-

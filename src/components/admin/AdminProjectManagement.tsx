@@ -10,6 +10,7 @@ interface Project {
   client: string
   body: string
   userId: number
+  managerName: string
   milestone: Date | null
   mbaNumber: string
   coFileNumbers: string
@@ -22,77 +23,69 @@ interface AdminProjectManagementProps {
 }
 
 export function AdminProjectManagement({ projects }: AdminProjectManagementProps) {
-  const handleDeleteProject = async (projectId: number) => {
-    await adminDeleteProjectAction(projectId)
-  }
-
   return (
-    <div className="admin-section">
-      <h2 className="section-title">Project Management</h2>
-      <div className="admin-table-container">
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>Project</th>
-              <th>Client</th>
-              <th>Manager</th>
-              <th>Tasks</th>
-              <th>Created</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {projects.length === 0 ? (
+    <div className="admin-section-card">
+      <div className="admin-section-card-header">
+        <div className="admin-section-card-title-group">
+          <div className="admin-section-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+            </svg>
+          </div>
+          <div>
+            <h2 className="admin-section-card-title">Project Management</h2>
+            <p className="admin-section-card-subtitle">{projects.length} project{projects.length !== 1 ? 's' : ''} total</p>
+          </div>
+        </div>
+      </div>
+      <div className="admin-section-card-body">
+        {projects.length === 0 ? (
+          <div className="admin-empty">
+            <p>No projects found</p>
+          </div>
+        ) : (
+          <table className="admin-table">
+            <thead>
               <tr>
-                <td colSpan={6} className="empty-state">
-                  <div className="empty-state-content">
-                    <div className="empty-state-icon">📁</div>
-                    <h3>No Projects Found</h3>
-                    <p>No projects have been created yet.</p>
-                  </div>
-                </td>
+                <th>Project</th>
+                <th>Client</th>
+                <th>Manager</th>
+                <th>Created</th>
+                <th></th>
               </tr>
-            ) : (
-              projects.map(project => (
+            </thead>
+            <tbody>
+              {projects.map(project => (
                 <tr key={project.id}>
-                  <td className="project-cell">
-                    <div className="project-info">
-                      <Link href={`/projects/${project.id}`} className="project-link">
-                        <div className="project-title">{project.title}</div>
-                      </Link>
-                      <div className="project-id">ID: {project.id}</div>
-                    </div>
+                  <td>
+                    <Link href={`/projects/${project.id}`} className="admin-cell-link">
+                      {project.title}
+                    </Link>
                   </td>
-                  <td className="client-cell">
-                    <span className="client-name">{project.client || 'N/A'}</span>
+                  <td>{project.client || <span className="admin-cell-muted">-</span>}</td>
+                  <td>{project.managerName}</td>
+                  <td className="admin-cell-muted">
+                    {new Date(project.createdAt).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                    })}
                   </td>
-                  <td className="manager-cell">
-                    <div className="manager-info">
-                      <div className="manager-name">Unknown</div>
-                      <div className="manager-id">ID: {project.userId}</div>
-                    </div>
-                  </td>
-                  <td className="count-cell">
-                    <span className="count-badge">0</span>
-                  </td>
-                  <td className="date-cell">
-                    <span className="created-date">
-                      {new Date(project.createdAt).toLocaleDateString()}
-                    </span>
-                  </td>
-                  <td className="actions-cell">
+                  <td>
                     <AdminDeleteButton
                       itemId={project.id}
                       itemName={project.title}
                       itemType="project"
-                      onDelete={handleDeleteProject}
+                      onDelete={async (id) => {
+                        await adminDeleteProjectAction(id)
+                      }}
                     />
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   )

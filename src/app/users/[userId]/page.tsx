@@ -8,6 +8,7 @@ import { UserTasksSection } from "@/components/UserTasksSection"
 import { Suspense } from "react"
 import { notFound, redirect } from "next/navigation"
 import { getCurrentUser } from "@/auth/currentUser"
+import { avatarColorClass } from "@/utils/avatarColor"
 
 export default async function UserPage({
   params,
@@ -175,7 +176,7 @@ async function UserHero({ userId }: { userId: string }) {
       <div className="hero-top-row">
         <div className="hero-identity">
           <div className="hero-avatar">
-            <div className="avatar-circle">
+            <div className={`avatar-circle ${avatarColorClass(user.name)}`}>
               <span className="avatar-text">{initials}</span>
             </div>
           </div>
