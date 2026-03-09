@@ -32,7 +32,7 @@ export default async function MyTasksPage() {
           </p>
         </div>
         <div className="title-btns">
-          <NewTaskButton users={users} projects={projects} />
+          <NewTaskButton users={users} projects={projects} currentUserId={user.id} />
         </div>
       </div>
 

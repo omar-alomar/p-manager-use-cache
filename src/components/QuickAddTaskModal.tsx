@@ -33,6 +33,7 @@ interface QuickAddTaskModalProps {
   className?: string
   users?: { id: number; name: string }[]
   projects?: { id: number; title: string }[]
+  currentUserId?: number
 }
 
 function QuickAddTaskDrawerContent({
@@ -43,14 +44,15 @@ function QuickAddTaskDrawerContent({
   presetUserName,
   presetProjectId,
   users: propUsers,
-  projects: propProjects
+  projects: propProjects,
+  currentUserId
 }: QuickAddTaskModalProps) {
   const [projects, setProjects] = useState<{ id: number; title: string }[]>([])
   const [users, setUsers] = useState<{ id: number; name: string }[]>([])
   const [isLoadingProjects, setIsLoadingProjects] = useState(false)
   const [isLoadingUsers, setIsLoadingUsers] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
-  const [selectedUserId, setSelectedUserId] = useState<number | undefined>(presetUserId)
+  const [selectedUserId, setSelectedUserId] = useState<number | undefined>(presetUserId ?? currentUserId)
   const [selectedProjectId, setSelectedProjectId] = useState<number | undefined>(presetProjectId)
   const [selectedUrgency, setSelectedUrgency] = useState<string>('MEDIUM')
   const [errors, formAction, pending] = useActionState(createTaskAction, {})
@@ -176,7 +178,10 @@ function QuickAddTaskDrawerContent({
               <FormGroup errorMessage={'userId' in errors ? errors.userId : undefined}>
                 <label htmlFor="task-user">Assigned To</label>
                 <SearchableSelect
-                  options={users.map(user => ({ value: user.id, label: user.name }))}
+                  options={[
+                    ...(currentUserId ? users.filter(u => u.id === currentUserId) : []),
+                    ...users.filter(u => u.id !== currentUserId)
+                  ].map(user => ({ value: user.id, label: user.name }))}
                   value={selectedUserId}
                   onChange={(value) => setSelectedUserId(typeof value === 'number' ? value : undefined)}
                   placeholder="Select a team member"

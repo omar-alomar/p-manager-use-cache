@@ -63,7 +63,10 @@ export async function getTasksAssignedByUser(userId: string | number) {
 
   await wait(500)
   return prisma.task.findMany({
-    where: { assignedById: Number(userId) },
+    where: {
+      assignedById: Number(userId),
+      NOT: { userId: Number(userId) }
+    },
     include: {
       Project: true,
       User: true

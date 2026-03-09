@@ -3,12 +3,14 @@
 import { useState } from "react"
 import { QuickAddTaskModal } from "./QuickAddTaskModal"
 
-export function NewTaskButton({ 
-  users, 
-  projects 
-}: { 
+export function NewTaskButton({
+  users,
+  projects,
+  currentUserId
+}: {
   users: { id: number; name: string }[]
   projects: { id: number; title: string }[]
+  currentUserId?: number
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalKey, setModalKey] = useState(0)
@@ -41,6 +43,7 @@ export function NewTaskButton({
         onClose={handleCloseModal}
         users={users}
         projects={projects}
+        currentUserId={currentUserId}
       />
     </>
   )

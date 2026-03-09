@@ -45,7 +45,7 @@ export default async function ProjectsPage() {
         </div>
         <div className="title-btns">
           <NewProjectButton users={users} clients={clients} />
-          <NewTaskButton users={users} projects={activeProjects} />
+          <NewTaskButton users={users} projects={activeProjects} currentUserId={user.id} />
         </div>
       </div>
 
