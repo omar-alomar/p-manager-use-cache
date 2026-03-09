@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useRef, useCallback } from "react"
+import { createPortal } from "react-dom"
 import Link from "next/link"
 import { Client } from "@prisma/client"
 import { User } from "@prisma/client"
@@ -182,20 +183,8 @@ export function ClientsPageClient({ clients }: ClientsPageClientProps) {
                 )}
               </th>
               <th>PHONE</th>
-              <th 
-                className="sortable-header" 
-                onClick={() => handleSort('address')}
-                style={{ cursor: 'pointer', userSelect: 'none' }}
-              >
-                ADDRESS
-                {sortConfig.key === 'address' && sortConfig.direction !== 'none' && (
-                  <span style={{ marginLeft: '4px' }}>
-                    {sortConfig.direction === 'asc' ? '↑' : '↓'}
-                  </span>
-                )}
-              </th>
-              <th 
-                className="sortable-header" 
+              <th
+                className="sortable-header"
                 onClick={() => handleSort('projectCount')}
                 style={{ cursor: 'pointer', userSelect: 'none' }}
               >
@@ -206,7 +195,18 @@ export function ClientsPageClient({ clients }: ClientsPageClientProps) {
                   </span>
                 )}
               </th>
-              <th>ACTIONS</th>
+              <th
+                className="sortable-header"
+                onClick={() => handleSort('address')}
+                style={{ cursor: 'pointer', userSelect: 'none' }}
+              >
+                ADDRESS
+                {sortConfig.key === 'address' && sortConfig.direction !== 'none' && (
+                  <span style={{ marginLeft: '4px' }}>
+                    {sortConfig.direction === 'asc' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -254,6 +254,7 @@ function ClientRow({ client }: { client: ClientWithProjects }) {
           <span className="no-data">-</span>
         )}
       </td>
+      <ProjectsCell client={client} />
       <td className="client-address">
         <InlineEditableField
           clientId={client.id}
@@ -264,33 +265,68 @@ function ClientRow({ client }: { client: ClientWithProjects }) {
           multiline={true}
         />
       </td>
-      <td className="client-projects">
-        <div className="project-count">
-          {client.projects.length > 0 ? (
-            <Link href={`/clients/${client.id}`} className="project-count-link">
-              {client.projects.length} project{client.projects.length !== 1 ? 's' : ''}
-            </Link>
-          ) : (
-            <span className="no-data">No projects</span>
-          )}
-        </div>
-      </td>
-      <td className="client-actions">
-        <div className="action-buttons">
-          <Link 
-            href={`/clients/${client.id}/edit?from=clients-list`}
-            className="action-btn edit"
-          >
-            Edit
-          </Link>
-          <Link 
-            href={`/clients/${client.id}`}
-            className="action-btn view"
-          >
-            View
-          </Link>
-        </div>
-      </td>
     </tr>
+  )
+}
+
+function ProjectsCell({ client }: { client: ClientWithProjects }) {
+  const pillRef = useRef<HTMLAnchorElement>(null)
+  const [popover, setPopover] = useState<{ top: number; left: number } | null>(null)
+
+  const showPopover = useCallback(() => {
+    const el = pillRef.current
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    setPopover({ top: rect.top, left: rect.left + rect.width / 2 })
+  }, [])
+
+  const hidePopover = useCallback(() => setPopover(null), [])
+
+  const projects = client.projects
+  if (!projects || projects.length === 0) {
+    return (
+      <td className="active-tasks">
+        <span className="active-task-count-zero">0</span>
+      </td>
+    )
+  }
+
+  return (
+    <td className="active-tasks">
+      <div
+        className="active-tasks-wrapper"
+        onMouseEnter={showPopover}
+        onMouseLeave={hidePopover}
+      >
+        <Link
+          ref={pillRef}
+          href={`/clients/${client.id}`}
+          className="active-task-count"
+        >
+          {projects.length}
+        </Link>
+        {popover && createPortal(
+          <div
+            className="active-tasks-popover"
+            style={{ top: popover.top, left: popover.left }}
+          >
+            <div className="active-tasks-popover-header">
+              Projects ({projects.length})
+            </div>
+            <ul className="active-tasks-popover-list">
+              {projects.map(project => (
+                <li key={project.id} className="active-tasks-popover-item">
+                  <Link href={`/projects/${project.id}`} className="active-tasks-popover-title" style={{ textDecoration: 'none', color: 'inherit' }}>
+                    {project.title}
+                  </Link>
+                  <span className="active-tasks-popover-manager">{project.user.name}</span>
+                </li>
+              ))}
+            </ul>
+          </div>,
+          document.body
+        )}
+      </div>
+    </td>
   )
 }

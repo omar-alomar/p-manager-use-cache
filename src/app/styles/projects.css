@@ -332,6 +332,14 @@
   white-space: nowrap;
 }
 
+.active-tasks-popover-manager {
+  font-size: 0.7rem;
+  color: var(--neutral-400);
+  white-space: nowrap;
+  margin-left: auto;
+  padding-left: 8px;
+}
+
 /* MBA number cell */
 .mba-number {
   min-width: 80px;

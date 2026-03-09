@@ -44,7 +44,7 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
   const [search, setSearch] = useState("")
   const [projectManagerFilter, setProjectManagerFilter] = useState<number | null>(null)
   const [showArchived, setShowArchived] = useState(false)
-  const { sortConfig, handleSort, resetSort } = useSessionSort<'title' | 'mbaNumber' | 'userId' | 'milestone'>('projectsSortConfig')
+  const { sortConfig, handleSort, resetSort } = useSessionSort<'title' | 'mbaNumber' | 'userId' | 'milestone' | 'taskCount'>('projectsSortConfig')
 
   // Create a map of users for quick lookup
   const userMap = useMemo(() => {
@@ -143,6 +143,16 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
           return aDate - bDate
         } else {
           return bDate - aDate
+        }
+      })
+    } else if (sortConfig.key === 'taskCount' && sortConfig.direction !== 'none') {
+      filtered.sort((a, b) => {
+        const aCount = a.activeTasks?.length ?? 0
+        const bCount = b.activeTasks?.length ?? 0
+        if (sortConfig.direction === 'asc') {
+          return aCount - bCount
+        } else {
+          return bCount - aCount
         }
       })
     } else {
@@ -305,7 +315,18 @@ export function ProjectsPageClient({ projects, users, currentUser }: ProjectsPag
                   </span>
                 )}
               </th>
-              <th>TASKS</th>
+              <th
+                className="sortable-header"
+                onClick={() => handleSort('taskCount')}
+                style={{ cursor: 'pointer', userSelect: 'none' }}
+              >
+                TASKS
+                {sortConfig.key === 'taskCount' && sortConfig.direction !== 'none' && (
+                  <span style={{ marginLeft: '4px' }}>
+                    {sortConfig.direction === 'asc' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
               <th>OVERVIEW</th>
             </tr>
           </thead>

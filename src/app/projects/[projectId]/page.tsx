@@ -94,13 +94,16 @@ export default async function ProjectPage({
               }
             >
               <div className="open-section">
-                <h3 className="open-section-title">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
-                  </svg>
-                  Details
-                </h3>
+                <div className="open-section-header">
+                  <h3 className="open-section-title">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                      <line x1="4" y1="22" x2="4" y2="15"/>
+                    </svg>
+                    Milestones
+                  </h3>
+                  <AddMilestoneButton projectId={Number(projectId)} />
+                </div>
                 <ProjectDetails projectId={projectId} />
               </div>
             </Suspense>
@@ -320,38 +323,7 @@ async function ProjectDetails({ projectId }: { projectId: string }) {
 
     return (
       <div className="project-details-grid">
-        <div className="detail-item">
-          <label className="detail-label">
-            Project Manager
-          </label>
-          <div className="detail-value">
-            <Suspense fallback={<span className="loading-text">Loading...</span>}>
-              <UserDetails userId={project.userId} />
-            </Suspense>
-          </div>
-        </div>
-
-        {project.clientRef && (
-          <div className="detail-item">
-            <label className="detail-label">
-              Client
-            </label>
-            <div className="detail-value">
-              <Link 
-                href={`/clients/${project.clientRef.id}`}
-                className="user-link"
-              >
-                {project.clientRef.name}
-              </Link>
-            </div>
-          </div>
-        )}
-
         <div className="detail-item full-width">
-          <div className="detail-label-row">
-            <label className="detail-label">Milestones</label>
-            <AddMilestoneButton projectId={project.id} />
-          </div>
           {project.milestones && project.milestones.length > 0 ? (
             <div className="detail-value">
               <div className="milestone-details-grid">
@@ -375,7 +347,6 @@ async function ProjectDetails({ projectId }: { projectId: string }) {
             </div>
           )}
         </div>
-
       </div>
     )
   } catch (error) {
@@ -446,24 +417,6 @@ async function ProjectManagerTag({ projectId }: { projectId: string }) {
   }
 }
 
-async function UserDetails({ userId }: { userId: number }) {
-  try {
-    const user = await getUser(userId)
-    if (user == null) return notFound()
-
-    return (
-      <Link 
-        href={`/users/${user.id}`} 
-        className="user-link"
-      >
-        {user.name}
-      </Link>
-    )
-  } catch (error) {
-    console.error('Error in UserDetails:', error)
-    return <span className="error-text">Error loading user</span>
-  }
-}
 
 async function Tasks({ projectId }: { projectId: string }) {
   try {
