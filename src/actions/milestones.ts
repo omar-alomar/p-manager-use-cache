@@ -4,11 +4,16 @@ import prisma from '@/db/db'
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { getCurrentUser } from '@/auth/currentUser'
 import { milestoneSchema } from '@/schemas/schemas'
+import { isBlocked } from '@/utils/maintenance'
+
+const MAINTENANCE_MSG = 'Site is under maintenance. Please try again later.'
 
 export async function updateMilestoneCompletionAction(
   milestoneId: number,
   completed: boolean
 ) {
+  if (await isBlocked()) return { success: false, message: MAINTENANCE_MSG }
+
   try {
     const currentUser = await getCurrentUser()
     if (!currentUser) {
@@ -45,6 +50,8 @@ export async function updateMilestoneAction(
   prevState: unknown,
   formData: FormData
 ) {
+  if (await isBlocked()) return { errors: { general: MAINTENANCE_MSG } }
+
   const result = milestoneSchema.safeParse({
     date: formData.get("date"),
     item: formData.get("item"),
@@ -86,6 +93,8 @@ export async function updateMilestoneAction(
 }
 
 export async function deleteMilestoneAction(milestoneId: number) {
+  if (await isBlocked()) return { success: false, message: MAINTENANCE_MSG }
+
   try {
     const currentUser = await getCurrentUser()
     if (!currentUser) {

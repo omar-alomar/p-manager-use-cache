@@ -8,6 +8,9 @@ import { revalidatePath } from "next/cache"
 import { z } from "zod"
 import prisma from "@/db/db"
 import type { ActionResult } from "@/types"
+import { isBlocked } from "@/utils/maintenance"
+
+const MAINTENANCE_MSG = "Site is under maintenance. Please try again later."
 
 const addCommentSchema = z.object({
   projectId: z.string().or(z.number()).nullable().optional(),
@@ -26,6 +29,8 @@ const deleteCommentSchema = z.object({
 })
 
 export async function addCommentAction(formData: FormData): Promise<ActionResult> {
+  if (await isBlocked()) return { success: false, message: MAINTENANCE_MSG }
+
   const rawData = {
     projectId: formData.get("projectId"),
     taskId: formData.get("taskId"),
@@ -125,6 +130,8 @@ export async function addCommentAction(formData: FormData): Promise<ActionResult
 }
 
 export async function deleteCommentAction(formData: FormData): Promise<ActionResult> {
+  if (await isBlocked()) return { success: false, message: MAINTENANCE_MSG }
+
   const rawData = {
     commentId: formData.get("commentId"),
     userId: formData.get("userId"),

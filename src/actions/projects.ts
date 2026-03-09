@@ -6,8 +6,13 @@ import { getProjects } from "@/db/projects"
 import { redirect } from "next/navigation"
 import { parseProjectFormData, milestoneSchema } from "@/schemas/schemas"
 import type { ActionResult } from "@/types"
+import { isBlocked } from "@/utils/maintenance"
+
+const MAINTENANCE_MSG = "Site is under maintenance. Please try again later."
 
 export async function createProjectAction(prevState: unknown, formData: FormData) {
+  if (await isBlocked()) return { success: false, message: MAINTENANCE_MSG }
+
   const result = parseProjectFormData(formData)
 
   if (!result.success) {
@@ -30,6 +35,8 @@ export async function editProjectAction(
   prevState: unknown,
   formData: FormData
 ) {
+  if (await isBlocked()) return { success: false, message: MAINTENANCE_MSG }
+
   const result = parseProjectFormData(formData)
 
   if (!result.success) {
@@ -48,6 +55,8 @@ export async function editProjectAction(
 }
 
 export async function deleteProjectAction(projectId: number | string) {
+  if (await isBlocked()) return { success: false, message: MAINTENANCE_MSG }
+
   await deleteProject(projectId)
   redirect("/projects")
 }
@@ -57,6 +66,8 @@ export async function updateProjectFieldAction(
   field: 'body' | 'mbaNumber' | 'coFileNumbers' | 'dldReviewer',
   value: string
 ): Promise<ActionResult> {
+  if (await isBlocked()) return { success: false, message: MAINTENANCE_MSG }
+
   await updateProjectField(projectId, field, value)
 
   revalidatePath('/projects')
@@ -70,6 +81,8 @@ export async function getProjectsAction(options?: { includeArchived?: boolean })
 }
 
 export async function setProjectArchivedAction(projectId: number | string, archived: boolean): Promise<ActionResult> {
+  if (await isBlocked()) return { success: false, message: MAINTENANCE_MSG }
+
   await setProjectArchived(projectId, archived)
   revalidatePath("/projects")
   revalidatePath(`/projects/${projectId}`)
@@ -81,6 +94,8 @@ export async function addMilestoneAction(
   prevState: unknown,
   formData: FormData
 ) {
+  if (await isBlocked()) return { errors: { general: MAINTENANCE_MSG } }
+
   const result = milestoneSchema.safeParse({
     date: formData.get("date"),
     item: formData.get("item"),

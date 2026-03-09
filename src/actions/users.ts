@@ -3,6 +3,9 @@
 import { getUsers, deleteUser, updateUserRole, updateUserEmail, updateUserPassword, createUser } from "@/db/users"
 import { Role } from "@prisma/client"
 import { z } from "zod"
+import { isBlocked } from "@/utils/maintenance"
+
+const MAINTENANCE_MSG = "Site is under maintenance. Please try again later."
 
 const createUserSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -16,22 +19,27 @@ export async function getUsersAction() {
 }
 
 export async function deleteUserAction(userId: string | number) {
+  if (await isBlocked()) return { success: false, message: MAINTENANCE_MSG }
   return await deleteUser(userId)
 }
 
 export async function updateUserRoleAction(userId: string | number, newRole: string) {
+  if (await isBlocked()) return { success: false, message: MAINTENANCE_MSG }
   return await updateUserRole(userId, newRole)
 }
 
 export async function updateUserEmailAction(userId: string | number, newEmail: string) {
+  if (await isBlocked()) return { success: false, message: MAINTENANCE_MSG }
   return await updateUserEmail(userId, newEmail)
 }
 
 export async function updateUserPasswordAction(userId: string | number, hashedPassword: string, salt: string) {
+  if (await isBlocked()) return { success: false, message: MAINTENANCE_MSG }
   return await updateUserPassword(userId, hashedPassword, salt)
 }
 
 export async function createUserAction(prevState: unknown, formData: FormData) {
+  if (await isBlocked()) return { success: false, error: MAINTENANCE_MSG }
   const rawData = {
     name: formData.get("name") as string,
     email: formData.get("email") as string,

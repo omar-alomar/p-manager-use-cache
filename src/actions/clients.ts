@@ -4,8 +4,13 @@ import { createClient, deleteClient, updateClient, updateClientField, validateCl
 import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
 import type { ActionResult } from "@/types"
+import { isBlocked } from "@/utils/maintenance"
+
+const MAINTENANCE_MSG = "Site is under maintenance. Please try again later."
 
 export async function createClientAction(prevState: unknown, formData: FormData) {
+  if (await isBlocked()) return { success: false, message: MAINTENANCE_MSG }
+
   const [data, errors] = validateClient(formData)
 
   if (!data) return errors
@@ -30,6 +35,8 @@ export async function editClientAction(
   formData: FormData,
   redirectTo: string = "/clients"
 ) {
+  if (await isBlocked()) return { success: false, message: MAINTENANCE_MSG }
+
   const [data, errors] = validateClient(formData)
 
   if (!data) return errors
@@ -43,6 +50,8 @@ export async function editClientAction(
 }
 
 export async function deleteClientAction(clientId: number) {
+  if (await isBlocked()) return { success: false, message: MAINTENANCE_MSG }
+
   await deleteClient(clientId)
   revalidatePath("/clients")
   redirect("/clients")
@@ -53,6 +62,8 @@ export async function updateClientFieldAction(
   field: 'companyName' | 'address',
   value: string
 ): Promise<ActionResult> {
+  if (await isBlocked()) return { success: false, message: MAINTENANCE_MSG }
+
   try {
     await updateClientField(clientId, field, value || null)
     return { success: true, message: `${field} updated successfully` }

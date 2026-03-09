@@ -3,6 +3,7 @@
 import { z } from "zod"
 import { signInSchema, signUpSchema, updateProfileSchema, changePasswordSchema } from "../schemas/schemas"
 import prisma from "@/db/db"
+import { isBlocked } from "@/utils/maintenance"
 import {
   comparePasswords,
   generateSalt,
@@ -51,6 +52,8 @@ export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
 }
 
 export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
+  if (await isBlocked()) return "Site is under maintenance. Please try again later."
+
   const { success, data } = signUpSchema.safeParse(unsafeData) // zod; type safety.
 
   if (!success) return "Unable to create account"
@@ -107,6 +110,8 @@ export async function logOut() {
 }
 
 export async function updateProfile(unsafeData: z.infer<typeof updateProfileSchema>) {
+  if (await isBlocked()) return "Site is under maintenance. Please try again later."
+
   const { success, data } = updateProfileSchema.safeParse(unsafeData)
 
   if (!success) return "Invalid profile data"
@@ -129,6 +134,8 @@ export async function updateProfile(unsafeData: z.infer<typeof updateProfileSche
 }
 
 export async function changePassword(unsafeData: z.infer<typeof changePasswordSchema>) {
+  if (await isBlocked()) return "Site is under maintenance. Please try again later."
+
   const { success, data } = changePasswordSchema.safeParse(unsafeData)
 
   if (!success) return "Invalid password data"

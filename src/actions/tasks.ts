@@ -7,9 +7,14 @@ import { getCurrentUser } from "@/auth/currentUser"
 import { revalidateTaskPaths } from "@/utils/revalidate"
 import { parseTaskFormData } from "@/schemas/schemas"
 import type { ActionResult } from "@/types"
+import { isBlocked } from "@/utils/maintenance"
+
+const MAINTENANCE_MSG = "Site is under maintenance. Please try again later."
 
 
 export async function createTaskAction(prevState: unknown, formData: FormData) {
+  if (await isBlocked()) return { success: false, message: MAINTENANCE_MSG }
+
   const result = parseTaskFormData(formData)
 
   if (!result.success) {
@@ -65,6 +70,8 @@ export async function editTaskAction(
   prevState: unknown,
   formData: FormData
 ) {
+  if (await isBlocked()) return { success: false, message: MAINTENANCE_MSG }
+
   const result = parseTaskFormData(formData)
 
   if (!result.success) {
@@ -90,6 +97,8 @@ export async function editTaskAction(
 }
 
 export async function deleteTaskAction(taskId: number | string) {
+  if (await isBlocked()) return { success: false, message: MAINTENANCE_MSG }
+
   try {
     const task = await getTask(taskId)
     if (!task) {
@@ -119,6 +128,8 @@ export async function updateTaskCompletionAction(
     projectId?: number
   }
 ) {
+  if (await isBlocked()) throw new Error(MAINTENANCE_MSG)
+
   try {
     // Get the original task to check if completion status changed and get the original assigner
     const originalTask = await prisma.task.findUnique({
