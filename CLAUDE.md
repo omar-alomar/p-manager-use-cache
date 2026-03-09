@@ -187,8 +187,17 @@ npx prisma generate      # Regenerate Prisma client
 | `/changelog` | Version changelog with feature highlights |
 | `/login`, `/signup`, `/profile` | Auth and profile pages |
 
+## Maintenance Mode
+- Toggle via Redis key `maintenance:enabled` — no restart or redeploy needed
+- **Admin UI**: Toggle switch at the top of `/admin` page (`MaintenanceToggle` component)
+- **CLI**: `maintenance.sh on|off|status` script in project root; uses `REDIS_CMD` env var to target the right Redis container
+- **How it works**: Root layout (`src/app/layout.tsx`) calls `isMaintenanceMode()` on every request. If enabled, non-admin users see a static maintenance page. Admins bypass it and can still access the full site.
+- **Redis functions**: `src/redis/maintenance.ts` — `isMaintenanceMode()` / `setMaintenanceMode(enabled)`
+- **Server actions**: `getMaintenanceStatusAction()` and `toggleMaintenanceAction(enabled)` in `src/actions/admin.ts`
+- **Deploy workflow**: `./maintenance.sh on` → deploy → `./maintenance.sh off`
+
 ## Known Issues / Quirks
-- `docker-compose.yml` does not exist here — deployment config lives in a separate folder
+- `docker-compose.yml` does not exist here — deployment config lives in a separate folder (`stack` for prod, `stg-stack` for staging)
 - `@azure/msal-node` is installed for future Azure AD auth (not yet implemented)
 - The `wait(500)` calls in DB functions are intentional artificial delays for loading UX
 - Zod v4 is used — `required_error` param no longer exists; use `error:` instead (e.g. `z.number({ error: "Required" })`)

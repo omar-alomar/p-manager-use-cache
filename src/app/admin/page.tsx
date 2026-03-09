@@ -3,7 +3,8 @@
 
 import { getCurrentUser } from "@/auth/currentUser"
 import { redirect } from "next/navigation"
-import { getAdminStatsAction, getAllUsersAction, getAllProjectsAction, getAllTasksAction, getAllClientsAction } from "@/actions/admin"
+import { getAdminStatsAction, getAllUsersAction, getAllProjectsAction, getAllTasksAction, getAllClientsAction, getMaintenanceStatusAction } from "@/actions/admin"
+import { MaintenanceToggle } from "@/components/admin/MaintenanceToggle"
 import { AdminStats } from "@/components/admin/AdminStats"
 import { AdminUserManagement } from "@/components/admin/AdminUserManagement"
 import { AdminProjectManagement } from "@/components/admin/AdminProjectManagement"
@@ -22,12 +23,13 @@ export default async function AdminPage() {
     redirect("/")
   }
 
-  const [stats, users, projectsData, tasks, clients] = await Promise.all([
+  const [stats, users, projectsData, tasks, clients, maintenanceEnabled] = await Promise.all([
     getAdminStatsAction(),
     getAllUsersAction(),
     getAllProjectsAction(),
     getAllTasksAction(),
-    getAllClientsAction()
+    getAllClientsAction(),
+    getMaintenanceStatusAction()
   ])
 
   const projects = projectsData.map(project => ({
@@ -42,6 +44,8 @@ export default async function AdminPage() {
         <h1>Admin</h1>
         <p className="admin-page-subtitle">System administration and management</p>
       </div>
+
+      <MaintenanceToggle initialEnabled={maintenanceEnabled} />
 
       <AdminStats stats={stats} />
 

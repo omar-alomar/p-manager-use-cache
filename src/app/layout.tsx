@@ -8,6 +8,9 @@ import { AuthProvider } from "@/components/auth/AuthContext"
 import { NotificationProvider } from "@/contexts/NotificationContext"
 import { APP_VERSION } from "@/constants/version"
 import { VersionBanner } from "@/components/VersionBanner"
+import { isMaintenanceMode } from "@/redis/maintenance"
+import { getCurrentUser } from "@/auth/currentUser"
+import { Role } from "@prisma/client"
 
 export const metadata: Metadata = {
   title: "Mildenberg Project Platform",
@@ -27,11 +30,32 @@ export const viewport: Viewport = {
   maximumScale: 5,
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const maintenance = await isMaintenanceMode()
+
+  if (maintenance) {
+    const user = await getCurrentUser()
+    if (!user || user.role !== Role.admin) {
+      return (
+        <html lang="en">
+          <body>
+            <div className="maintenance-page">
+              <svg className="maintenance-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <h1>Under Maintenance</h1>
+              <p>We&apos;re making some updates. The site will be back shortly.</p>
+            </div>
+          </body>
+        </html>
+      )
+    }
+  }
+
   return (
     <html lang="en">
       <body>

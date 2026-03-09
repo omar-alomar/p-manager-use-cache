@@ -1,307 +1,154 @@
 # Mildenberg Project Platform
 
-A comprehensive project management platform built with Next.js 15, React 19, and Prisma. This application provides project tracking, task management, client management, and team collaboration features for the Mildenberg team.
+Internal project management platform for the Mildenberg team. Tracks projects, tasks, clients, milestones, and team collaboration.
 
-## 🚀 Features
+**Version:** α 1.1
 
-### Core Functionality
-- **Project Management**: Create, edit, and track projects with detailed information
-- **Task Management**: Assign and track tasks across projects and team members
-- **Client Management**: Manage client information and project associations
-- **Team Management**: User profiles, roles, and permissions
-- **Milestone Tracking**: Milestone tracking with color-coded urgency indicators
-- **Real-time Updates**: Live editing of project details, comments, and assignments
+## Tech Stack
 
-### Key Features
-- **Advanced Search & Filtering**: Search across projects, clients, managers, MBA numbers, and Co Files
-- **Smart Sorting**: Sort projects by milestones with intelligent date handling
-- **Role-based Access**: Admin and user roles with appropriate permissions
-- **Responsive Design**: Mobile-friendly interface with adaptive navigation
-- **Caching**: Redis-based caching for improved performance
-- **Authentication**: Secure session-based authentication with password hashing
+- **Framework:** Next.js 15 (App Router), React 19, TypeScript
+- **Database:** PostgreSQL via Prisma ORM
+- **Cache / Sessions:** Redis (ioredis)
+- **Validation:** Zod v4
+- **Styling:** Plain CSS — modular files under `src/app/styles/`, no Tailwind, no CSS Modules
+- **Deployment:** Docker (standalone output), separate stack repos for prod and staging
 
-## 🛠️ Tech Stack
+## Getting Started
 
-### Frontend
-- **Next.js 15** - React framework with App Router
-- **React 19** - UI library
-- **TypeScript** - Type safety
-- **CSS Modules** - Styling
+### Prerequisites
 
-### Backend
-- **Next.js API Routes** - Server-side API
-- **Prisma** - Database ORM
-- **SQLite** - Database (development)
-- **Redis** - Caching layer
-- **Zod** - Schema validation
+- Node.js 18+
+- PostgreSQL
+- Redis
 
-### Authentication
-- **Session-based Auth** - Secure cookie-based sessions
-- **Password Hashing** - bcrypt-style password security
-- **Role-based Access Control** - Admin and user roles
+### Setup
 
-## 📁 Project Structure
+```bash
+npm install
+```
+
+Create a `.env` file:
+
+```
+DATABASE_URL=postgresql://user:pass@localhost:5432/mildenberg
+DIRECT_URL=postgresql://user:pass@localhost:5432/mildenberg
+REDIS_URL=redis://localhost:6379/2
+SESSION_SECRET=your-secret-here
+```
+
+Set up the database and start the dev server:
+
+```bash
+npx prisma generate
+npx prisma db push
+npm run dev
+```
+
+### Scripts
+
+```
+npm run dev              # Dev server
+npm run build            # Production build
+npm run fix-sequences    # Fix PostgreSQL ID sequences
+npm run check-sequences  # Check sequence health
+npx prisma studio        # Browse DB
+npx prisma db push       # Apply schema changes
+npx prisma generate      # Regenerate Prisma client
+```
+
+## Project Structure
 
 ```
 src/
-├── app/                    # Next.js App Router pages
-│   ├── admin/             # Admin dashboard
-│   ├── clients/           # Client management
-│   ├── login/             # Authentication
-│   ├── projects/          # Project management
-│   ├── tasks/             # Task management
-│   ├── users/             # User profiles
-│   └── my-tasks/          # Personal task view
-├── components/            # React components
-│   ├── admin/             # Admin-specific components
-│   ├── auth/              # Authentication components
-│   ├── navigation/        # Navigation components
-│   └── ...                # Feature components
-├── auth/                  # Authentication logic
-├── db/                    # Database utilities
-├── redis/                 # Redis caching
-├── schemas/               # Zod validation schemas
-└── utils/                 # Utility functions
+├── actions/       # Server actions — all mutations
+├── app/           # App Router pages, API routes, styles
+├── auth/          # Session management, password hashing
+├── components/    # React components (admin/, auth/, navigation/)
+├── constants/     # Shared constants (version, urgency)
+├── contexts/      # React contexts (notifications, task filters)
+├── db/            # Database query functions (Prisma)
+├── hooks/         # Custom hooks
+├── redis/         # Redis singleton + maintenance mode
+├── schemas/       # Zod validation schemas
+├── services/      # Notification service
+├── types/         # Shared TypeScript types
+└── utils/         # Date utils, mentions, milestones, avatarColor
 ```
 
-## 🗄️ Database Schema
+## Pages
 
-### Core Models
+| Route | Description |
+|---|---|
+| `/projects` | Project list — search, sort, filter, inline editing |
+| `/projects/[id]` | Project detail — milestones, comments, inline fields |
+| `/projects/new` | Create project |
+| `/dashboard` | Team workload — KPIs, task list, milestones, activity |
+| `/tasks` | All tasks |
+| `/my-tasks` | Personal tasks — resizable three-panel layout |
+| `/clients` | Client list |
+| `/clients/[id]` | Client detail |
+| `/users` | Team directory |
+| `/users/[id]` | User profile |
+| `/admin` | Admin — stats, user/project/task/client management, maintenance toggle |
+| `/changelog` | Version changelog |
+| `/login`, `/signup` | Auth |
+| `/profile` | Current user profile |
 
-#### User
-- `id` - Primary key
-- `email` - Unique email address
-- `name` - Display name
-- `password` - Hashed password (nullable for OAuth)
-- `salt` - Password salt (nullable for OAuth)
-- `role` - User role (user/admin)
-- `createdAt` - Account creation timestamp
+## API Routes
 
-#### Project
-- `id` - Primary key
-- `title` - Project name
-- `clientId` - Associated client (nullable)
-- `body` - Project description/comments
-- `userId` - Project manager
-- `milestone` - Main milestone date (nullable)
-- `mbaNumber` - MBA reference number
-- `coFileNumbers` - Co file references
-- `dldReviewer` - DLD reviewer assignment
-- `createdAt` - Project creation timestamp
+| Route | Method | Purpose |
+|---|---|---|
+| `/api/notifications/stream` | GET | SSE real-time notifications |
+| `/api/notifications/user/[userId]` | GET | Stored notifications |
+| `/api/users/by-name` | GET | Resolve username to user ID |
 
-#### Task
-- `id` - Primary key
-- `title` - Task description
-- `completed` - Completion status
-- `userId` - Assigned user
-- `projectId` - Associated project
-- `createdAt` - Task creation timestamp
-- `updatedAt` - Last update timestamp
+## Key Features
 
-#### Client
-- `id` - Primary key
-- `name` - Client name
-- `companyName` - Company name (nullable)
-- `email` - Contact email
-- `phone` - Contact phone (nullable)
-- `address` - Client address (nullable)
-- `createdAt` - Client creation timestamp
-- `updatedAt` - Last update timestamp
+**Projects & Tasks** — Create and manage projects with clients, milestones, urgency levels, and task assignments. Tasks support LOW/MEDIUM/HIGH/CRITICAL urgency. Inline editing on project detail pages.
 
-#### Milestone
-- `id` - Primary key
-- `date` - Milestone date
-- `item` - Milestone description
-- `projectId` - Associated project
-- `createdAt` - Milestone creation timestamp
+**Real-time Notifications** — Redis Pub/Sub powers SSE-based notifications for task assignments, completions, and @mentions in comments.
 
-#### Comment
-- `id` - Primary key
-- `email` - Commenter email
-- `body` - Comment content
-- `projectId` - Associated project
-- `userId` - Commenter user
-- `createdAt` - Comment timestamp
+**Team Dashboard** — KPI cards, filterable task lists, upcoming milestones, and recent activity across the team.
 
-## 🚀 Getting Started
+**Maintenance Mode** — Toggle via the admin UI or CLI (`./maintenance.sh on|off`). Uses a Redis key so no restart is needed. Admins bypass the maintenance page and can still access the full site.
 
-### Prerequisites
-- Node.js 18+ 
-- npm or yarn
-- Redis server (for caching)
+**Session Auth** — Redis-backed sessions with environment-specific cookies and key prefixes (prod/staging/dev use separate Redis DBs). Sessions auto-invalidate on version bumps.
 
-### Installation
+**Version Tracking** — Users see a version banner after updates and get redirected to the changelog on first login after a version bump.
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd p-manager-use-cache
-   ```
+## Maintenance Mode
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+Toggle the site into maintenance mode before deployments:
 
-3. **Set up environment variables**
-   Create a `.env.local` file in the root directory:
-   ```env
-   DATABASE_URL="file:./dev.db"
-   REDIS_URL="redis://localhost:6379"
-   SESSION_SECRET="your-session-secret-here"
-   ```
+```bash
+# From your stack server
+./maintenance.sh on       # Enable — users see maintenance page
+./maintenance.sh off      # Disable — site goes live
+./maintenance.sh status   # Check current state
 
-4. **Set up the database**
-   ```bash
-   npx prisma generate
-   npx prisma db push
-   npx prisma db seed
-   ```
+# Target a specific Redis container
+REDIS_CMD='docker exec stg-stack-redis-1 redis-cli' ./maintenance.sh on
+```
 
-5. **Start Redis server**
-   ```bash
-   redis-server
-   ```
+Or toggle from the admin UI at `/admin`.
 
-6. **Start the development server**
-   ```bash
-   npm run dev
-   ```
+## Environment Variables
 
-7. **Open your browser**
-   Navigate to `http://localhost:3000`
+| Variable | Description |
+|---|---|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `DIRECT_URL` | PostgreSQL direct URL (Prisma migrations) |
+| `REDIS_URL` | Full Redis URL (preferred) |
+| `REDIS_HOST` / `REDIS_PORT` / `REDIS_PASSWORD` | Fallback if no `REDIS_URL` |
+| `SESSION_SECRET` | Session signing key |
+| `COOKIE_DOMAIN` | Optional — scope cookies to subdomain |
+| `SKIP_REDIS` | Set to `1` to skip Redis (CI builds) |
 
-## 📱 Pages & Features
+## Deployment
 
-### Public Pages
-- **Login** (`/login`) - User authentication
-- **Sign Up** (`/signup`) - User registration
+The app builds as a standalone Next.js output (`output: "standalone"` in `next.config.ts`). Docker deployment configs live in separate repos:
 
-### Authenticated Pages
-- **Projects** (`/projects`) - Main project dashboard
-- **Project Details** (`/projects/[id]`) - Individual project view
-- **New Project** (`/projects/new`) - Create new project
-- **Clients** (`/clients`) - Client management
-- **Tasks** (`/tasks`) - All tasks view
-- **My Tasks** (`/my-tasks`) - Personal task view
-- **Team** (`/users`) - User profiles
-- **User Profile** (`/users/[id]`) - Individual user profile
+- **Production:** `stack` folder
+- **Staging:** `stg-stack` folder
 
-### Admin Pages
-- **Admin Dashboard** (`/admin`) - System administration
-  - User management
-  - Project management
-  - Task management
-  - Client management
-  - System statistics
-
-## 🔧 Key Components
-
-### ProjectsPageClient
-The main project dashboard component featuring:
-- Advanced search and filtering
-- Sortable columns (especially milestone dates)
-- Real-time editing of project details
-- Color-coded milestone urgency indicators
-- Responsive table design
-
-### Authentication System
-- Session-based authentication
-- Password hashing with salt
-- Role-based access control
-- Automatic session management
-
-### Caching System
-- Redis-based caching for improved performance
-- Intelligent cache invalidation
-- Optimized database queries
-
-## 🎨 UI/UX Features
-
-### Responsive Design
-- Mobile-first approach
-- Adaptive navigation (desktop/mobile)
-- Touch-friendly interfaces
-
-### Smart Filtering
-- Real-time search across multiple fields
-- Project manager filtering
-- Milestone-based sorting
-
-### Visual Indicators
-- Color-coded milestone urgency:
-  - 🔴 Red: Within 2 weeks (urgent)
-  - 🟡 Yellow: Within 1 month (warning)
-  - 🟢 Green: More than 1 month (safe)
-
-## 🔒 Security Features
-
-- **Password Security**: bcrypt-style hashing with salt
-- **Session Management**: Secure cookie-based sessions
-- **Input Validation**: Zod schema validation
-- **SQL Injection Protection**: Prisma ORM
-- **XSS Protection**: React's built-in protections
-
-## 🚀 Performance Optimizations
-
-- **React Caching**: Intelligent component caching
-- **Database Optimization**: Efficient queries with Prisma
-- **Redis Caching**: Fast data retrieval
-- **Code Splitting**: Next.js automatic code splitting
-- **Image Optimization**: Next.js image optimization
-
-## 📊 Admin Features
-
-### System Statistics
-- Total users, projects, tasks, and clients
-- Recent activity metrics
-- System health indicators
-
-### Management Tools
-- User role management
-- Project oversight
-- Task assignment tools
-- Client data management
-
-## 🛠️ Development
-
-### Available Scripts
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
-
-### Database Management
-- `npx prisma studio` - Open Prisma Studio
-- `npx prisma db push` - Push schema changes
-- `npx prisma generate` - Generate Prisma client
-- `npx prisma db seed` - Seed database
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## 📄 License
-
-This project is proprietary software for the Mildenberg team.
-
-## 🆘 Support
-
-For support and questions, please contact the development team or create an issue in the repository.
-
----
-
-**Version**: Alpha 1.0  
-**Last Updated**: 2024  
-**Team**: Mildenberg Development Team
-
-
-
-
-
-
-
+Both share the same Git remote as this repo. Redis DBs are isolated per environment (prod=0, staging=1, dev=2).
