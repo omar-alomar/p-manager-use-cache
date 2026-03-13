@@ -2,6 +2,7 @@ export interface TaskWithRelations {
   id: number
   title: string
   completed: boolean
+  completedAt?: Date | null
   urgency?: string | null
   userId: number
   projectId: number | null

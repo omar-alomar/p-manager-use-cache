@@ -28,6 +28,7 @@ export async function DashboardContent() {
     id: t.id,
     title: t.title,
     completed: t.completed,
+    completedAt: t.completedAt?.toISOString() ?? null,
     urgency: t.urgency ?? "MEDIUM",
     userId: t.userId,
     userName: t.User?.name ?? "Unassigned",

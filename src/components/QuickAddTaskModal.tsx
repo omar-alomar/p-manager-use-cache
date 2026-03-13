@@ -14,6 +14,7 @@ export interface CreatedTask {
   id: number
   title: string
   completed: boolean
+  completedAt: string | null
   urgency: string
   userId: number
   userName: string
@@ -102,6 +103,7 @@ function QuickAddTaskDrawerContent({
           id: errors.taskId,
           title: lastTitleRef.current,
           completed: false,
+          completedAt: null,
           urgency: selectedUrgency,
           userId,
           userName,

@@ -85,7 +85,13 @@ export async function editTaskAction(
   const data = result.data
 
   try {
-    const task = await updateTask(taskId, data)
+    // Check if completion status changed to set completedAt
+    const originalTask = await prisma.task.findUnique({ where: { id: taskId } })
+    const completedAt = data.completed
+      ? (originalTask?.completed ? originalTask.completedAt : new Date())
+      : null
+
+    const task = await updateTask(taskId, { ...data, completedAt })
 
     revalidateTaskPaths({ projectId: data.projectId, taskId })
 
@@ -137,8 +143,11 @@ export async function updateTaskCompletionAction(
       include: { User: true, Project: true }
     })
 
-    // Update the task
-    const result = await updateTask(taskId, data)
+    // Update the task — set completedAt when completing, clear when uncompleting
+    const result = await updateTask(taskId, {
+      ...data,
+      completedAt: data.completed ? (originalTask?.completed ? originalTask.completedAt : new Date()) : null,
+    })
 
     // Send notification if task was just completed
     if (data.completed && originalTask && !originalTask.completed) {

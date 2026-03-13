@@ -124,13 +124,15 @@ export async function createTask({
   const urgencyValue = urgency || 'MEDIUM'
   const projectIdValue = projectId && projectId > 0 ? projectId : null
   const assignedByIdValue = assignedById || null
-  
+  const completedAtValue = completed ? new Date() : null
+
   // Use a transaction to ensure atomicity and prevent race conditions
   const result = await prisma.$transaction(async (tx) => {
     return tx.$queryRaw<Array<{
       id: number
       title: string
       completed: boolean
+      completedAt: Date | null
       urgency: string | null
       userId: number
       assignedById: number | null
@@ -142,12 +144,13 @@ export async function createTask({
         SELECT COALESCE(MAX(id), 0) + 1 as next_id FROM "Task"
       )
       INSERT INTO "Task" (
-        id, title, completed, urgency, "userId", "assignedById", "projectId", "createdAt", "updatedAt"
+        id, title, completed, "completedAt", urgency, "userId", "assignedById", "projectId", "createdAt", "updatedAt"
       )
-      SELECT 
+      SELECT
         next_id,
         ${title},
         ${completed},
+        ${completedAtValue}::timestamp,
         ${urgencyValue}::"Urgency",
         ${userId},
         ${assignedByIdValue},
@@ -160,7 +163,7 @@ export async function createTask({
   })
 
   const task = result[0]
-  
+
   if (!task) {
     throw new Error('Failed to create task')
   }
@@ -175,6 +178,7 @@ export async function createTask({
     id: task.id,
     title: task.title,
     completed: task.completed,
+    completedAt: task.completedAt,
     urgency: task.urgency as any,
     userId: task.userId,
     assignedById: task.assignedById,
@@ -191,19 +195,22 @@ export async function updateTask(
     completed,
     urgency,
     userId,
-    projectId
+    projectId,
+    completedAt
    }:{
      title: string,
      completed: boolean,
      urgency?: string | null,
      userId: number,
      projectId?: number
+     completedAt?: Date | null
   }) {
   const task = await prisma.task.update({
     where: { id: Number(taskId) },
     data: {
       title,
       completed,
+      completedAt,
       urgency: urgency as any || 'MEDIUM',
       userId,
       projectId: projectId || null,

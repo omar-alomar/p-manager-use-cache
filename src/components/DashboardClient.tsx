@@ -9,6 +9,7 @@ interface SerializedTask {
   id: number
   title: string
   completed: boolean
+  completedAt: string | null
   urgency: string
   userId: number
   userName: string
@@ -98,20 +99,34 @@ export function DashboardClient({ data }: { data: DashboardData }) {
 
   // Handle task updates from TaskItem
   const handleTaskUpdate = useCallback((taskId: number, updates: { completed?: boolean; title?: string; deleted?: boolean }) => {
+    const now = new Date().toISOString()
     setLocalTasks((prev) =>
       updates.deleted
         ? prev.filter((t) => t.id !== taskId)
         : prev.map((t) =>
             t.id === taskId
-              ? { ...t, ...(updates.completed !== undefined ? { completed: updates.completed } : {}), ...(updates.title ? { title: updates.title } : {}) }
+              ? {
+                  ...t,
+                  updatedAt: now,
+                  ...(updates.completed !== undefined ? { completed: updates.completed, completedAt: updates.completed ? now : null } : {}),
+                  ...(updates.title ? { title: updates.title } : {}),
+                }
               : t
           )
     )
   }, [])
 
-  // Filter tasks
+  // Filter tasks — always exclude archived (completed > 30 days ago)
   const filteredTasks = useMemo(() => {
+    const archiveCutoff = new Date()
+    archiveCutoff.setDate(archiveCutoff.getDate() - 30)
+
     return localTasks.filter((t) => {
+      // Exclude archived tasks (completed > 30 days ago)
+      if (t.completed) {
+        const isArchived = !t.completedAt || new Date(t.completedAt) < archiveCutoff
+        if (isArchived) return false
+      }
       if (!showCompleted && t.completed) return false
       if (searchQuery) {
         const q = searchQuery.toLowerCase()
@@ -146,6 +161,28 @@ export function DashboardClient({ data }: { data: DashboardData }) {
 
     return { columns: cols, idleUsers: idle }
   }, [filteredTasks, data.users])
+
+  // Derive recent activity from localTasks so it updates in real time
+  const assignedByLookup = useMemo(() => {
+    const map = new Map<number, string | null>()
+    for (const a of data.recentActivity) map.set(a.id, a.assignedByName)
+    return map
+  }, [data.recentActivity])
+
+  const recentActivity = useMemo(() => {
+    return [...localTasks]
+      .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+      .slice(0, 20)
+      .map((t) => ({
+        id: t.id,
+        title: t.title,
+        completed: t.completed,
+        projectTitle: t.projectTitle || null,
+        assigneeName: t.userName || null,
+        assignedByName: assignedByLookup.get(t.id) ?? null,
+        updatedAt: t.updatedAt,
+      }))
+  }, [localTasks, assignedByLookup])
 
   const toggleUrgency = useCallback((level: string) => {
     setUrgencyFilter((prev) => {
@@ -233,11 +270,11 @@ export function DashboardClient({ data }: { data: DashboardData }) {
 
         <div className="dashboard-section">
           <h3 className="dashboard-section-title">Recent Activity</h3>
-          {data.recentActivity.length === 0 ? (
+          {recentActivity.length === 0 ? (
             <div className="dashboard-empty">No recent activity</div>
           ) : (
             <div className="activity-list">
-              {data.recentActivity.map((item) => (
+              {recentActivity.map((item) => (
                 <div key={item.id} className="activity-item">
                   <div className={`activity-icon ${item.completed ? "icon-completed" : "icon-pending"}`}>
                     {item.completed ? "✓" : "○"}

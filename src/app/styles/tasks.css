@@ -635,3 +635,45 @@
   gap: var(--space-4);
   align-items: center;
 }
+
+/* ── Task archive view ── */
+.task-archive-list .task-list {
+  background: var(--neutral-50);
+  border-color: var(--neutral-300);
+  box-shadow: none;
+}
+
+.task-archive-list .task-list-header--completed {
+  background: var(--neutral-100);
+  border-bottom-color: var(--neutral-300);
+}
+
+.task-archive-list .task-list-header--completed .task-list-title {
+  color: var(--text-muted);
+}
+
+.task-archive-list .task-card {
+  background: var(--neutral-50);
+  border-color: var(--neutral-200);
+  opacity: 0.75;
+}
+
+.task-archive-list .task-card:hover {
+  opacity: 1;
+  border-color: var(--neutral-300);
+}
+
+.task-archive-list .task-card.task-completed {
+  background: var(--neutral-50);
+  border-color: var(--neutral-200);
+}
+
+.task-archive-list .task-title {
+  color: var(--text-muted);
+}
+
+.task-archive-list .task-count {
+  background: var(--neutral-200);
+  color: var(--text-muted);
+}
+
