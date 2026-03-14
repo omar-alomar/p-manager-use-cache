@@ -20,7 +20,7 @@ interface Project {
   body: string
   archived?: boolean
   milestone: Date | null
-  milestones?: { id: number; date: Date | null; item: string; completed?: boolean }[]
+  milestones?: { id: number; date: Date | null; item: string; completed?: boolean; apfo?: boolean }[]
   mbaNumber: string | null
   coFileNumbers: string
   dldReviewer: string
@@ -598,8 +598,16 @@ function ProjectRow({
                     return (
                       <div
                         key={milestone.id || index}
-                        className={`milestone-entry ${getMilestoneColorClass(milestone.date)} ${isNearest ? "milestone-nearest" : ""}`}
+                        className={`milestone-entry ${getMilestoneColorClass(milestone.date)} ${isNearest ? "milestone-nearest" : ""} ${milestone.apfo ? "milestone-apfo" : ""}`}
                       >
+                        {milestone.apfo && (
+                          <span className="apfo-badge" title="APFO">
+                            <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                              <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                            </svg>
+                            APFO
+                          </span>
+                        )}
                         <span
                           className={`milestone-highlight ${getMilestoneColorClass(milestone.date)}`}
                         >

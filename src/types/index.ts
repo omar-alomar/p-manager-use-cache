@@ -8,7 +8,9 @@ export interface TaskWithRelations {
   projectId: number | null
   createdAt: Date
   updatedAt: Date
+  assignedById?: number | null
   User: { id: number; name: string }
+  AssignedBy?: { id: number; name: string } | null
   Project?: { id: number; title: string } | null
 }
 

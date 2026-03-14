@@ -27,6 +27,7 @@ interface UpcomingMilestone {
   projectTitle: string
   daysUntil: number
   colorClass: string
+  apfo?: boolean
 }
 
 interface RecentActivity {
@@ -256,7 +257,17 @@ export function DashboardClient({ data }: { data: DashboardData }) {
               {data.upcomingMilestones.map((ms) => (
                 <a key={ms.id} href={`/projects/${ms.projectId}`} className={`milestone-item ${ms.colorClass}`}>
                   <div className="milestone-item-content">
-                    <div className="milestone-item-label">{ms.item}</div>
+                    <div className="milestone-item-label">
+                      {ms.apfo && (
+                        <span className="apfo-badge" title="APFO">
+                          <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                            <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                          </svg>
+                          APFO
+                        </span>
+                      )}
+                      {ms.item}
+                    </div>
                     <div className="milestone-item-project">{ms.projectTitle}</div>
                   </div>
                   <span className={`milestone-days-badge ${ms.colorClass}`}>

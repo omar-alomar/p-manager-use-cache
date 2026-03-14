@@ -80,6 +80,7 @@ export function TaskList({
                 projectTitle={task.Project?.title || "No Project"}
                 userId={task.userId}
                 userName={task.User.name}
+                assignedByName={variant !== "assigned" ? task.AssignedBy?.name : undefined}
                 createdAt={task.createdAt}
                 displayProject={showProject}
                 displayUser={showUser}

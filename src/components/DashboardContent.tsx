@@ -60,6 +60,7 @@ export async function DashboardContent() {
           projectTitle: p.title,
           daysUntil: diffDays,
           colorClass: getMilestoneColorClass(ms.date),
+          apfo: ms.apfo ?? false,
         })
       }
     }

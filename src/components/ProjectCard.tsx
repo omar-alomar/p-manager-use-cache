@@ -36,7 +36,7 @@ export function ProjectCard({
   clientId?: number | null
   body: string
   milestone: Date | null
-  milestones?: { id: number; date: Date; item: string; completed?: boolean }[]
+  milestones?: { id: number; date: Date; item: string; completed?: boolean; apfo?: boolean }[]
   userId: number
   archived?: boolean
   showManager?: boolean
@@ -95,6 +95,14 @@ export function ProjectCard({
 
             return nearestMilestone && (
               <div className={`project-milestone ${getMilestoneStatus(nearestMilestone.date)}`}>
+                {'apfo' in nearestMilestone && nearestMilestone.apfo && (
+                  <span className="apfo-badge" title="APFO">
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                      <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                    </svg>
+                    APFO
+                  </span>
+                )}
                 <span className="milestone-label">
                   {nearestMilestone.item || 'MILESTONE'}
                 </span>

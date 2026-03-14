@@ -25,6 +25,49 @@
   padding: var(--space-5);
 }
 
+/* ============================================================
+   TASK DETAIL PAGE — /tasks/[taskId]
+   ============================================================ */
+
+/* Icon circle urgency color variants */
+.td-icon--urgency-low {
+  background: linear-gradient(135deg, var(--success-bg), #d1fae5);
+  color: var(--success-text);
+  border-color: var(--success-border);
+}
+.td-icon--urgency-medium {
+  background: linear-gradient(135deg, var(--warning-bg), #fef3c7);
+  color: var(--warning-text);
+  border-color: var(--warning-border);
+}
+.td-icon--urgency-high {
+  background: linear-gradient(135deg, #fff7ed, #fed7aa);
+  color: #c2410c;
+  border-color: #fed7aa;
+}
+.td-icon--urgency-critical {
+  background: linear-gradient(135deg, var(--danger-bg), #fecaca);
+  color: var(--danger-text);
+  border-color: var(--danger-border);
+}
+
+/* Success button variant for "Completed" state */
+.btn-success {
+  background: var(--success-600, #059669);
+  color: #FFFFFF;
+  border: 1px solid var(--success-600, #059669);
+}
+.btn-success:hover {
+  background: var(--success-700, #047857);
+  border-color: var(--success-700, #047857);
+}
+
+/* Task detail comments — sits inside project-detail-body card */
+.project-profile-container > .project-detail-body > .comment-thread {
+  border-top: 1px solid var(--neutral-200);
+  padding: var(--space-6);
+}
+
 /* ── Task filters bar ── */
 .task-filters {
   background: #FFFFFF;
@@ -369,7 +412,8 @@
 
 .task-project,
 .task-user,
-.task-created {
+.task-created,
+.task-assigned-by {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -381,10 +425,18 @@
   border: 1px solid var(--border);
 }
 
+/* "Assigned by" gets a subtle purple tint to stand out from other meta */
+.task-assigned-by {
+  background: var(--primary-50);
+  border-color: var(--primary-100);
+  color: var(--primary-700);
+}
+
 /* Keep meta SVGs inline */
 .task-project svg,
 .task-user svg,
-.task-created svg {
+.task-created svg,
+.task-assigned-by svg {
   display: inline;
   flex-shrink: 0;
 }

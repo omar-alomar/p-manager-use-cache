@@ -45,11 +45,12 @@ export async function getUserTasks(userId: string | number) {
   cacheTag(`tasks:userId=${userId}`)
 
   await wait(500)
-  return prisma.task.findMany({ 
+  return prisma.task.findMany({
     where: { userId: Number(userId) },
     include: {
       Project: true,
-      User: true
+      User: true,
+      AssignedBy: true
     },
     orderBy: [
       { createdAt: 'desc' }
@@ -69,7 +70,8 @@ export async function getTasksAssignedByUser(userId: string | number) {
     },
     include: {
       Project: true,
-      User: true
+      User: true,
+      AssignedBy: true
     },
     orderBy: [
       { createdAt: 'desc' }
@@ -100,7 +102,8 @@ export async function getTask(taskId: string | number) {
     where: { id: Number(taskId) },
     include: {
       Project: true,
-      User: true
+      User: true,
+      AssignedBy: true
     }
   })
 }

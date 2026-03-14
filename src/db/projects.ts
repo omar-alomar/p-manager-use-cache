@@ -145,7 +145,7 @@ export async function createProject({
   coFileNumbers: string
   dldReviewer: string
   userId: number
-  milestones?: { date: Date; item: string }[]
+  milestones?: { date: Date; item: string; apfo?: boolean }[]
 }) {
   const project = await prisma.project.create({
     data: {
@@ -164,7 +164,8 @@ export async function createProject({
       milestones: milestones ? {
         create: milestones.map(milestone => ({
           date: milestone.date,
-          item: milestone.item
+          item: milestone.item,
+          apfo: milestone.apfo ?? false,
         }))
       } : undefined,
     },
@@ -203,7 +204,7 @@ export async function updateProject(
     coFileNumbers: string
     dldReviewer: string
     userId: number
-    milestones?: { date: Date; item: string }[]
+    milestones?: { date: Date; item: string; apfo?: boolean }[]
   }
 ) {
   const project = await prisma.project.update({
@@ -227,7 +228,8 @@ export async function updateProject(
         deleteMany: {},
         create: milestones.map(milestone => ({
           date: milestone.date,
-          item: milestone.item
+          item: milestone.item,
+          apfo: milestone.apfo ?? false,
         }))
       } : undefined,
     },
@@ -325,13 +327,14 @@ export async function updateProjectField(
 
 export async function addMilestone(
   projectId: number,
-  milestoneData: { date: Date; item: string }
+  milestoneData: { date: Date; item: string; apfo?: boolean }
 ) {
   const milestone = await prisma.milestone.create({
     data: {
       projectId,
       date: milestoneData.date,
-      item: milestoneData.item
+      item: milestoneData.item,
+      apfo: milestoneData.apfo ?? false,
     }
   })
 

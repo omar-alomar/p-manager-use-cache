@@ -58,6 +58,7 @@ export const projectSchema = z.object({
   milestones: z.array(z.object({
     date: z.date(),
     item: z.string(),
+    apfo: z.boolean().default(false),
   })).default([]),
 })
 
@@ -66,13 +67,14 @@ export function parseProjectFormData(formData: FormData) {
   const milestone = formData.get("milestone") as string
 
   // Parse milestone entries
-  const milestones: { date: Date; item: string }[] = []
+  const milestones: { date: Date; item: string; apfo: boolean }[] = []
   let milestoneIndex = 0
   while (formData.get(`milestoneDate_${milestoneIndex}`)) {
     const date = formData.get(`milestoneDate_${milestoneIndex}`) as string
     const item = formData.get(`milestoneItem_${milestoneIndex}`) as string
+    const apfo = formData.get(`milestoneApfo_${milestoneIndex}`) === "on"
     if (date) {
-      milestones.push({ date: new Date(date), item: item || "" })
+      milestones.push({ date: new Date(date), item: item || "", apfo })
     }
     milestoneIndex++
   }
@@ -95,4 +97,5 @@ export function parseProjectFormData(formData: FormData) {
 export const milestoneSchema = z.object({
   date: z.string().min(1, "Date is required"),
   item: z.string().min(1, "Milestone description is required").transform(s => s.trim()),
+  apfo: z.boolean().default(false),
 })

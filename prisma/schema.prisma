@@ -82,6 +82,7 @@ model Milestone {
   date      DateTime
   item      String
   completed Boolean  @default(false)
+  apfo      Boolean  @default(false)
   projectId Int
   createdAt DateTime @default(now())
 

@@ -24,7 +24,7 @@ type ClientSortKey = keyof Client | 'projectCount'
 
 export function ClientsPageClient({ clients }: ClientsPageClientProps) {
   const [searchQuery, setSearchQuery] = useState("")
-  const { sortConfig, handleSort, resetSort } = useSessionSort<ClientSortKey>('clientsSortConfig', { key: 'name', direction: 'asc' })
+  const { sortConfig, handleSort, resetSort } = useSessionSort<ClientSortKey>('clientsSortConfig', { key: 'projectCount', direction: 'desc' })
 
   const filteredAndSortedClients = useMemo(() => {
     let filtered = clients
@@ -121,7 +121,7 @@ export function ClientsPageClient({ clients }: ClientsPageClientProps) {
           </div>
         </div>
 
-        {(searchQuery || sortConfig.key !== 'name' || sortConfig.direction !== 'asc') && (
+        {(searchQuery || sortConfig.key !== 'projectCount' || sortConfig.direction !== 'desc') && (
           <div className="filter-group filter-group-right">
             <button
               type="button"

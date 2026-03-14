@@ -282,3 +282,158 @@ td.milestone-date {
 }
 
 .milestone-item-row .form-group { flex: 1; }
+
+/* ── APFO badge ── */
+.apfo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #B45309;
+  background: #FEF3C7;
+  border: 1px solid #F59E0B;
+  border-radius: 3px;
+  padding: 1px 4px;
+  line-height: 1;
+}
+
+.apfo-badge svg {
+  color: #D97706;
+  flex-shrink: 0;
+}
+
+/* APFO badge in table chips */
+.milestone-multiple .milestone-entry .apfo-badge {
+  margin-top: 1px;
+}
+
+/* APFO badge in project cards */
+.project-milestone .apfo-badge {
+  margin-right: 4px;
+}
+
+/* ── APFO left stripe — color matches urgency ── */
+.milestone-detail-card.milestone-apfo:not(.completed) {
+  border-left: 3px solid;
+}
+.milestone-detail-card.milestone-apfo.milestone-urgent:not(.completed)  { border-left-color: #EF4444; }
+.milestone-detail-card.milestone-apfo.milestone-warning:not(.completed) { border-left-color: #F59E0B; }
+.milestone-detail-card.milestone-apfo.milestone-safe:not(.completed)    { border-left-color: #10B981; }
+
+.milestone-multiple .milestone-entry.milestone-apfo {
+  border-left: 3px solid;
+}
+.milestone-multiple .milestone-entry.milestone-apfo.milestone-urgent  { border-left-color: #EF4444; }
+.milestone-multiple .milestone-entry.milestone-apfo.milestone-warning { border-left-color: #F59E0B; }
+.milestone-multiple .milestone-entry.milestone-apfo.milestone-safe    { border-left-color: #10B981; }
+
+/* ── APFO toggle in project form ── */
+.apfo-form-checkbox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding-top: 18px;
+  user-select: none;
+}
+
+.apfo-form-checkbox input[type="checkbox"] {
+  width: 36px;
+  height: 20px;
+  background: var(--neutral-200);
+  border: none;
+  border-radius: 10px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+
+.apfo-form-checkbox input[type="checkbox"]::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border: none;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  transform: none;
+}
+
+.apfo-form-checkbox input[type="checkbox"]:checked {
+  background: var(--primary-600);
+  border: none;
+}
+
+.apfo-form-checkbox input[type="checkbox"]:checked::after {
+  transform: translateX(16px);
+  border: none;
+}
+
+.apfo-form-label {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.3px;
+}
+
+/* ── APFO toggle in drawer forms ── */
+.checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  line-height: 20px;
+}
+
+input[type="checkbox"].apfo-checkbox {
+  width: 36px;
+  height: 20px;
+  background: var(--neutral-200);
+  border: none;
+  border-radius: 10px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+input[type="checkbox"].apfo-checkbox::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border: none;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  transform: none;
+}
+
+input[type="checkbox"].apfo-checkbox:checked {
+  background: var(--primary-600);
+  border: none;
+}
+
+input[type="checkbox"].apfo-checkbox:checked::after {
+  transform: translateX(16px);
+  border: none;
+}
+
+.apfo-label-text {
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+}

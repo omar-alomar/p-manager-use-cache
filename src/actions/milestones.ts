@@ -55,6 +55,7 @@ export async function updateMilestoneAction(
   const result = milestoneSchema.safeParse({
     date: formData.get("date"),
     item: formData.get("item"),
+    apfo: formData.get("apfo") === "on",
   })
 
   if (!result.success) {
@@ -76,6 +77,7 @@ export async function updateMilestoneAction(
       data: {
         date: new Date(result.data.date),
         item: result.data.item,
+        apfo: result.data.apfo,
       },
       include: { project: true }
     })

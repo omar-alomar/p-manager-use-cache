@@ -470,6 +470,13 @@
 .milestone-chip.milestone-warning { background: var(--warning-bg); color: var(--warning-text); border: 1px solid var(--warning-border); }
 .milestone-chip.milestone-safe    { background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border); }
 
+.milestone-item-label .apfo-badge {
+  margin-right: 5px;
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+}
+
 /* ── Recent Activity ── */
 .activity-list {
   display: flex;

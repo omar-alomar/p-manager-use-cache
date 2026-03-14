@@ -11,10 +11,11 @@ interface MilestoneItemProps {
   date: Date
   item: string
   completed: boolean
+  apfo?: boolean
   projectId: number
 }
 
-export function MilestoneItem({ id, date, item, completed, projectId }: MilestoneItemProps) {
+export function MilestoneItem({ id, date, item, completed, apfo = false, projectId }: MilestoneItemProps) {
   const [isCompleted, setIsCompleted] = useState(completed)
   const [isUpdating, setIsUpdating] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
@@ -81,7 +82,7 @@ export function MilestoneItem({ id, date, item, completed, projectId }: Mileston
   return (
     <>
       <div
-        className={`milestone-detail-card ${getMilestoneColorClass(date)} ${isCompleted ? 'completed' : ''} ${isUpdating || isDeleting ? 'updating' : ''}`}
+        className={`milestone-detail-card ${getMilestoneColorClass(date)} ${isCompleted ? 'completed' : ''} ${isUpdating || isDeleting ? 'updating' : ''} ${apfo ? 'milestone-apfo' : ''}`}
         onClick={handleToggleCompletion}
         style={{ cursor: 'pointer' }}
       >
@@ -109,6 +110,14 @@ export function MilestoneItem({ id, date, item, completed, projectId }: Mileston
             </svg>
           </button>
         </div>
+        {apfo && (
+          <span className="apfo-badge" title="APFO">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+              <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+            </svg>
+            APFO
+          </span>
+        )}
         <div className="milestone-detail-date">
           {formatDate(date)}
         </div>
@@ -123,6 +132,7 @@ export function MilestoneItem({ id, date, item, completed, projectId }: Mileston
         milestoneId={id}
         initialDate={dateStr}
         initialItem={item}
+        initialApfo={apfo}
       />
     </>
   )

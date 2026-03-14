@@ -11,9 +11,10 @@ interface EditMilestoneModalProps {
   milestoneId: number
   initialDate: string
   initialItem: string
+  initialApfo?: boolean
 }
 
-export function EditMilestoneModal({ isOpen, onClose, milestoneId, initialDate, initialItem }: EditMilestoneModalProps) {
+export function EditMilestoneModal({ isOpen, onClose, milestoneId, initialDate, initialItem, initialApfo = false }: EditMilestoneModalProps) {
   const [state, formAction, pending] = useActionState(
     updateMilestoneAction.bind(null, milestoneId),
     { errors: {} }
@@ -100,6 +101,16 @@ export function EditMilestoneModal({ isOpen, onClose, milestoneId, initialDate, 
                 <span className="error-message">{state.errors.item}</span>
               )}
             </div>
+
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                name="apfo"
+                className="apfo-checkbox"
+                defaultChecked={initialApfo}
+              />
+              <span className="apfo-label-text">APFO?</span>
+            </label>
 
             {state && 'errors' in state && state.errors && 'general' in state.errors && state.errors.general && (
               <div className="error-message">{state.errors.general}</div>

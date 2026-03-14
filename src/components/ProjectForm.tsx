@@ -31,7 +31,7 @@ export function ProjectForm({
   coFileNumbers: string
   dldReviewer: string
   userId: number
-  milestones?: { id: number; date: Date; item: string; completed?: boolean }[]
+  milestones?: { id: number; date: Date; item: string; completed?: boolean; apfo?: boolean }[]
   }
   onSuccess?: () => void
   onCancel?: () => void
@@ -44,10 +44,11 @@ export function ProjectForm({
   const [clientsList, setClientsList] = useState(clients)
   const [selectedClientId, setSelectedClientId] = useState<number | undefined>(project?.clientId || undefined)
   const [selectedUserId, setSelectedUserId] = useState<number | undefined>(project?.userId)
-  const [milestoneEntries, setMilestoneEntries] = useState<{ date: string; item: string }[]>(
+  const [milestoneEntries, setMilestoneEntries] = useState<{ date: string; item: string; apfo: boolean }[]>(
     project?.milestones?.map(milestone => ({
       date: milestone.date.toISOString().split('T')[0],
-      item: milestone.item
+      item: milestone.item,
+      apfo: milestone.apfo ?? false,
     })) || []
   )
   
@@ -73,15 +74,15 @@ export function ProjectForm({
 
   // Handle milestone entry management
   const addMilestoneEntry = () => {
-    setMilestoneEntries(prev => [...prev, { date: '', item: '' }])
+    setMilestoneEntries(prev => [...prev, { date: '', item: '', apfo: false }])
   }
 
   const removeMilestoneEntry = (index: number) => {
     setMilestoneEntries(prev => prev.filter((_, i) => i !== index))
   }
 
-  const updateMilestoneEntry = (index: number, field: 'date' | 'item', value: string) => {
-    setMilestoneEntries(prev => prev.map((entry, i) => 
+  const updateMilestoneEntry = (index: number, field: 'date' | 'item' | 'apfo', value: string | boolean) => {
+    setMilestoneEntries(prev => prev.map((entry, i) =>
       i === index ? { ...entry, [field]: value } : entry
     ))
   }
@@ -174,6 +175,15 @@ export function ProjectForm({
                       onChange={(e) => updateMilestoneEntry(index, 'item', e.target.value)}
                     />
                   </FormGroup>
+                  <label className="apfo-form-checkbox" title="APFO?">
+                    <input
+                      type="checkbox"
+                      name={`milestoneApfo_${index}`}
+                      checked={entry.apfo}
+                      onChange={(e) => updateMilestoneEntry(index, 'apfo', e.target.checked)}
+                    />
+                    <span className="apfo-form-label">APFO</span>
+                  </label>
                   <button
                     type="button"
                     className="btn-remove-milestone"

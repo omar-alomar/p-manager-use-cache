@@ -98,6 +98,15 @@ export function AddMilestoneModal({ isOpen, onClose, projectId }: AddMilestoneMo
               )}
             </div>
 
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                name="apfo"
+                className="apfo-checkbox"
+              />
+              <span className="apfo-label-text">APFO?</span>
+            </label>
+
             {state && 'errors' in state && state.errors && 'general' in state.errors && state.errors.general && (
               <div className="error-message">{state.errors.general}</div>
             )}

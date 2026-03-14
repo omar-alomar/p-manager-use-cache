@@ -336,6 +336,7 @@ async function ProjectDetails({ projectId }: { projectId: string }) {
                       date={milestone.date}
                       item={milestone.item}
                       completed={milestone.completed || false}
+                      apfo={milestone.apfo || false}
                       projectId={project.id}
                     />
                   ))}
