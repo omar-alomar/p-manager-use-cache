@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { getCurrentUser } from "@/auth/currentUser"
 import { markVersionSeen } from "@/actions/auth"
-import { APP_VERSION, DISPLAY_VERSION } from "@/constants/version"
+import { DISPLAY_VERSION } from "@/constants/version"
 import { EnchantedText } from "@/components/EnchantedText"
 
 export default async function ChangelogPage() {
@@ -32,9 +32,15 @@ export default async function ChangelogPage() {
           <h3 className="changelog-subheading">1.1.1</h3>
           <time className="changelog-date">2026-03-14</time>
           <p className="changelog-summary">
-            Bug fixes and minor improvements.
+            Microsoft OAuth2, bug fixes and minor improvements.
           </p>
           <ul className="changelog-changes">
+            <li>
+              Sign in with Microsoft:
+              <div className="changelog-media changelog-media-sm">
+                <img src="/changelog/MSOAuth2.png" style={{ maxWidth: 340 }} alt="Microsoft OAuth login" />
+              </div>
+            </li>
             <li>Task archiving: tasks marked as completed longer than 30 days are automatically archived.</li>
             <li>
               Milestone APFO flag: milestones can now be marked as APFOs:
