@@ -11,6 +11,7 @@ import { AdminProjectManagement } from "@/components/admin/AdminProjectManagemen
 import { AdminTaskManagement } from "@/components/admin/AdminTaskManagement"
 import { AdminClientManagement } from "@/components/admin/AdminClientManagement"
 import { Role } from "@prisma/client"
+import { APP_VERSION } from "@/constants/version"
 
 export default async function AdminPage() {
   const user = await getCurrentUser()
@@ -50,7 +51,7 @@ export default async function AdminPage() {
       <AdminStats stats={stats} />
 
       <div className="admin-sections" id="user-management">
-        <AdminUserManagement users={users} />
+        <AdminUserManagement users={users} currentAppVersion={APP_VERSION} />
       </div>
 
       <div className="admin-sections" id="client-management">

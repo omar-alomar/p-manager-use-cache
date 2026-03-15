@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { getCurrentUser } from "@/auth/currentUser"
 import { markVersionSeen } from "@/actions/auth"
-import { APP_VERSION } from "@/constants/version"
+import { APP_VERSION, DISPLAY_VERSION } from "@/constants/version"
 import { EnchantedText } from "@/components/EnchantedText"
 
 export default async function ChangelogPage() {
@@ -26,7 +26,7 @@ export default async function ChangelogPage() {
       <div className="changelog-list">
         <article className="changelog-entry">
           <div className="changelog-header">
-            <span className="changelog-version">α {APP_VERSION}</span>
+            <span className="changelog-version">α {DISPLAY_VERSION}</span>
           </div>
 
           <h3 className="changelog-subheading">1.1.1</h3>
@@ -35,7 +35,7 @@ export default async function ChangelogPage() {
             Bug fixes and minor improvements.
           </p>
           <ul className="changelog-changes">
-            <li>Task archiving: tasks completed for more than 30 days are automatically archived.</li>
+            <li>Task archiving: tasks marked as completed longer than 30 days are automatically archived.</li>
             <li>
               Milestone APFO flag: milestones can now be marked as APFOs:
               <div className="changelog-media changelog-media-row">
@@ -66,7 +66,7 @@ export default async function ChangelogPage() {
               </div>
             </li>
             <li>Design overhaul — refreshed cards, badges, navigation, and page layouts.</li>
-            <li>Changelog (you&apos;re here!) — click the <span className="changelog-version">α {APP_VERSION}</span> badge in the top left to return here at any time.</li>
+            <li>Changelog (you&apos;re here!) — click the <span className="changelog-version">α {DISPLAY_VERSION}</span> badge in the top left to return here at any time.</li>
             <li>
             Project archives - just swipe to archive or unarchive projects:
               <div className="changelog-media">

@@ -9,12 +9,14 @@ import { EditableEmail } from "./EditableEmail"
 import { EditablePassword } from "./EditablePassword"
 import { deleteUserAction } from "@/actions/users"
 import { UserModal } from "./UserModal"
+import { EditableVersion } from "./EditableVersion"
 
 interface User {
   id: number
   name: string
   email: string
   role: string
+  lastSeenVersion: string | null
   createdAt: Date
   projects: { id: number; title: string }[]
   tasks: { id: number; title: string }[]
@@ -22,9 +24,10 @@ interface User {
 
 interface AdminUserManagementProps {
   users: User[]
+  currentAppVersion: string
 }
 
-export function AdminUserManagement({ users }: AdminUserManagementProps) {
+export function AdminUserManagement({ users, currentAppVersion }: AdminUserManagementProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const router = useRouter()
 
@@ -81,6 +84,7 @@ export function AdminUserManagement({ users }: AdminUserManagementProps) {
                 <th>Role</th>
                 <th>Projects</th>
                 <th>Tasks</th>
+                <th>Version</th>
                 <th>Created</th>
                 <th></th>
               </tr>
@@ -114,6 +118,13 @@ export function AdminUserManagement({ users }: AdminUserManagementProps) {
                   </td>
                   <td>
                     <span className="admin-count">{user.tasks.length}</span>
+                  </td>
+                  <td>
+                    <EditableVersion
+                      userId={user.id}
+                      initialVersion={user.lastSeenVersion}
+                      currentAppVersion={currentAppVersion}
+                    />
                   </td>
                   <td className="admin-cell-muted">
                     {new Date(user.createdAt).toLocaleDateString('en-US', {

@@ -6,7 +6,7 @@ import { Navigation } from "@/components/navigation/Navigation"
 import { MobileNavigation } from "@/components/navigation/MobileNavigation"
 import { AuthProvider } from "@/components/auth/AuthContext"
 import { NotificationProvider } from "@/contexts/NotificationContext"
-import { APP_VERSION } from "@/constants/version"
+import { DISPLAY_VERSION } from "@/constants/version"
 import { VersionBanner } from "@/components/VersionBanner"
 import { isMaintenanceMode } from "@/redis/maintenance"
 import { getCurrentUser } from "@/auth/currentUser"
@@ -74,7 +74,7 @@ export default async function RootLayout({
                     </svg>
                     <span className="nav-logo">Mildenberg</span>
                   </Link>
-                  <Link href="/changelog" className="nav-subtitle">α {APP_VERSION}</Link>
+                  <Link href="/changelog" className="nav-subtitle">α {DISPLAY_VERSION}</Link>
                 </div>
               </div>
               <div className="nav-center">

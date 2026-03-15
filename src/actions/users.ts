@@ -1,6 +1,6 @@
 "use server"
 
-import { getUsers, deleteUser, updateUserRole, updateUserEmail, updateUserPassword, createUser } from "@/db/users"
+import { getUsers, deleteUser, updateUserRole, updateUserEmail, updateUserPassword, updateUserLastSeenVersion, createUser } from "@/db/users"
 import { Role } from "@prisma/client"
 import { z } from "zod"
 import { isBlocked } from "@/utils/maintenance"
@@ -36,6 +36,11 @@ export async function updateUserEmailAction(userId: string | number, newEmail: s
 export async function updateUserPasswordAction(userId: string | number, hashedPassword: string, salt: string) {
   if (await isBlocked()) return { success: false, message: MAINTENANCE_MSG }
   return await updateUserPassword(userId, hashedPassword, salt)
+}
+
+export async function updateUserLastSeenVersionAction(userId: string | number, version: string | null) {
+  if (await isBlocked()) return { success: false, message: MAINTENANCE_MSG }
+  return await updateUserLastSeenVersion(userId, version)
 }
 
 export async function createUserAction(prevState: unknown, formData: FormData) {

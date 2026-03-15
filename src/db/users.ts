@@ -128,6 +128,18 @@ export async function updateUserPassword(userId: string | number, hashedPassword
   return user
 }
 
+export async function updateUserLastSeenVersion(userId: string | number, version: string | null) {
+  const user = await prisma.user.update({
+    where: { id: Number(userId) },
+    data: { lastSeenVersion: version }
+  })
+
+  revalidateTag("users:all")
+  revalidateTag(`users:id=${user.id}`)
+
+  return user
+}
+
 export async function createUser(data: {
   name: string
   email: string
