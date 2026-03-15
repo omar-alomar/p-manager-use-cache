@@ -1,24 +1,46 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { Suspense, useState, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { AuthCard } from "@/components/auth/AuthCard"
 import { LoginForm } from "@/components/auth/LoginForm"
 import Link from "next/link"
 import { signIn, getPostLoginRedirect } from "@/actions/auth"
 import { useAuth } from "@/components/auth/AuthContext"
 
+const OAUTH_ERRORS: Record<string, string> = {
+  no_account: "No account found for that Microsoft email. Contact your admin.",
+  oauth_failed: "Microsoft sign-in failed. Please try again.",
+  no_email: "Could not retrieve email from Microsoft. Please try again.",
+}
+
 export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginContent />
+    </Suspense>
+  )
+}
+
+function LoginContent() {
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { user, checkAuth } = useAuth()
+
+  // Show OAuth error from redirect
+  useEffect(() => {
+    const oauthError = searchParams.get("error")
+    if (oauthError && OAUTH_ERRORS[oauthError]) {
+      setError(OAUTH_ERRORS[oauthError])
+    }
+  }, [searchParams])
 
   // Check if user is already authenticated
   useEffect(() => {
     if (user) {
-      // User is already logged in, redirect to projects page
       router.push("/projects")
       return
     }
@@ -28,20 +50,18 @@ export default function LoginPage() {
   const handleLogin = async (email: string, password: string) => {
     setError("")
     setIsLoading(true)
-    
+
     try {
       const result = await signIn({ email, password })
-      
+
       if (result) {
-        // signIn returns an error message if something went wrong
         setError(result)
       } else {
-        // Login was successful, refresh auth state and redirect
         await checkAuth()
         const redirect = await getPostLoginRedirect()
         router.push(redirect)
       }
-      
+
     } catch {
       setError("Failed to sign in")
     } finally {
@@ -49,7 +69,6 @@ export default function LoginPage() {
     }
   }
 
-  // Show loading while checking authentication
   if (isCheckingAuth) {
     return (
       <div className="auth-loading">
@@ -59,7 +78,7 @@ export default function LoginPage() {
   }
 
   return (
-    <AuthCard 
+    <AuthCard
       title="Welcome Back"
       footer={
         <p>
@@ -67,11 +86,21 @@ export default function LoginPage() {
         </p>
       }
     >
-      <LoginForm 
+      <LoginForm
         onSubmit={handleLogin}
         error={error}
         isLoading={isLoading}
       />
+      <div className="auth-divider"><span>or</span></div>
+      <a href="/api/auth/microsoft" className="microsoft-login-btn">
+        <svg viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
+          <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
+          <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
+          <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
+        </svg>
+        Sign in with Microsoft
+      </a>
     </AuthCard>
   )
 }

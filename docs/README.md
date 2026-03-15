@@ -1,276 +1,143 @@
-# Documentation Index
+# Mildenberg Project Platform
 
-Welcome to the Mildenberg Project Platform documentation. This comprehensive guide covers all aspects of the application, from setup and development to deployment and usage.
+Internal project management platform for the Mildenberg team. Tracks projects, tasks, clients, milestones, and team collaboration.
 
-## 📚 Documentation Structure
+**Current version**: α 1.1
 
-### Getting Started
-- **[Main README](../README.md)** - Project overview, features, and quick start guide
-- **[Development Guide](./DEVELOPMENT.md)** - Complete development setup and workflow
-- **[Deployment Guide](./DEPLOYMENT.md)** - Production deployment instructions
+## Tech Stack
 
-### Technical Documentation
-- **[API Documentation](./API.md)** - Complete API reference and endpoints
-- **[Authentication Guide](./AUTHENTICATION.md)** - Security, authentication, and authorization
-- **[Features Documentation](./FEATURES.md)** - Detailed feature descriptions and usage
+- **Framework**: Next.js 15, React 19, TypeScript
+- **Database**: PostgreSQL via Prisma ORM (hosted on Supabase)
+- **Cache/Sessions**: Redis (ioredis)
+- **Auth**: Session-based (Redis) + Microsoft OAuth (Azure AD / MSAL)
+- **Validation**: Zod
+- **Styling**: Plain CSS (modular files under `src/app/styles/`)
+- **Deployment**: Docker
 
-## 🚀 Quick Start
+## Features
 
-### For Developers
-1. Read the [Development Guide](./DEVELOPMENT.md) for setup instructions
-2. Review the [API Documentation](./API.md) for backend integration
-3. Check the [Authentication Guide](./AUTHENTICATION.md) for security implementation
+- **Project management** — create, edit, archive projects with inline editing, milestones, and comments
+- **Task tracking** — assign tasks with urgency levels (LOW/MEDIUM/HIGH/CRITICAL), track completion
+- **Milestone tracking** — date-based milestones with urgency color coding and APFO flags
+- **Client management** — track client details linked to projects
+- **Team dashboard** — KPI cards, task overview, upcoming milestones, recent activity
+- **My Tasks** — resizable three-panel layout for personal task management
+- **Real-time notifications** — SSE-based notifications for task assignments, completions, and @mentions
+- **@Mentions** — mention users in comments with autocomplete
+- **Admin panel** — system stats, user/project/task/client management, maintenance mode toggle
+- **Microsoft OAuth** — sign in with Microsoft as an alternative to password login
+- **Version tracking** — changelog with version banner, automatic redirect on version bump
+- **Task archiving** — tasks completed for 30+ days are automatically archived
+- **Maintenance mode** — toggle via admin UI or CLI, non-admin users see a maintenance page
 
-### For Users
-1. Start with the [Main README](../README.md) for an overview
-2. Read the [Features Documentation](./FEATURES.md) for detailed usage
-3. Follow the [Deployment Guide](./DEPLOYMENT.md) for production setup
+## Authentication
 
-### For Administrators
-1. Review the [Authentication Guide](./AUTHENTICATION.md) for security setup
-2. Check the [Deployment Guide](./DEPLOYMENT.md) for production deployment
-3. Read the [Features Documentation](./FEATURES.md) for admin features
+Two login methods available:
 
-## 📖 Documentation Overview
+### Password Login
+Traditional email/password authentication. Passwords are hashed with salt.
 
-### Main README
-The main README provides a comprehensive overview of the project including:
-- Project description and features
-- Technology stack
-- Quick start instructions
-- Project structure
-- Database schema overview
-- Security features
-- Performance optimizations
+### Microsoft OAuth
+"Sign in with Microsoft" button on the login page. Uses Azure AD OAuth (MSAL). Users must be pre-created by an admin — the OAuth callback matches the Microsoft email to an existing user. No auto-provisioning.
 
-### Development Guide
-Complete development documentation covering:
-- Development environment setup
-- Project structure explanation
-- Development workflow
-- Code style and conventions
-- Testing guidelines
-- Debugging techniques
-- Performance optimization
-- Contributing guidelines
+### Sessions
+- Stored in Redis with 3-month expiry
+- Environment-specific cookie names and Redis key prefixes (prod/staging/dev never collide)
+- **Regular users**: sessions are invalidated on version bumps (forces re-login to see new features)
+- **Admins**: sessions survive version bumps (version-less Redis key prefix)
 
-### API Documentation
-Comprehensive API reference including:
-- Authentication endpoints
-- Project management APIs
-- Task management APIs
-- Client management APIs
-- User management APIs
-- Admin APIs
-- Error handling
-- Rate limiting
-- Caching strategies
+## Environment Variables
 
-### Authentication Guide
-Detailed security documentation covering:
-- Authentication flow diagrams
-- Security features
-- User roles and permissions
-- Session management
-- Password security
-- CSRF and XSS protection
-- Rate limiting
-- Testing authentication
-- Troubleshooting
+```
+# Database
+DATABASE_URL          # PostgreSQL connection string (pooled via pgbouncer)
+DIRECT_URL            # PostgreSQL direct URL (for migrations)
 
-### Deployment Guide
-Production deployment instructions including:
-- Environment setup
-- Database configuration
-- Redis setup
-- Deployment options (Vercel, Docker, Traditional)
-- SSL certificate setup
-- Monitoring and logging
-- Backup strategies
-- Performance optimization
-- Security checklist
-- Troubleshooting
+# Redis
+REDIS_URL             # Full Redis URL — e.g. redis://:pass@host:6379/0
+REDIS_PASSWORD        # Used if REDIS_URL not set
 
-### Features Documentation
-Comprehensive feature descriptions including:
-- Core features overview
-- Project management
-- Milestone tracking (Milestone system)
-- Task management
-- Client management
-- Team management
-- Admin dashboard
-- User interface features
-- Advanced features
-- Security features
-- Performance features
-- Future roadmap
-- Usage examples
-- Best practices
+# Auth
+SESSION_SECRET        # Session signing key
+COOKIE_DOMAIN         # Optional: scope cookies to subdomain
 
-## 🔧 Technology Stack
+# Microsoft OAuth
+APP_URL               # Base URL — e.g. https://projects.mba-eng.com
+AZURE_CLIENT_ID       # From Azure AD app registration
+AZURE_CLIENT_SECRET   # Client secret (expires, max 24 months)
+AZURE_TENANT_ID       # Azure AD tenant ID
 
-### Frontend
-- **Next.js 15** - React framework with App Router
-- **React 19** - UI library
-- **TypeScript** - Type safety
-- **CSS Modules** - Styling
+# Optional
+SKIP_REDIS=1          # Skip Redis (e.g. in CI)
+```
 
-### Backend
-- **Next.js API Routes** - Server-side API
-- **Prisma** - Database ORM
-- **SQLite/PostgreSQL** - Database
-- **Redis** - Caching layer
-- **Zod** - Schema validation
+## Project Structure
 
-### Authentication
-- **Session-based Auth** - Secure cookie-based sessions
-- **Password Hashing** - bcrypt-style password security
-- **Role-based Access Control** - Admin and user roles
-
-## 🏗️ Architecture
-
-### Application Structure
 ```
 src/
-├── app/                    # Next.js App Router pages
-├── components/            # React components
-├── auth/                  # Authentication logic
-├── db/                    # Database utilities
-├── redis/                 # Redis caching
-├── schemas/               # Zod validation schemas
-├── utils/                 # Utility functions
-└── contexts/              # React contexts
+├── actions/       # Server actions — all mutations
+├── app/           # Next.js App Router pages and API routes
+│   ├── api/       # API routes (auth/microsoft, notifications, users)
+│   └── styles/    # Modular CSS files
+├── auth/          # Session management, password hashing, MSAL config
+├── components/    # React components (admin/, auth/, navigation/)
+├── constants/     # version.ts, urgency.ts
+├── contexts/      # NotificationContext, TaskFilterContext
+├── db/            # Prisma query functions
+├── hooks/         # Custom React hooks
+├── redis/         # Redis singleton, maintenance mode
+├── schemas/       # Zod validation schemas
+├── services/      # Notification service
+├── types/         # Shared TypeScript types
+└── utils/         # Utilities (dates, mentions, avatarColor, etc.)
 ```
 
-### Database Schema
-- **User** - User accounts and authentication
-- **Project** - Project information and management
-- **Task** - Task assignments and tracking
-- **Client** - Client information and management
-- **Milestone** - Milestone tracking
-- **Comment** - Project comments and communication
+## Scripts
 
-## 🔒 Security
+```bash
+npm run dev              # Start dev server
+npm run build            # Production build
+npm run fix-sequences    # Fix PostgreSQL ID sequences
+npm run check-sequences  # Check sequence health
+npx prisma studio        # Browse DB
+npx prisma db push       # Apply schema changes
+npx prisma generate      # Regenerate Prisma client
+```
 
-### Authentication
-- Session-based authentication with HTTP-only cookies
-- Password hashing with bcrypt and salt
-- Role-based access control (Admin/User)
-- Rate limiting for login attempts
+## Deployment
 
-### Authorization
-- Resource-based permissions
-- Admin-only features protection
-- Data isolation between users
-- Secure API endpoints
+Docker-based. Config lives in separate folders on the server:
+- Production: `~/stack`
+- Staging: `~/stg-stack`
 
-### Data Protection
-- Input validation with Zod schemas
-- SQL injection protection with Prisma
-- XSS protection with React
-- CSRF protection with SameSite cookies
+Each environment has its own `.env`, Redis instance, Azure AD app registration, and Supabase database.
 
-## 📊 Performance
+### Maintenance Mode
 
-### Optimization Strategies
-- Redis caching for improved performance
-- Database query optimization
-- React component optimization
-- Next.js built-in optimizations
+```bash
+# Production
+./maintenance.sh on      # Enable
+./maintenance.sh off     # Disable
+./maintenance.sh status  # Check
 
-### Caching
-- Session caching in Redis
-- Database query caching
-- Component-level caching
-- API response caching
+# Staging
+REDIS_CMD='docker exec stg-stack-redis-1 redis-cli' ./maintenance.sh off
 
-## 🚀 Deployment
+# If Redis requires auth
+docker exec stack-redis-1 redis-cli -a YOUR_PASSWORD DEL maintenance:enabled
+```
 
-### Supported Platforms
-- **Vercel** (Recommended)
-- **Docker** containers
-- **Traditional servers** (Ubuntu, CentOS, etc.)
+Admins can also toggle maintenance mode from the admin panel UI.
 
-### Environment Requirements
-- Node.js 18+
-- Redis server
-- Database (SQLite for dev, PostgreSQL for prod)
-- SSL certificate (production)
+## Database Models
 
-## 📈 Monitoring
-
-### Application Monitoring
-- PM2 process monitoring
-- Database performance monitoring
-- Redis memory usage monitoring
-- Error logging and tracking
-
-### Health Checks
-- Database connectivity
-- Redis connectivity
-- API endpoint health
-- System resource usage
-
-## 🤝 Contributing
-
-### Development Process
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Update documentation
-6. Submit a pull request
-
-### Code Standards
-- TypeScript for type safety
-- ESLint for code quality
-- Prettier for code formatting
-- Jest for testing
-
-## 📞 Support
-
-### Getting Help
-- Check the documentation first
-- Review existing issues
-- Create a new issue with detailed information
-- Contact the development team
-
-### Common Issues
-- Database connection problems
-- Redis connectivity issues
-- Authentication errors
-- Build and deployment issues
-
-## 📝 Changelog
-
-### Version 1.0 (Alpha)
-- Initial release
-- Core project management features
-- User authentication and authorization
-- Task management system
-- Client management
-- Admin dashboard
-- Mobile-responsive design
-
-## 🔮 Roadmap
-
-### Upcoming Features
-- Real-time collaboration
-- Advanced analytics
-- Mobile applications
-- Enterprise features
-- Third-party integrations
-
----
-
-**Last Updated**: 2024  
-**Version**: Alpha 1.0  
-**Maintainer**: Mildenberg Development Team
-
-
-
-
-
-
-
+| Model | Purpose |
+|---|---|
+| `User` | Accounts, roles (user/admin), lastSeenVersion |
+| `Project` | Projects with client, manager, milestones, archive status |
+| `Task` | Tasks with urgency, assignment, completion, archiving |
+| `Client` | Client contact info linked to projects |
+| `Milestone` | Date-based milestones with APFO flag |
+| `Comment` | Comments on projects and tasks |
+| `Mention` | @mention records linked to comments |
+| `Notification` | In-app notifications (task_assigned, task_completed, mention) |

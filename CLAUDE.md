@@ -7,6 +7,7 @@ Internal project management platform for the Mildenberg team. Tracks projects, t
 - **Framework**: Next.js 15 (canary `15.2.0-canary.56`), React 19, TypeScript
 - **Database**: PostgreSQL via Prisma ORM
 - **Cache/Sessions**: Redis (ioredis)
+- **Auth**: Custom session-based + Microsoft OAuth (MSAL)
 - **Validation**: Zod
 - **Styling**: Plain CSS split into modular files under `src/app/styles/` — no Tailwind, no CSS Modules
 
@@ -15,16 +16,17 @@ Internal project management platform for the Mildenberg team. Tracks projects, t
 src/
 ├── actions/       # Next.js server actions ("use server") — all mutations go here
 ├── app/           # Next.js App Router pages and API routes
+│   ├── api/       # API routes (notifications, auth/microsoft OAuth, users)
 │   ├── styles/    # Modular CSS files (see Design System section)
 │   ├── changelog/ # Version changelog page
 │   └── dashboard/ # Team workload dashboard
-├── auth/          # Session management, password hashing, currentUser helper
+├── auth/          # Session management, password hashing, MSAL config, currentUser helper
 ├── components/    # React components (admin/, auth/, navigation/ subdirs)
-├── constants/     # Shared constants — urgency.ts, version.ts (APP_VERSION)
+├── constants/     # Shared constants — urgency.ts, version.ts (APP_VERSION, DISPLAY_VERSION)
 ├── contexts/      # React contexts (NotificationContext, TaskFilterContext)
 ├── db/            # Database query functions (projects, tasks, users, etc.)
 ├── hooks/         # Custom React hooks — useSessionSort, useNotifications
-├── redis/         # Redis singleton (src/redis/redis.ts)
+├── redis/         # Redis singleton (src/redis/redis.ts), maintenance mode
 ├── schemas/       # Zod validation schemas (taskSchema, projectSchema, milestoneSchema + parsers)
 ├── services/      # notificationService.ts
 ├── types/         # Shared TypeScript types — TaskWithRelations, ActionResult
@@ -62,7 +64,7 @@ Styles are split into modular files imported via `styles.css`:
 | `notifications.css` | Notification bell, center, toasts |
 | `fab.css` | Floating action button |
 | `admin.css` | Admin panel |
-| `auth.css` | Login/signup pages |
+| `auth.css` | Login/signup pages, OAuth button |
 | `profile.css` | User profile page |
 | `skeleton.css` | Loading skeletons |
 | `empty.css` | Empty state illustrations |
@@ -97,22 +99,43 @@ Styles are split into modular files imported via `styles.css`:
 ### Task Creation — Raw SQL Workaround
 `createTask()` in `src/db/tasks.ts` uses raw SQL (`prisma.$queryRaw`) instead of `prisma.task.create()`. This bypasses a PostgreSQL sequence bug where the auto-increment sequence falls behind the actual max ID. Do not change this back to `prisma.task.create()`.
 
-### Session Auth
+### Authentication
+
+#### Session Auth (`src/auth/session.ts`)
 - Sessions stored in Redis with 3-month expiry
-- Cookie names and Redis key prefixes are environment-specific to prevent prod/staging collisions:
-  - Production: `prod-session-id` cookie, `prod:session` Redis prefix, DB 0
-  - Staging: `staging-session-id` cookie, `staging:session` Redis prefix, DB 1
-  - Development: `dev-session-id` cookie, `dev:session` Redis prefix, DB 2
-- Redis key prefix includes `APP_VERSION` — sessions are automatically invalidated on version bumps
+- Session payload: `{ id: number, role: "user" | "admin" }`
+- Cookie names are environment-specific to prevent prod/staging collisions:
+  - Production: `prod-session-id` cookie
+  - Staging: `staging-session-id` cookie
+  - Development: `dev-session-id` cookie
+- **Regular users**: Redis key prefix includes `APP_VERSION` (e.g. `prod:session:v1.1.1:<id>`) — version bump invalidates their sessions, forcing re-login
+- **Admins**: Redis key prefix is version-less (e.g. `prod:session:admin:<id>`) — sessions survive version bumps so admins aren't locked out during deploys
+- Session lookup checks the admin prefix first, then the versioned prefix
+- Logout deletes from both prefixes
 - Redis is optional — auth gracefully degrades if Redis is unavailable (session still set via cookie)
 
+#### Microsoft OAuth (`src/auth/msal.ts`)
+- Uses `@azure/msal-node` (`ConfidentialClientApplication`) for Azure AD OAuth
+- Alternative to password login — both options available on the login page
+- OAuth flow:
+  1. `GET /api/auth/microsoft` — generates CSRF state cookie, redirects to Microsoft login
+  2. Microsoft authenticates the user and redirects to `/api/auth/callback/microsoft`
+  3. Callback exchanges the authorization code for tokens, extracts email from claims
+  4. Email is matched (case-insensitive) to an existing user in the DB — no auto-provisioning
+  5. Session is created via `createUserSession()` — identical to password login from this point
+- If no matching user exists, redirects to `/login?error=no_account`
+- All redirects in the callback use `APP_URL` env var as the base (not `request.url`) because inside Docker, `request.url` resolves to the container's internal address
+- Each environment (prod/staging) needs its own Azure AD app registration with the correct redirect URI
+- Azure client secret expires (max 24 months) — set a reminder to rotate
+
 ### Version Tracking
-- `APP_VERSION` exported from `src/constants/version.ts` (currently `"1.1"`)
+- `APP_VERSION` exported from `src/constants/version.ts` (currently `"1.1.1"`)
+- `DISPLAY_VERSION` strips the patch number for display (e.g. `"1.1.1"` → `"1.1"`) — used in navbar and changelog badges
 - `User.lastSeenVersion` field tracks which version each user has seen
 - On login, `getPostLoginRedirect()` checks if user has seen the current version; if not, redirects to `/changelog`
 - `markVersionSeen()` updates the user's `lastSeenVersion` after viewing changelog
 - `VersionBanner` component in layout shows update notification until dismissed
-- `clearInvalidSession()` handles stale sessions after version bumps
+- Admin panel shows and allows editing of each user's `lastSeenVersion`
 
 ### Real-time Notifications
 - `NotificationService` (`src/services/notificationService.ts`) publishes via Redis Pub/Sub
@@ -129,25 +152,29 @@ Styles are split into modular files imported via `styles.css`:
 
 ## Environment Variables
 ```
-DATABASE_URL        # PostgreSQL connection string (Prisma)
-DIRECT_URL          # PostgreSQL direct URL (Prisma for migrations)
-REDIS_URL           # Full Redis URL (preferred) — e.g. redis://:pass@host:6379/0
-REDIS_HOST          # Fallback if no REDIS_URL
-REDIS_PORT          # Fallback if no REDIS_URL
-REDIS_PASSWORD      # Fallback if no REDIS_URL
-SESSION_SECRET      # Session signing key
-COOKIE_DOMAIN       # Optional: scope cookies to subdomain in prod/staging
-SKIP_REDIS=1        # Set to skip Redis (e.g. in CI)
+DATABASE_URL          # PostgreSQL connection string (Prisma, pooled via pgbouncer)
+DIRECT_URL            # PostgreSQL direct URL (Prisma for migrations, port 5432)
+REDIS_URL             # Full Redis URL (preferred) — e.g. redis://:pass@host:6379/0
+REDIS_HOST            # Fallback if no REDIS_URL
+REDIS_PORT            # Fallback if no REDIS_URL
+REDIS_PASSWORD        # Fallback if no REDIS_URL
+SESSION_SECRET        # Session signing key
+COOKIE_DOMAIN         # Optional: scope cookies to subdomain in prod/staging
+APP_URL               # Base URL for OAuth redirects — e.g. https://projects.mba-eng.com
+AZURE_CLIENT_ID       # Microsoft OAuth — from Azure AD app registration
+AZURE_CLIENT_SECRET   # Microsoft OAuth — client secret (expires, max 24 months)
+AZURE_TENANT_ID       # Microsoft OAuth — Azure AD tenant ID
+SKIP_REDIS=1          # Set to skip Redis (e.g. in CI)
 ```
 
 ## Database Models Summary
 | Model | Notable fields |
 |---|---|
-| `User` | id, email, name, password, salt, role (user\|admin), lastSeenVersion |
+| `User` | id, email, name, password?, salt?, role (user\|admin), lastSeenVersion |
 | `Project` | title, clientId, body, userId (manager), archived, milestone, mbaNumber, coFileNumbers, dldReviewer |
-| `Task` | title, completed, urgency (LOW\|MEDIUM\|HIGH\|CRITICAL), userId, assignedById, projectId |
+| `Task` | title, completed, urgency (LOW\|MEDIUM\|HIGH\|CRITICAL), userId, assignedById, projectId, archived |
 | `Client` | name, companyName, email, phone, address |
-| `Milestone` | date, item, completed, projectId |
+| `Milestone` | date, item, completed, projectId, apfo |
 | `Comment` | body, userId, projectId?, taskId?, email |
 | `Mention` | commentId, userId (unique per comment+user) |
 | `Notification` | mentionId, userId, type, message, read |
@@ -166,11 +193,12 @@ npx prisma generate      # Regenerate Prisma client
 ## API Routes
 | Route | Method | Purpose |
 |---|---|---|
+| `/api/auth/microsoft` | GET | Initiate Microsoft OAuth flow — redirects to Microsoft login |
+| `/api/auth/callback/microsoft` | GET | OAuth callback — exchanges code, creates session, redirects |
 | `/api/notifications/stream` | GET | SSE endpoint for real-time notifications (`?userId=<id>`) |
 | `/api/notifications/user/[userId]` | GET | Fetch stored notifications for a user |
 | `/api/notifications/demo` | POST | Demo notification trigger |
 | `/api/users/by-name` | GET | Resolve username to user ID (used by `MentionedUser` component) |
-| `/api/test-notifications` | POST | Test notification endpoint |
 
 ## App Pages
 | Route | Description |
@@ -183,7 +211,7 @@ npx prisma generate      # Regenerate Prisma client
 | `/my-tasks` | Personal task view with resizable panels |
 | `/clients`, `/clients/[clientId]` | Client list and detail |
 | `/users`, `/users/[userId]` | User directory and profiles |
-| `/admin` | System stats + manage users/projects/tasks/clients |
+| `/admin` | System stats, user/project/task/client management, maintenance toggle |
 | `/changelog` | Version changelog with feature highlights |
 | `/login`, `/signup`, `/profile` | Auth and profile pages |
 
@@ -191,14 +219,25 @@ npx prisma generate      # Regenerate Prisma client
 - Toggle via Redis key `maintenance:enabled` — no restart or redeploy needed
 - **Admin UI**: Toggle switch at the top of `/admin` page (`MaintenanceToggle` component)
 - **CLI**: `maintenance.sh on|off|status` script in project root; uses `REDIS_CMD` env var to target the right Redis container
+  - Production: `./maintenance.sh off` (defaults to `docker exec stack-redis-1 redis-cli`)
+  - Staging: `REDIS_CMD='docker exec stg-stack-redis-1 redis-cli' ./maintenance.sh off`
+  - Redis requires auth: `docker exec stack-redis-1 redis-cli -a YOUR_PASSWORD DEL maintenance:enabled`
 - **How it works**: Root layout (`src/app/layout.tsx`) calls `isMaintenanceMode()` on every request. If enabled, non-admin users see a static maintenance page. Admins bypass it and can still access the full site.
-- **Redis functions**: `src/redis/maintenance.ts` — `isMaintenanceMode()` / `setMaintenanceMode(enabled)`
-- **Server actions**: `getMaintenanceStatusAction()` and `toggleMaintenanceAction(enabled)` in `src/actions/admin.ts`
 - **Deploy workflow**: `./maintenance.sh on` → deploy → `./maintenance.sh off`
+
+## Deployment
+- Docker-based deployment — config lives in separate folders:
+  - Production: `~/stack` on the server
+  - Staging: `~/stg-stack` on the server
+- App source lives at `~/stg-projects-app` (this repo)
+- Database hosted on Supabase (PostgreSQL)
+- Redis runs as a Docker service alongside the app
+- Each environment has its own `.env` with distinct DATABASE_URL, REDIS_URL, APP_URL, and Azure OAuth credentials
 
 ## Known Issues / Quirks
 - `docker-compose.yml` does not exist here — deployment config lives in a separate folder (`stack` for prod, `stg-stack` for staging)
-- `@azure/msal-node` is installed for future Azure AD auth (not yet implemented)
 - The `wait(500)` calls in DB functions are intentional artificial delays for loading UX
 - Zod v4 is used — `required_error` param no longer exists; use `error:` instead (e.g. `z.number({ error: "Required" })`)
 - `EnchantedText` component (`src/components/EnchantedText.tsx`) is a decorative Minecraft enchanting table-style terminal effect used on the changelog page — purely cosmetic, uses Unicode glyphs (SGA, Elder Futhark, Katakana)
+- Task archiving: tasks completed for more than 30 days are automatically archived
+- Milestones can be flagged as APFOs via the `apfo` field
