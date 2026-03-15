@@ -89,11 +89,14 @@
 .sortable-header:hover { color: var(--text-secondary); }
 
 .projects-table tbody tr {
-  border-bottom: 1px solid var(--border);
   transition: background var(--transition);
 }
 
-.projects-table tbody tr:last-child { border-bottom: none; }
+.projects-table tbody tr td {
+  border-bottom: 1px solid var(--border);
+}
+
+.projects-table tbody tr:last-child td { border-bottom: none; }
 
 .projects-table td {
   padding: 14px 18px;
@@ -141,7 +144,7 @@
 .projects-table-container--archived .projects-table { background: var(--neutral-50); }
 .projects-table-container--archived .projects-table thead tr { background: var(--neutral-100); }
 .projects-table-container--archived .projects-table th { color: var(--text-muted); }
-.projects-table-container--archived .projects-table tbody tr { border-bottom-color: var(--neutral-200); }
+.projects-table-container--archived .projects-table tbody tr td { border-bottom-color: var(--neutral-200); }
 .projects-table-container--archived .projects-table tbody tr:hover .row-slideable,
 .projects-table-container--archived .projects-table tbody tr.project-row-even:hover .row-slideable {
   background: var(--neutral-100);

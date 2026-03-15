@@ -27,8 +27,32 @@ export default async function ChangelogPage() {
         <article className="changelog-entry">
           <div className="changelog-header">
             <span className="changelog-version">α {APP_VERSION}</span>
-            <time className="changelog-date">2026-03-05</time>
           </div>
+
+          <h3 className="changelog-subheading">1.1.1</h3>
+          <time className="changelog-date">2026-03-14</time>
+          <p className="changelog-summary">
+            Bug fixes and minor improvements.
+          </p>
+          <ul className="changelog-changes">
+            <li>Task archiving: tasks completed for more than 30 days are automatically archived.</li>
+            <li>
+              Milestone APFO flag: milestones can now be marked as APFOs:
+              <div className="changelog-media changelog-media-row">
+                <img src="/changelog/milestoneAPFO.png" alt="Milestone APFO flag" />
+                <img src="/changelog/milestoneAPFO2.png" alt="Milestone APFO flag detail" />
+              </div>
+            </li>
+            <li>
+              You can now see who has assigned you tasks:
+              <div className="changelog-media changelog-media-xs">
+                <img src="/changelog/viaMashid.png" alt="Task assigned by indicator" />
+              </div>
+            </li>
+          </ul>
+
+          <h3 className="changelog-subheading">1.1.0</h3>
+          <time className="changelog-date">2026-03-05</time>
           <p className="changelog-summary">
             Dashboard overhaul, improved task management, and visual polish across the platform.
           </p>
