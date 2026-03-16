@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { NotificationData } from '@/services/notificationService';
 
 interface SSEMessage {
-  type: 'connected' | 'task_assigned' | 'task_completed';
+  type: 'connected' | 'task_assigned' | 'task_completed' | 'project_assigned' | 'mention';
   message?: string;
   timestamp?: string;
   [key: string]: unknown;
@@ -174,7 +174,7 @@ export function useNotifications(userId: number | null): UseNotificationsReturn 
         }
         
         // Only process actual notifications
-        if (message.type === 'task_assigned' || message.type === 'task_completed' || message.type === 'mention') {
+        if (message.type === 'task_assigned' || message.type === 'task_completed' || message.type === 'project_assigned' || message.type === 'mention') {
           addNotification(message as unknown as NotificationData);
         }
       } catch (err) {

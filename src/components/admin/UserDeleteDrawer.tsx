@@ -112,7 +112,7 @@ export function UserDeleteDrawer({ user, allUsers, onClose }: UserDeleteDrawerPr
                   <line x1="12" y1="9" x2="12" y2="13"/>
                   <line x1="12" y1="17" x2="12.01" y2="17"/>
                 </svg>
-                <span>Deleting <strong>{user.name}</strong> will permanently remove their comments, mentions, and notifications.</span>
+                <span>Deleting <strong>{user.name}</strong> will permanently remove their mentions and notifications. Their comments will be preserved and shown as &quot;Deleted User&quot;.</span>
               </div>
 
               {hasAssetsToReassign ? (

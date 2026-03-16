@@ -1,12 +1,15 @@
 "use server"
 
-import { createProject, deleteProject, updateProject, updateProjectField, addMilestone, setProjectArchived } from "@/db/projects"
+import { createProject, deleteProject, updateProject, getProject, updateProjectField, addMilestone, setProjectArchived } from "@/db/projects"
 import { revalidatePath } from "next/cache"
 import { getProjects } from "@/db/projects"
 import { redirect } from "next/navigation"
 import { parseProjectFormData, milestoneSchema } from "@/schemas/schemas"
 import type { ActionResult } from "@/types"
 import { isBlocked } from "@/utils/maintenance"
+import { getCurrentUser } from "@/auth/currentUser"
+import prisma from "@/db/db"
+import { notificationService } from "@/services/notificationService"
 
 const MAINTENANCE_MSG = "Site is under maintenance. Please try again later."
 
@@ -25,9 +28,28 @@ export async function createProjectAction(prevState: unknown, formData: FormData
 
   const data = result.data
 
-  await createProject(data)
+  const project = await createProject(data)
 
-  return { success: true, message: 'Project created successfully', redirectTo: `/projects` }
+  // Notify the assigned manager if different from current user
+  const currentUser = await getCurrentUser()
+  if (currentUser && data.userId !== currentUser.id) {
+    const [assignedUser, assigner] = await Promise.all([
+      prisma.user.findUnique({ where: { id: data.userId }, select: { name: true } }),
+      prisma.user.findUnique({ where: { id: currentUser.id }, select: { name: true } }),
+    ])
+    if (assignedUser && assigner) {
+      await notificationService.notifyProjectAssigned({
+        projectId: project.id,
+        projectTitle: project.title,
+        assignedUserId: data.userId,
+        assignedUserName: assignedUser.name,
+        assignerUserId: currentUser.id,
+        assignerUserName: assigner.name,
+      })
+    }
+  }
+
+  return { success: true, message: 'Project created successfully', redirectTo: `/projects/${project.id}` }
 }
 
 export async function editProjectAction(
@@ -49,7 +71,30 @@ export async function editProjectAction(
 
   const data = result.data
 
+  // Check if manager is changing
+  const oldProject = await getProject(projectId)
   const project = await updateProject(projectId, data)
+
+  // Notify the new manager if they changed
+  if (oldProject && oldProject.userId !== data.userId) {
+    const currentUser = await getCurrentUser()
+    if (currentUser && data.userId !== currentUser.id) {
+      const [assignedUser, assigner] = await Promise.all([
+        prisma.user.findUnique({ where: { id: data.userId }, select: { name: true } }),
+        prisma.user.findUnique({ where: { id: currentUser.id }, select: { name: true } }),
+      ])
+      if (assignedUser && assigner) {
+        await notificationService.notifyProjectAssigned({
+          projectId: project.id,
+          projectTitle: project.title,
+          assignedUserId: data.userId,
+          assignedUserName: assignedUser.name,
+          assignerUserId: currentUser.id,
+          assignerUserName: assigner.name,
+        })
+      }
+    }
+  }
 
   return { success: true, message: 'Project updated successfully', redirectTo: `/projects/${project.id}` }
 }

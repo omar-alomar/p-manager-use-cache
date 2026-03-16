@@ -4,6 +4,7 @@ import { getUsers, deleteUserWithReassignment, getUserDeletionImpact, updateUser
 import { Role } from "@prisma/client"
 import { z } from "zod"
 import { isBlocked } from "@/utils/maintenance"
+import { getCurrentUser } from "@/auth/currentUser"
 
 const MAINTENANCE_MSG = "Site is under maintenance. Please try again later."
 
@@ -29,7 +30,8 @@ export async function getUserDeletionImpactAction(userId: string | number) {
 export async function deleteUserAction(userId: string | number, reassignToUserId: string | number) {
   if (await isBlocked()) return { success: false, message: MAINTENANCE_MSG }
   try {
-    await deleteUserWithReassignment(userId, reassignToUserId)
+    const currentUser = await getCurrentUser()
+    await deleteUserWithReassignment(userId, reassignToUserId, currentUser?.id)
     return { success: true }
   } catch (error: any) {
     return { success: false, message: error.message || "Failed to delete user" }

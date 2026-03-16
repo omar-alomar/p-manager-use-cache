@@ -57,10 +57,12 @@ export function ProjectForm({
     if ('success' in state && state.success) {
       if (onSuccess) {
         onSuccess()
-      } else if (!project) {
-        window.location.href = '/projects'
-      } else {
+      } else if ('redirectTo' in state && state.redirectTo) {
+        window.location.href = state.redirectTo as string
+      } else if (project) {
         window.location.href = `/projects/${project.id}`
+      } else {
+        window.location.href = '/projects'
       }
     }
   }, [state, project, onSuccess])

@@ -17,8 +17,9 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
   const handleNotificationClick = (notification: NotificationData) => {
     markAsRead(notification.id);
     // Navigate based on notification type
-    if (notification.type === 'task_assigned' || notification.type === 'task_completed') {
-      // Navigate to task page
+    if (notification.type === 'project_assigned') {
+      window.location.href = `/projects/${notification.projectId}`;
+    } else if (notification.type === 'task_assigned' || notification.type === 'task_completed') {
       window.location.href = `/tasks/${notification.taskId}`;
     } else if (notification.type === 'mention') {
       // Navigate to the appropriate page based on context
@@ -117,7 +118,8 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
                     onClick={() => handleNotificationClick(notification)}
                   >
                     <div className={`notification-indicator ${
-                      notification.type === 'task_assigned' ? 'task-assigned' : 
+                      notification.type === 'project_assigned' ? 'task-assigned' :
+                      notification.type === 'task_assigned' ? 'task-assigned' :
                       notification.type === 'task_completed' ? 'task-completed' : 'mention'
                     }`} />
                     <div className="notification-text">

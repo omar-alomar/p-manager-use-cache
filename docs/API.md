@@ -249,7 +249,7 @@ These are the JSON shapes returned in `data`. All `DateTime` fields are ISO 8601
   "body": "Looks good, @John Smith please review",  // string (raw text with @mentions)
   "projectId": 1,                       // int | null
   "taskId": null,                       // int | null
-  "userId": 2,                          // int (author)
+  "userId": 2,                          // int | null (author — null if user was deleted)
   "createdAt": "2025-08-01T10:00:00.000Z",  // ISO 8601
   // Included relation:
   "user": {
@@ -267,7 +267,7 @@ Notifications from `GET /api/v1/notifications` come from the Redis real-time sto
 ```jsonc
 {
   "id": "notif_1710590400000_a1b2c3d4e",  // string (generated ID)
-  "type": "task_assigned",               // "task_assigned" | "task_completed" | "mention"
+  "type": "task_assigned",               // "task_assigned" | "task_completed" | "project_assigned" | "mention"
   "title": "New Task Assignment",        // string (display title)
   "message": "You have been assigned a new task: \"Review blueprints\"",  // string
   "taskId": 1,                           // int | undefined
@@ -1277,7 +1277,7 @@ Delete a user after reassigning their projects and uncompleted tasks. Cannot del
 1. All projects managed by the user are transferred to the `reassignTo` user.
 2. All tasks on those projects assigned to the deleted user (completed or not) are reassigned.
 3. All standalone uncompleted tasks assigned to the deleted user are reassigned.
-4. The user is deleted. Cascade removes: completed standalone tasks, comments by the user, mentions of the user, and notifications for the user.
+4. The user is deleted. Cascade removes: completed standalone tasks, mentions of the user, and notifications for the user. Comments by the user are preserved with `userId` set to `null` (displayed as "Deleted User").
 
 **Response:** `204 No Content`
 

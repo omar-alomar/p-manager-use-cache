@@ -214,6 +214,17 @@
   white-space: nowrap;
 }
 
+.author-name--deleted {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.avatar-color-deleted {
+  background: linear-gradient(135deg, var(--neutral-100), var(--neutral-200)) !important;
+  color: var(--neutral-400) !important;
+  border-color: var(--neutral-200) !important;
+}
+
 .author-email {
   font-size: var(--font-size-xs);
   color: var(--text-muted);

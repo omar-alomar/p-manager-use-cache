@@ -20,6 +20,12 @@ export function VersionBanner() {
     return () => { cancelled = true }
   }, [user])
 
+  useEffect(() => {
+    if (!visible) return
+    const timer = setTimeout(() => setVisible(false), 10000)
+    return () => clearTimeout(timer)
+  }, [visible])
+
   if (!visible) return null
 
   return (
@@ -33,7 +39,7 @@ export function VersionBanner() {
           </svg>
         </div>
         <span className="version-banner-text">
-          The app has been updated — check out the changelog to see what&apos;s new.
+          The app has been updated — read the changelog to see what&apos;s new.
         </span>
         <button
           className="version-banner-close"

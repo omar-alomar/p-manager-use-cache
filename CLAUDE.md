@@ -112,7 +112,8 @@ Styles are split into modular files imported via `styles.css`:
 - **Users cannot be deleted without reassigning their assets.** Admins must select a target user to receive the deleted user's projects and tasks.
 - Flow: Admin clicks delete → `UserDeleteDrawer` opens → shows impact (managed projects, project tasks, standalone uncompleted tasks) → admin selects reassignment target → confirm.
 - **What gets reassigned:** All managed projects (with their tasks assigned to the deleted user), and all standalone uncompleted tasks.
-- **What gets cascade-deleted:** Completed standalone tasks, comments by the user, mentions of the user, notifications for the user.
+- **What gets cascade-deleted:** Completed standalone tasks, mentions of the user, notifications for the user.
+- **Comments are preserved:** `Comment.userId` is nullable with `onDelete: SetNull` — when a user is deleted, their comments remain with `userId = null` and display as "Deleted User" in the UI.
 - DB functions: `getUserDeletionImpact()` and `deleteUserWithReassignment()` in `src/db/users.ts`. The reassignment + delete runs in a Prisma `$transaction`.
 - REST API: `GET /api/v1/admin/users/:id` returns impact preview. `DELETE /api/v1/admin/users/:id?reassignTo=<userId>` performs the operation.
 
@@ -157,7 +158,7 @@ Styles are split into modular files imported via `styles.css`:
 - `NotificationService` (`src/services/notificationService.ts`) publishes via Redis Pub/Sub
 - SSE endpoint at `/api/notifications/stream?userId=<id>` subscribes to `notifications:<userId>` channel
 - Notifications are also stored in a Redis list `notifications:user:<userId>` (capped at 100)
-- Three notification types: `task_assigned`, `task_completed`, `mention`
+- Four notification types: `task_assigned`, `task_completed`, `project_assigned`, `mention`
 - Never notify a user about their own actions (assigner === assignee checks exist)
 
 ### @Mentions
@@ -191,7 +192,7 @@ SKIP_REDIS=1          # Set to skip Redis (e.g. in CI)
 | `Task` | title, completed, urgency (LOW\|MEDIUM\|HIGH\|CRITICAL), userId, assignedById, projectId, archived |
 | `Client` | name, companyName, email, phone, address |
 | `Milestone` | date, item, completed, projectId, apfo |
-| `Comment` | body, userId, projectId?, taskId?, email |
+| `Comment` | body, userId? (nullable — null if author deleted), projectId?, taskId?, email |
 | `Mention` | commentId, userId (unique per comment+user) |
 | `Notification` | mentionId, userId, type, message, read |
 

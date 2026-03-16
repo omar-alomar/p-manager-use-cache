@@ -12,13 +12,13 @@ interface Comment {
   id: number
   email: string
   body: string
-  userId: number
+  userId: number | null
   createdAt: Date
   user: {
     id: number
     name: string
     role: string
-  }
+  } | null
 }
 
 interface CommentItemProps {
@@ -30,7 +30,7 @@ export function CommentItem({ comment }: CommentItemProps) {
   const [isDeleting, startTransition] = useTransition()
   const [isDeleted, setIsDeleted] = useState(false)
 
-  const canDelete = user && (user.role === Role.admin || user.id === comment.userId)
+  const canDelete = user && (user.role === Role.admin || (comment.userId != null && user.id === comment.userId))
 
   const handleDelete = async () => {
     if (!user || !canDelete) return
@@ -59,7 +59,9 @@ export function CommentItem({ comment }: CommentItemProps) {
     return null
   }
 
-  const initials = comment.user.name
+  const authorName = comment.user?.name ?? "Deleted User"
+
+  const initials = authorName
     .split(' ')
     .map(n => n[0])
     .join('')
@@ -68,13 +70,13 @@ export function CommentItem({ comment }: CommentItemProps) {
 
   return (
     <div className="comment-item">
-      <div className={`author-avatar ${avatarColorClass(comment.user.name)}`}>
+      <div className={`author-avatar ${comment.user ? avatarColorClass(comment.user.name) : "avatar-color-deleted"}`}>
         <span style={{ fontSize: 11, fontWeight: 600 }}>{initials}</span>
       </div>
       <div className="comment-item-content">
         <div className="comment-header">
           <div className="author-info">
-            <span className="author-name">{comment.user.name}</span>
+            <span className={`author-name${!comment.user ? " author-name--deleted" : ""}`}>{authorName}</span>
             <span className="comment-date">
               {formatDate(comment.createdAt, {
                 month: 'short',

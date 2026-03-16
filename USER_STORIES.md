@@ -464,7 +464,7 @@ These are presented as bottom sheets, modals, or slide-overs — not full-screen
 
 | ID | Priority | User Story | Acceptance Criteria |
 |---|---|---|---|
-| NOTIF-01 | P0 | As a user, I want to receive real-time notifications for: task assignments, task completions, and @mentions. | Three types: `task_assigned`, `task_completed`, `mention`. Never triggered by user's own actions. |
+| NOTIF-01 | P0 | As a user, I want to receive real-time notifications for: task assignments, task completions, project assignments, and @mentions. | Four types: `task_assigned`, `task_completed`, `project_assigned`, `mention`. Never triggered by user's own actions. Project assignment fires when assigned as manager on new/edited project or via user deletion reassignment. |
 | NOTIF-02 | P0 | As a user, I want to see an unread notification count badge in the app navigation. | Badge shows count. Refreshes periodically (every ~30 seconds) and on real-time events. |
 | NOTIF-03 | P0 | As a user, I want to open a notification center listing all my notifications. | Each notification shows: unread indicator, message text, type-specific color/icon, relative time. |
 | NOTIF-04 | P0 | As a user, I want to tap a notification to navigate to the related task or project. | Tapping marks notification as read and navigates to context. |
@@ -513,7 +513,7 @@ These are presented as bottom sheets, modals, or slide-overs — not full-screen
 | ADMIN-03 | P0 | As an admin, I want to view all users with their email, role, project/task counts, version seen, and created date. | Scrollable user list with all fields. |
 | ADMIN-04 | P0 | As an admin, I want to create a new user with name, email, password (min 8 chars), and optional role. | Form with validation. New user appears in list. |
 | ADMIN-05 | P1 | As an admin, I want to edit a user's email, reset their password, toggle their role (user/admin), and set their last-seen version. | Each field independently editable. |
-| ADMIN-06 | P1 | As an admin, I want to delete a user after reassigning their projects and uncompleted tasks to another team member. | Drawer shows deletion impact (managed projects, project tasks, standalone uncompleted tasks). Admin must select a reassignment target user. Projects transfer with all their tasks. Standalone uncompleted tasks are reassigned. Completed standalone tasks, comments, mentions, and notifications of the deleted user are removed. |
+| ADMIN-06 | P1 | As an admin, I want to delete a user after reassigning their projects and uncompleted tasks to another team member. | Drawer shows deletion impact (managed projects, project tasks, standalone uncompleted tasks). Admin must select a reassignment target user. Projects transfer with all their tasks. Standalone uncompleted tasks are reassigned. Completed standalone tasks, mentions, and notifications of the deleted user are removed. Comments are preserved with author shown as "Deleted User". |
 
 ### 14.3 Entity Management
 
@@ -559,8 +559,8 @@ These are presented as bottom sheets, modals, or slide-overs — not full-screen
 
 | ID | Priority | User Story | Acceptance Criteria |
 |---|---|---|---|
-| MOB-01 | P0 | As a user, I want to receive push notifications on my phone for task assignments, completions, and @mentions so that I'm informed even when the app isn't open. | Push replaces/complements the web's SSE. Same three notification types. Same self-action suppression rules. Tapping a push opens the relevant task/project in the app. |
-| MOB-02 | P1 | As a user, I want to control my push notification preferences (e.g., mute certain types). | Settings screen for toggling: task_assigned, task_completed, mention notifications. |
+| MOB-01 | P0 | As a user, I want to receive push notifications on my phone for task assignments, completions, project assignments, and @mentions so that I'm informed even when the app isn't open. | Push replaces/complements the web's SSE. Same four notification types. Same self-action suppression rules. Tapping a push opens the relevant task/project in the app. |
+| MOB-02 | P1 | As a user, I want to control my push notification preferences (e.g., mute certain types). | Settings screen for toggling: task_assigned, task_completed, project_assigned, mention notifications. |
 | MOB-03 | P2 | As a user, I want push notifications to show a preview with the notification message. | Rich notification with title (type) and body (message text). |
 
 ### 16.2 Offline & Connectivity
@@ -696,7 +696,7 @@ These are presented as bottom sheets, modals, or slide-overs — not full-screen
 | id | Int | Auto | Primary key |
 | mentionId | Int | Yes | FK → Mention |
 | userId | Int | Yes | FK → User (recipient) |
-| type | String | Yes | `"mention"`, `"task_assigned"`, `"task_completed"` |
+| type | String | Yes | `"mention"`, `"task_assigned"`, `"task_completed"`, `"project_assigned"` |
 | message | String | Yes | Human-readable text |
 | read | Boolean | Yes | Default: false |
 | createdAt | DateTime | Auto | |

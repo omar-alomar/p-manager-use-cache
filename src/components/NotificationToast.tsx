@@ -22,25 +22,24 @@ export function NotificationToast({ notification, onClose, duration = 5000 }: No
   }, [duration, onClose]);
 
   const handleClick = () => {
-    // Navigate to task or project page
-    if (notification.type === 'task_assigned' || notification.type === 'task_completed') {
+    if (notification.type === 'project_assigned') {
+      window.location.href = `/projects/${notification.projectId}`;
+    } else if (notification.type === 'task_assigned' || notification.type === 'task_completed') {
       window.location.href = `/tasks/${notification.taskId}`;
     }
     onClose();
   };
 
+  const indicatorClass = notification.type === 'task_completed' ? 'task-completed' : 'task-assigned';
+
   return (
     <div
-      className={`notification-toast ${
-        notification.type === 'task_assigned' ? 'task-assigned' : 'task-completed'
-      } ${isVisible ? '' : 'hidden'}`}
+      className={`notification-toast ${indicatorClass} ${isVisible ? '' : 'hidden'}`}
       onClick={handleClick}
     >
       <div className="notification-toast-content">
         <div className="notification-toast-header">
-          <div className={`notification-toast-indicator ${
-            notification.type === 'task_assigned' ? 'task-assigned' : 'task-completed'
-          }`} />
+          <div className={`notification-toast-indicator ${indicatorClass}`} />
           <div className="notification-toast-text">
             <h4 className="notification-toast-title">
               {notification.title}

@@ -2,7 +2,7 @@ import { getRedis } from '@/redis/redis';
 
 export interface NotificationData {
   id: string;
-  type: 'task_assigned' | 'task_completed' | 'mention';
+  type: 'task_assigned' | 'task_completed' | 'project_assigned' | 'mention';
   title: string;
   message: string;
   taskId?: number;
@@ -139,6 +139,38 @@ export class NotificationService {
       assignedUserName: assignerUserName,
       assignerUserId: completedByUserId,
       assignerUserName: completedByUserName,
+    });
+  }
+
+  async notifyProjectAssigned({
+    projectId,
+    projectTitle,
+    assignedUserId,
+    assignedUserName,
+    assignerUserId,
+    assignerUserName,
+  }: {
+    projectId: number;
+    projectTitle: string;
+    assignedUserId: number;
+    assignedUserName: string;
+    assignerUserId: number;
+    assignerUserName: string;
+  }) {
+    if (assignedUserId === assignerUserId) {
+      return null;
+    }
+
+    return this.sendNotification({
+      type: 'project_assigned',
+      title: 'Project Assignment',
+      message: `You have been assigned as manager of project "${projectTitle}"`,
+      projectId,
+      projectTitle,
+      assignedUserId,
+      assignedUserName,
+      assignerUserId,
+      assignerUserName,
     });
   }
 

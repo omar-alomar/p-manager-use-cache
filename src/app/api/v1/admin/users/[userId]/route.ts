@@ -45,7 +45,7 @@ export async function DELETE(
   }
 
   try {
-    await deleteUserWithReassignment(userId, reassignTo)
+    await deleteUserWithReassignment(userId, reassignTo, auth.id)
     return jsonNoContent()
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to delete user"

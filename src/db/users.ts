@@ -3,6 +3,7 @@ import { revalidateTag, revalidatePath } from "next/cache"
 import { cacheTag } from "next/dist/server/use-cache/cache-tag"
 import { Role } from "@prisma/client"
 import { generateSalt, hashPassword } from "../auth/passwordHasher"
+import { notificationService } from "@/services/notificationService"
 
 
 export async function getUsers() {
@@ -96,7 +97,11 @@ export async function getUserDeletionImpact(userId: string | number) {
   }
 }
 
-export async function deleteUserWithReassignment(userId: string | number, reassignToUserId: string | number) {
+export async function deleteUserWithReassignment(
+  userId: string | number,
+  reassignToUserId: string | number,
+  adminUserId?: number
+) {
   const id = Number(userId)
   const reassignId = Number(reassignToUserId)
 
@@ -109,12 +114,25 @@ export async function deleteUserWithReassignment(userId: string | number, reassi
   if (!reassignTo) throw new Error(`Reassignment target user with id ${reassignToUserId} not found`)
   if (id === reassignId) throw new Error("Cannot reassign to the same user being deleted")
 
-  // Get managed project IDs before transaction
-  const managedProjects = await prisma.project.findMany({
-    where: { userId: id },
-    select: { id: true }
-  })
+  // Collect all affected data BEFORE the transaction for cache invalidation + notifications
+  const [managedProjects, affectedTasks] = await Promise.all([
+    prisma.project.findMany({
+      where: { userId: id },
+      select: { id: true, title: true }
+    }),
+    prisma.task.findMany({
+      where: { userId: id, completed: false },
+      include: { Project: { select: { id: true, title: true } } }
+    })
+  ])
+
   const managedProjectIds = managedProjects.map(p => p.id)
+
+  // Collect all unique projectIds touched by affected tasks (for cache invalidation)
+  const affectedProjectIds = new Set<number>(managedProjectIds)
+  for (const task of affectedTasks) {
+    if (task.projectId && task.projectId !== 0) affectedProjectIds.add(task.projectId)
+  }
 
   await prisma.$transaction([
     // Reassign all projects managed by this user
@@ -140,23 +158,75 @@ export async function deleteUserWithReassignment(userId: string | number, reassi
       },
       data: { userId: reassignId }
     }),
-    // Delete user — cascades: completed straggler tasks, comments, mentions, notifications
+    // Delete user — cascades: completed straggler tasks, mentions, notifications. Comments preserved (userId set to null).
     prisma.user.delete({ where: { id } })
   ])
 
+  // Cache invalidation — global tags
   revalidateTag("users:all")
   revalidateTag(`users:id=${id}`)
   revalidateTag(`users:id=${reassignId}`)
   revalidateTag("projects:all")
   revalidateTag(`projects:userId=${id}`)
   revalidateTag(`projects:userId=${reassignId}`)
+  revalidateTag(`projects:userTasks=${id}`)
+  revalidateTag(`projects:userTasks=${reassignId}`)
   revalidateTag("tasks:all")
   revalidateTag(`tasks:userId=${id}`)
   revalidateTag(`tasks:userId=${reassignId}`)
+
+  // Cache invalidation — per-project tags
+  for (const projectId of affectedProjectIds) {
+    revalidateTag(`projects:id=${projectId}`)
+    revalidateTag(`tasks:projectId=${projectId}`)
+    revalidatePath(`/projects/${projectId}`)
+  }
+
+  // Cache invalidation — per-task tags
+  for (const task of affectedTasks) {
+    revalidateTag(`tasks:id=${task.id}`)
+    if (task.projectId) revalidatePath(`/tasks/${task.id}`)
+  }
+
+  // Path revalidation
   revalidatePath("/admin")
   revalidatePath("/users")
   revalidatePath("/projects")
   revalidatePath("/tasks")
+  revalidatePath("/dashboard")
+  revalidatePath("/")
+
+  // Send notifications — the admin performing the deletion is the "assigner"
+  const notifierName = adminUserId
+    ? (await prisma.user.findUnique({ where: { id: adminUserId }, select: { name: true } }))?.name ?? "Admin"
+    : "Admin"
+  const notifierId = adminUserId ?? 0
+
+  // Notify about reassigned projects
+  for (const project of managedProjects) {
+    await notificationService.notifyProjectAssigned({
+      projectId: project.id,
+      projectTitle: project.title,
+      assignedUserId: reassignId,
+      assignedUserName: reassignTo.name,
+      assignerUserId: notifierId,
+      assignerUserName: notifierName,
+    })
+  }
+
+  // Notify about reassigned tasks
+  for (const task of affectedTasks) {
+    await notificationService.notifyTaskAssigned({
+      taskId: task.id,
+      taskTitle: task.title,
+      assignedUserId: reassignId,
+      assignedUserName: reassignTo.name,
+      assignerUserId: notifierId,
+      assignerUserName: notifierName,
+      projectId: task.Project?.id,
+      projectTitle: task.Project?.title,
+    })
+  }
 
   return user
 }
