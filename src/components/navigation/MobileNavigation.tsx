@@ -88,13 +88,10 @@ export function MobileNavigation() {
             
             <ul className="mobile-nav-list">
               {!user ? (
-                // User is not authenticated - show limited navigation
+                // User is not authenticated - show login only
                 <>
                   <li>
                     <Link href="/login" onClick={closeMenu}>Login</Link>
-                  </li>
-                  <li>
-                    <Link href="/signup" onClick={closeMenu}>Sign Up</Link>
                   </li>
                 </>
               ) : (

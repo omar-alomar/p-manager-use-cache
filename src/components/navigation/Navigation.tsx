@@ -21,14 +21,11 @@ export function Navigation() {
   }
 
   if (!user) {
-    // User is not authenticated - show limited navigation
+    // User is not authenticated - show login only
     return (
       <ul className="nav-list">
         <li>
           <Link href="/login">Login</Link>
-        </li>
-        <li>
-          <Link href="/signup">Sign Up</Link>
         </li>
       </ul>
     )

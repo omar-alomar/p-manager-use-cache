@@ -1,13 +1,13 @@
 # Mildenberg Project Platform — Claude Instructions
 
 ## Project Overview
-Internal project management platform for the Mildenberg team. Tracks projects, tasks, clients, milestones, and team collaboration. Current version: **α 1.1** (tracked via `src/constants/version.ts`).
+Internal project management platform for the Mildenberg team. Tracks projects, tasks, clients, milestones, and team collaboration. Current version: **α 1.1.1** (tracked via `src/constants/version.ts`).
 
 ## Tech Stack
 - **Framework**: Next.js 15 (canary `15.2.0-canary.56`), React 19, TypeScript
 - **Database**: PostgreSQL via Prisma ORM
 - **Cache/Sessions**: Redis (ioredis)
-- **Auth**: Custom session-based + Microsoft OAuth (MSAL)
+- **Auth**: Custom session-based + Microsoft OAuth (MSAL). No public signup — user accounts are created by admins only.
 - **Validation**: Zod
 - **Styling**: Plain CSS split into modular files under `src/app/styles/` — no Tailwind, no CSS Modules
 
@@ -64,7 +64,7 @@ Styles are split into modular files imported via `styles.css`:
 | `notifications.css` | Notification bell, center, toasts |
 | `fab.css` | Floating action button |
 | `admin.css` | Admin panel |
-| `auth.css` | Login/signup pages, OAuth button |
+| `auth.css` | Login page, OAuth button |
 | `profile.css` | User profile page |
 | `skeleton.css` | Loading skeletons |
 | `empty.css` | Empty state illustrations |
@@ -100,6 +100,11 @@ Styles are split into modular files imported via `styles.css`:
 `createTask()` in `src/db/tasks.ts` uses raw SQL (`prisma.$queryRaw`) instead of `prisma.task.create()`. This bypasses a PostgreSQL sequence bug where the auto-increment sequence falls behind the actual max ID. Do not change this back to `prisma.task.create()`.
 
 ### Authentication
+
+#### User Provisioning
+- **No public signup.** There is no `/signup` route. All user accounts are created by admins via the Admin panel (`/admin` → User Management → "New User").
+- Microsoft OAuth also requires a pre-existing account — it matches the Microsoft email to an existing user, no auto-provisioning.
+- The first admin account must be seeded directly in the database or created via Prisma Studio.
 
 #### Session Auth (`src/auth/session.ts`)
 - Sessions stored in Redis with 3-month expiry
@@ -213,7 +218,7 @@ npx prisma generate      # Regenerate Prisma client
 | `/users`, `/users/[userId]` | User directory and profiles |
 | `/admin` | System stats, user/project/task/client management, maintenance toggle |
 | `/changelog` | Version changelog with feature highlights |
-| `/login`, `/signup`, `/profile` | Auth and profile pages |
+| `/login`, `/profile` | Auth and profile pages |
 
 ## Maintenance Mode
 - Toggle via Redis key `maintenance:enabled` — no restart or redeploy needed

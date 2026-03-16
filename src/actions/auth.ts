@@ -1,7 +1,7 @@
 "use server"
 
 import { z } from "zod"
-import { signInSchema, signUpSchema, updateProfileSchema, changePasswordSchema } from "../schemas/schemas"
+import { signInSchema, updateProfileSchema, changePasswordSchema } from "../schemas/schemas"
 import prisma from "@/db/db"
 import { isBlocked } from "@/utils/maintenance"
 import {
@@ -12,8 +12,6 @@ import {
 import { cookies } from "next/headers"
 import { createUserSession, removeUserFromSession } from "../auth/session"
 import { getCurrentUser } from "../auth/currentUser"
-import { Role } from "@prisma/client"
-import { revalidateTag, revalidatePath } from "next/cache"
 import { APP_VERSION } from "@/constants/version"
 
 
@@ -46,54 +44,6 @@ export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
   if (!isCorrectPassword) return "Unable to log you in"
 
   await createUserSession({ id: user.id, role: user.role }, await cookies())
-
-  // Return null to indicate success (no error)
-  return null
-}
-
-export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
-  if (await isBlocked()) return "Site is under maintenance. Please try again later."
-
-  const { success, data } = signUpSchema.safeParse(unsafeData) // zod; type safety.
-
-  if (!success) return "Unable to create account"
-
-  const existingUser = await prisma.user.findUnique({
-    where: { email: data.email }
-  })
-
-  if (existingUser != null) return "Account already exists for this email"
-
-  try {
-    const salt = generateSalt()
-    const hashedPassword = await hashPassword(data.password, salt)
-
-    const user = await prisma.user.create({
-      data: {
-        name: data.name,
-        email: data.email,
-        password: hashedPassword,
-        salt,
-        role: Role.user // Set default role
-      },
-      select: { 
-        id: true, 
-        role: true 
-      }
-    })
-
-    if (user == null) return "Unable to create account"
-    
-    // Revalidate cache so new user shows up
-    revalidateTag("users:all")
-    revalidatePath("/admin")
-    revalidatePath("/users")
-    
-    await createUserSession({ id: user.id, role: user.role }, await cookies())
-  } catch (error) {
-    console.error("Signup error:", error)
-    return "Unable to create account"
-  }
 
   // Return null to indicate success (no error)
   return null

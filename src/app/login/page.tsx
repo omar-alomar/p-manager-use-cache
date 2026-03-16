@@ -4,7 +4,6 @@ import { Suspense, useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { AuthCard } from "@/components/auth/AuthCard"
 import { LoginForm } from "@/components/auth/LoginForm"
-import Link from "next/link"
 import { signIn, getPostLoginRedirect } from "@/actions/auth"
 import { useAuth } from "@/components/auth/AuthContext"
 
@@ -80,11 +79,6 @@ function LoginContent() {
   return (
     <AuthCard
       title="Welcome Back"
-      footer={
-        <p>
-          Don&apos;t have an account? <Link href="/signup">Sign up</Link>
-        </p>
-      }
     >
       <LoginForm
         onSubmit={handleLogin}
