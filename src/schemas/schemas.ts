@@ -88,6 +88,16 @@ export function parseProjectFormData(formData: FormData) {
   })
 }
 
+// --- Client schemas ---
+
+export const clientSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  companyName: z.string().optional(),
+  email: z.string().email("Please enter a valid email address"),
+  phone: z.string().optional(),
+  address: z.string().optional(),
+})
+
 export const milestoneSchema = z.object({
   date: z.string().min(1, "Date is required"),
   item: z.string().min(1, "Milestone description is required").transform(s => s.trim()),

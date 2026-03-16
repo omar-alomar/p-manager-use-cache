@@ -3,13 +3,12 @@ import { revalidateTag, revalidatePath } from "next/cache"
 import { cacheTag } from "next/dist/server/use-cache/cache-tag"
 import { Role } from "@prisma/client"
 import { generateSalt, hashPassword } from "../auth/passwordHasher"
-import { wait } from "@/utils/wait"
+
 
 export async function getUsers() {
   "use cache"
   cacheTag("users:all")
 
-  await wait(500)
   return prisma.user.findMany({
     include: {
       projects: true,
@@ -25,7 +24,6 @@ export async function getUser(userId: string | number) {
   "use cache"
   cacheTag(`users:id=${userId}`)
 
-  await wait(500)
   return prisma.user.findUnique({ where: { id: Number(userId) } })
 }
 
@@ -33,8 +31,6 @@ export async function getUsersWithTasks() {
   "use cache"
   cacheTag("users:all")
 
-  await wait(500)
-  
   // This query should only return users who have at least one task
   const usersWithTasks = await prisma.user.findMany({
     where: {

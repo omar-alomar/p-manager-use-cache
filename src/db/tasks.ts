@@ -2,13 +2,12 @@ import prisma from "./db"
 import { Prisma } from "@prisma/client"
 import { cacheTag } from "next/dist/server/use-cache/cache-tag"
 import { revalidateTag } from "next/cache"
-import { wait } from "@/utils/wait"
+
 
 export async function getTasks() {
   "use cache"
   cacheTag("tasks:all")
 
-  await wait(500)
   return prisma.task.findMany({
     include: {
       Project: true,
@@ -25,7 +24,6 @@ export async function getTasksByCompletion(completed: boolean) {
   "use cache"
   cacheTag("tasks:all")
 
-  await wait(500)
   return prisma.task.findMany({ 
     where: { completed },
     include: {
@@ -44,7 +42,6 @@ export async function getUserTasks(userId: string | number) {
   "use cache"
   cacheTag(`tasks:userId=${userId}`)
 
-  await wait(500)
   return prisma.task.findMany({
     where: { userId: Number(userId) },
     include: {
@@ -62,7 +59,6 @@ export async function getTasksAssignedByUser(userId: string | number) {
   "use cache"
   cacheTag(`tasks:assignedBy=${userId}`)
 
-  await wait(500)
   return prisma.task.findMany({
     where: {
       assignedById: Number(userId),
@@ -83,7 +79,6 @@ export async function getProjectTasks(projectId: string | number) {
   "use cache"
   cacheTag(`tasks:projectId=${projectId}`)
 
-  await wait(500)
   return prisma.task.findMany({ 
     where: { projectId: Number(projectId) },
     include: {
@@ -97,7 +92,6 @@ export async function getTask(taskId: string | number) {
   "use cache"
   cacheTag(`tasks:id=${taskId}`)
 
-  await wait(500)
   return prisma.task.findUnique({
     where: { id: Number(taskId) },
     include: {

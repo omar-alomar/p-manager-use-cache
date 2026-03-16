@@ -66,6 +66,7 @@ Two login methods — both require a pre-existing account:
 - Redis key prefixes are also environment-specific (prod/staging/dev use separate Redis DBs: 0/1/2)
 - Regular user sessions are invalidated on app version bumps (forces re-login)
 - Admin sessions survive version bumps so admins aren't locked out during deploys
+- **Mobile/API auth:** The `/api/v1/auth/login` endpoint returns the session token in the response body. Mobile clients store it and send `Authorization: Bearer <token>` on all requests.
 
 ## Features
 
@@ -151,6 +152,8 @@ Two login methods — both require a pre-existing account:
 
 ## API Routes
 
+### Web-only
+
 | Route | Method | Purpose |
 |---|---|---|
 | `/api/auth/microsoft` | GET | Initiate Microsoft OAuth flow |
@@ -159,6 +162,24 @@ Two login methods — both require a pre-existing account:
 | `/api/notifications/user/[userId]` | GET/DELETE | Fetch or delete stored notifications |
 | `/api/notifications/demo` | POST | Demo notification trigger |
 | `/api/users/by-name` | GET | Resolve username to user ID |
+
+### REST API v1 (for mobile clients)
+
+Full REST API at `/api/v1/` for mobile app consumption. Accepts `Authorization: Bearer <token>` or session cookie.
+
+| Group | Endpoints | Description |
+|---|---|---|
+| `/api/v1/auth/` | login, logout, me, password, version | Auth & profile |
+| `/api/v1/projects/` | CRUD, field patch, archive, milestones | Project management |
+| `/api/v1/tasks/` | CRUD, complete toggle | Tasks with notifications |
+| `/api/v1/clients/` | CRUD, field patch | Client management |
+| `/api/v1/users/` | list, detail | Team directory (read-only) |
+| `/api/v1/comments/` | list, create, delete | Comments with @mention support |
+| `/api/v1/milestones/` | update, delete, complete | Milestone management |
+| `/api/v1/notifications/` | list, count, read, read-all | Notification management |
+| `/api/v1/admin/` | stats, users, entity deletes, maintenance | Admin-only |
+
+Full reference with request/response examples: [`docs/API.md`](docs/API.md)
 
 ## Scripts
 
@@ -179,6 +200,7 @@ src/
 ├── actions/       # Server actions — all mutations ("use server")
 ├── app/           # App Router pages, API routes, styles
 │   ├── api/       # REST endpoints (notifications, OAuth, users)
+│   │   └── v1/   # REST API for mobile clients — see docs/API.md
 │   └── styles/    # Modular CSS files (tokens, base, nav, forms, etc.)
 ├── auth/          # Session management, password hashing, MSAL config
 ├── components/    # React components (admin/, auth/, navigation/)

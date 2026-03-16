@@ -722,9 +722,9 @@ Mention 1──* Notification
 
 ## 18. API Contract Reference
 
-> The web app uses Next.js Server Actions for mutations and has minimal REST endpoints. The mobile app will need a full REST (or GraphQL) API layer. This section lists every operation the backend must expose.
+> **Status: IMPLEMENTED.** All REST endpoints are live under `/api/v1/`. Full reference with request/response examples: [`docs/API.md`](docs/API.md).
 
-### Existing REST Endpoints
+### Web-only Endpoints (unchanged)
 
 | Method | Endpoint | Purpose |
 |---|---|---|
@@ -736,101 +736,101 @@ Mention 1──* Notification
 | POST | `/api/notifications/demo` | Trigger demo notification |
 | GET | `/api/users/by-name?name={name}` | Resolve username → user |
 
-### Required API Endpoints (from Server Actions)
+### REST API v1 — `/api/v1/`
 
-> These server actions need REST equivalents for the mobile app. Grouped by domain.
+**Authentication:** All endpoints (except login) require `Authorization: Bearer <token>` header or session cookie. The login endpoint returns the token in the response body.
+
+**Response format:** `{ "data": <payload> }` on success, `{ "error": { "message": "...", "details": { ... } } }` on error.
+
+**Status codes:** 200 (ok), 201 (created), 204 (no content), 400 (bad input), 401 (no auth), 403 (not admin), 404 (not found), 503 (maintenance).
 
 #### Auth
-| Operation | Parameters | Returns | Notes |
+| Operation | Method | Endpoint | Notes |
 |---|---|---|---|
-| Sign in | `{ email, password }` | Session token or error | Generic error message on failure |
-| Log out | — | Success | Destroys server session |
-| Update profile | `{ name }` | Success or error | Updates current user's name |
-| Change password | `{ currentPassword, newPassword }` | Success or error | Verifies current password first |
-| Get post-login redirect | — | `"/changelog"` or `"/projects"` | Based on `lastSeenVersion` |
-| Mark version seen | — | Success | Sets `lastSeenVersion = APP_VERSION` |
-| Get current user | — | User object or 401 | Full user with role |
+| Sign in | POST | `/api/v1/auth/login` | Returns `{ token, user }` — store token for Bearer auth |
+| Log out | POST | `/api/v1/auth/logout` | Destroys session (204) |
+| Get current user | GET | `/api/v1/auth/me` | Returns user profile |
+| Update profile | PATCH | `/api/v1/auth/me` | Body: `{ name }` |
+| Change password | PUT | `/api/v1/auth/password` | Body: `{ currentPassword, newPassword }` |
+| Version check | GET | `/api/v1/auth/version` | Returns `{ currentVersion, lastSeenVersion, needsAck }` |
+| Mark version seen | POST | `/api/v1/auth/version` | Sets `lastSeenVersion = APP_VERSION` |
 
 #### Projects
-| Operation | Parameters | Returns | Notes |
+| Operation | Method | Endpoint | Notes |
 |---|---|---|---|
-| List projects | `{ includeArchived?: bool }` | Project[] | Includes client, milestones, tasks |
-| Get project | `projectId` | Project | Full detail with milestones, tasks |
-| Create project | `{ title, clientId, body, userId, milestones[], mbaNumber?, coFileNumbers?, dldReviewer? }` | Project | Blocks during maintenance |
-| Update project | `projectId, { ...fields }` | Project | Full update including milestones |
-| Delete project | `projectId` | Success | Hard delete |
-| Update project field | `projectId, field, value` | Success | Fields: body, mbaNumber, coFileNumbers, dldReviewer |
-| Set project archived | `projectId, archived` | Success | Archive/unarchive |
-| Add milestone | `projectId, { date, item, apfo }` | Milestone | |
+| List projects | GET | `/api/v1/projects` | Query: `?query=&userId=&includeArchived=true` |
+| Create project | POST | `/api/v1/projects` | Full body with milestones array |
+| Get project | GET | `/api/v1/projects/{id}` | Includes clientRef, milestones |
+| Update project | PUT | `/api/v1/projects/{id}` | Full replacement including milestones |
+| Delete project | DELETE | `/api/v1/projects/{id}` | 204 |
+| Update field | PATCH | `/api/v1/projects/{id}/field` | Body: `{ field, value }` — body/mbaNumber/coFileNumbers/dldReviewer |
+| Archive toggle | PUT | `/api/v1/projects/{id}/archive` | Body: `{ archived: true\|false }` |
+| Add milestone | POST | `/api/v1/projects/{id}/milestones` | Body: `{ date, item, apfo }` |
 
 #### Tasks
-| Operation | Parameters | Returns | Notes |
+| Operation | Method | Endpoint | Notes |
 |---|---|---|---|
-| List all tasks | — | Task[] | Includes User, Project, AssignedBy |
-| Get user tasks | `userId` | Task[] | Assigned to this user |
-| Get tasks assigned by user | `userId` | Task[] | Excludes self-assigned |
-| Get project tasks | `projectId` | Task[] | |
-| Get task | `taskId` | Task | Full detail |
-| Create task | `{ title, userId, projectId?, urgency? }` | Task | Sends `task_assigned` notification |
-| Update task | `taskId, { title, completed, urgency?, userId, projectId? }` | Task | Sets/clears `completedAt` |
-| Update task completion | `taskId, { completed }` | Task | Sends `task_completed` notification on complete |
-| Delete task | `taskId` | Success | |
+| List tasks | GET | `/api/v1/tasks` | Query: `?userId=&projectId=` |
+| Create task | POST | `/api/v1/tasks` | Sends `task_assigned` notification |
+| Get task | GET | `/api/v1/tasks/{id}` | Includes User, Project, AssignedBy |
+| Update task | PUT | `/api/v1/tasks/{id}` | Full replacement |
+| Delete task | DELETE | `/api/v1/tasks/{id}` | 204 |
+| Toggle completion | PATCH | `/api/v1/tasks/{id}/complete` | Body: `{ completed }` — sends `task_completed` notification |
 
 #### Clients
-| Operation | Parameters | Returns | Notes |
+| Operation | Method | Endpoint | Notes |
 |---|---|---|---|
-| List clients | `{ query? }` | Client[] | Search by name/email/phone/address |
-| Get client | `clientId` | Client | Includes projects + milestones |
-| Create client | `{ name, email, companyName?, phone?, address? }` | Client | |
-| Update client | `clientId, { ...fields }` | Client | |
-| Update client field | `clientId, field, value` | Success | Fields: companyName, address |
-| Delete client | `clientId` | Success | |
+| List clients | GET | `/api/v1/clients` | Query: `?query=` |
+| Create client | POST | `/api/v1/clients` | Body: `{ name, email, companyName?, phone?, address? }` |
+| Get client | GET | `/api/v1/clients/{id}` | Includes projects |
+| Update client | PUT | `/api/v1/clients/{id}` | Full replacement |
+| Delete client | DELETE | `/api/v1/clients/{id}` | 204 |
+| Update field | PATCH | `/api/v1/clients/{id}/field` | Body: `{ field, value }` — companyName/address |
 
 #### Users
-| Operation | Parameters | Returns | Notes |
+| Operation | Method | Endpoint | Notes |
 |---|---|---|---|
-| List users | — | User[] | Includes project/task counts |
-| Get user | `userId` | User | Full profile |
-| Create user | `{ name, email, password, role? }` | User | Admin only |
-| Update user role | `userId, role` | Success | Admin only |
-| Update user email | `userId, email` | Success | Admin only |
-| Reset user password | `userId, password` | Success | Admin only. Server hashes. |
-| Update user lastSeenVersion | `userId, version` | Success | Admin only |
-| Delete user | `userId` | Success | Admin only |
+| List users | GET | `/api/v1/users` | Strips password/salt |
+| Get user | GET | `/api/v1/users/{id}` | Strips password/salt |
 
 #### Comments
-| Operation | Parameters | Returns | Notes |
+| Operation | Method | Endpoint | Notes |
 |---|---|---|---|
-| Get project comments | `projectId` | Comment[] | Includes author info |
-| Get task comments | `taskId` | Comment[] | Includes author info |
-| Add comment | `{ projectId?, taskId?, body, userId }` | Comment | Parses @mentions, sends notifications |
-| Delete comment | `commentId` | Success | Owner or admin |
+| List comments | GET | `/api/v1/comments` | Query: `?projectId=` or `?taskId=` (one required) |
+| Create comment | POST | `/api/v1/comments` | Body: `{ body, projectId?, taskId? }` — auto-parses @mentions |
+| Delete comment | DELETE | `/api/v1/comments/{id}` | Author or admin only (403 otherwise) |
 
 #### Milestones
-| Operation | Parameters | Returns | Notes |
+| Operation | Method | Endpoint | Notes |
 |---|---|---|---|
-| Update milestone completion | `milestoneId, completed` | Milestone | Toggle |
-| Update milestone | `milestoneId, { date, item, apfo }` | Milestone | |
-| Delete milestone | `milestoneId` | Success | |
+| Update milestone | PUT | `/api/v1/milestones/{id}` | Body: `{ date?, item?, apfo? }` — all optional |
+| Delete milestone | DELETE | `/api/v1/milestones/{id}` | 204 |
+| Toggle completion | PATCH | `/api/v1/milestones/{id}/complete` | Body: `{ completed }` |
 
 #### Notifications
-| Operation | Parameters | Returns | Notes |
+| Operation | Method | Endpoint | Notes |
 |---|---|---|---|
-| Get unread count | `userId` | Number | |
-| Get notifications | `userId, { limit? }` | Notification[] | Default limit: 50 |
-| Mark as read | `notificationId, userId` | Success | |
-| Mark all as read | `userId` | Success | |
+| List notifications | GET | `/api/v1/notifications` | Query: `?limit=` (default 50, max 100) |
+| Unread count | GET | `/api/v1/notifications/count` | Returns `{ count }` |
+| Mark all read | POST | `/api/v1/notifications/read-all` | Clears DB + Redis |
+| Mark single read | POST | `/api/v1/notifications/{id}/read` | |
 
-#### Admin
-| Operation | Parameters | Returns | Notes |
+#### Admin (requires `role: "admin"`)
+| Operation | Method | Endpoint | Notes |
 |---|---|---|---|
-| Get admin stats | — | Stats object | Admin only |
-| Get all users/projects/tasks/clients | — | Entity[] | Admin only |
-| Admin delete project | `projectId` | Success | Admin only |
-| Admin delete task | `taskId` | Success | Admin only |
-| Admin delete client | `clientId` | Success | Admin only |
-| Get maintenance status | — | Boolean | |
-| Toggle maintenance | `enabled` | Success | Admin only |
+| System stats | GET | `/api/v1/admin/stats` | User/project/task/client counts |
+| List users | GET | `/api/v1/admin/users` | Same as /users but admin-gated |
+| Create user | POST | `/api/v1/admin/users` | Body: `{ name, email, password, role? }` |
+| Delete user | DELETE | `/api/v1/admin/users/{id}` | Cannot delete self |
+| Update role | PUT | `/api/v1/admin/users/{id}/role` | Body: `{ role }` |
+| Update email | PUT | `/api/v1/admin/users/{id}/email` | Body: `{ email }` |
+| Reset password | PUT | `/api/v1/admin/users/{id}/password` | Body: `{ password }` — server hashes |
+| Update version | PUT | `/api/v1/admin/users/{id}/version` | Body: `{ version }` — null to reset |
+| Delete project | DELETE | `/api/v1/admin/projects/{id}` | 204 |
+| Delete task | DELETE | `/api/v1/admin/tasks/{id}` | 204 |
+| Delete client | DELETE | `/api/v1/admin/clients/{id}` | 204 |
+| Get maintenance | GET | `/api/v1/admin/maintenance` | Returns `{ enabled }` |
+| Set maintenance | PUT | `/api/v1/admin/maintenance` | Body: `{ enabled }` |
 
 ---
 

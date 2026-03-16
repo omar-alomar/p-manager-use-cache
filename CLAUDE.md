@@ -17,6 +17,7 @@ src/
 ├── actions/       # Next.js server actions ("use server") — all mutations go here
 ├── app/           # Next.js App Router pages and API routes
 │   ├── api/       # API routes (notifications, auth/microsoft OAuth, users)
+│   │   └── v1/   # REST API for mobile clients (see REST API section below)
 │   ├── styles/    # Modular CSS files (see Design System section)
 │   ├── changelog/ # Version changelog page
 │   └── dashboard/ # Team workload dashboard
@@ -27,7 +28,7 @@ src/
 ├── db/            # Database query functions (projects, tasks, users, etc.)
 ├── hooks/         # Custom React hooks — useSessionSort, useNotifications
 ├── redis/         # Redis singleton (src/redis/redis.ts), maintenance mode
-├── schemas/       # Zod validation schemas (taskSchema, projectSchema, milestoneSchema + parsers)
+├── schemas/       # Zod validation schemas (taskSchema, projectSchema, milestoneSchema, clientSchema + parsers)
 ├── services/      # notificationService.ts
 ├── types/         # Shared TypeScript types — TaskWithRelations, ActionResult
 └── utils/         # dateUtils, mentions, milestoneUtils, wait, revalidate, avatarColor
@@ -89,12 +90,13 @@ Styles are split into modular files imported via `styles.css`:
 1. **DB layer** (`src/db/`) — raw Prisma queries, tagged with `"use cache"` + `cacheTag()`
 2. **Server actions** (`src/actions/`) — validate input, call DB layer, call `revalidatePath()` or `revalidateTag()`
 3. **Components** — call server actions; never call DB layer directly from client components
+4. **REST API** (`src/app/api/v1/`) — thin route handlers that validate input (Zod), call DB layer directly, return JSON. Used by mobile clients. See `docs/API.md` for full reference.
 
 ### Caching
 - DB read functions use Next.js `"use cache"` directive with `cacheTag()` for granular invalidation
 - Cache tags follow the pattern: `projects:all`, `projects:id=<id>`, `projects:userId=<id>`, `clients:all`, etc.
 - After mutations, call `revalidateTag()` (in DB layer) **and** `revalidatePath()` (in server actions) to bust both
-- DB **read** functions include a `wait(500)` artificial delay (for loading state UX) — imported from `src/utils/wait.ts`. Mutation functions do NOT wait.
+- DB **read** functions have no artificial delays. `src/utils/wait.ts` has been deleted.
 
 ### Task Creation — Raw SQL Workaround
 `createTask()` in `src/db/tasks.ts` uses raw SQL (`prisma.$queryRaw`) instead of `prisma.task.create()`. This bypasses a PostgreSQL sequence bug where the auto-increment sequence falls behind the actual max ID. Do not change this back to `prisma.task.create()`.
@@ -118,6 +120,7 @@ Styles are split into modular files imported via `styles.css`:
 - Session lookup checks the admin prefix first, then the versioned prefix
 - Logout deletes from both prefixes
 - Redis is optional — auth gracefully degrades if Redis is unavailable (session still set via cookie)
+- **Bearer token support** (for mobile/REST API): The `/api/v1/` routes accept `Authorization: Bearer <sessionId>` as an alternative to cookies. The login endpoint returns the session token in the JSON response body. `getSessionByToken()` and `COOKIE_SESSION_KEY` are exported from `session.ts` for the API auth helper (`src/app/api/v1/_lib/auth.ts`). `createUserSession()` returns the session ID so callers can include it in API responses.
 
 #### Microsoft OAuth (`src/auth/msal.ts`)
 - Uses `@azure/msal-node` (`ConfidentialClientApplication`) for Azure AD OAuth
@@ -196,6 +199,8 @@ npx prisma generate      # Regenerate Prisma client
 ```
 
 ## API Routes
+
+### Web-only (used by Next.js frontend)
 | Route | Method | Purpose |
 |---|---|---|
 | `/api/auth/microsoft` | GET | Initiate Microsoft OAuth flow — redirects to Microsoft login |
@@ -204,6 +209,23 @@ npx prisma generate      # Regenerate Prisma client
 | `/api/notifications/user/[userId]` | GET | Fetch stored notifications for a user |
 | `/api/notifications/demo` | POST | Demo notification trigger |
 | `/api/users/by-name` | GET | Resolve username to user ID (used by `MentionedUser` component) |
+
+### REST API v1 (for mobile clients) — `src/app/api/v1/`
+Full reference in `docs/API.md`. Summary of route groups:
+
+| Group | Routes | Purpose |
+|---|---|---|
+| `/api/v1/auth/` | login, logout, me, password, version | Authentication & profile management |
+| `/api/v1/projects/` | CRUD, field patch, archive, milestones | Project management |
+| `/api/v1/tasks/` | CRUD, complete toggle | Task management with notifications |
+| `/api/v1/clients/` | CRUD, field patch | Client management |
+| `/api/v1/users/` | list, detail | User directory (read-only, no sensitive fields) |
+| `/api/v1/comments/` | list, create, delete | Comments with @mention processing |
+| `/api/v1/milestones/` | update, delete, complete toggle | Milestone management |
+| `/api/v1/notifications/` | list, count, read, read-all | Notification management |
+| `/api/v1/admin/` | stats, user CRUD, entity deletes, maintenance | Admin-only operations |
+
+**Architecture:** Shared utilities in `src/app/api/v1/_lib/` — `auth.ts` (Bearer + cookie auth), `responses.ts` (consistent JSON format), `maintenance.ts` (503 guard). All routes call existing `src/db/` functions directly — no duplicated business logic.
 
 ## App Pages
 | Route | Description |
@@ -239,10 +261,50 @@ npx prisma generate      # Regenerate Prisma client
 - Redis runs as a Docker service alongside the app
 - Each environment has its own `.env` with distinct DATABASE_URL, REDIS_URL, APP_URL, and Azure OAuth credentials
 
+### REST API — Maintenance Checklist
+
+The REST API (`src/app/api/v1/`) is a **third consumer** of the DB layer alongside server actions and components. When making changes, keep the following in mind:
+
+#### Adding/removing a DB field
+1. Prisma schema + `npx prisma db push`
+2. `src/db/` — update query functions
+3. `src/actions/` — update server actions (for web)
+4. **`src/app/api/v1/`** — update the relevant route to accept/return the new field
+5. `src/schemas/schemas.ts` — update Zod schema if the field needs validation (shared by web + API)
+6. `docs/API.md` — document the new field
+7. `USER_STORIES.md` section 18 — update the endpoint table if the contract changes
+
+**The risk is forgetting step 4.** The web app and API can drift silently since there's no compile-time guarantee they stay in sync.
+
+#### Sensitive fields
+User routes manually strip `password` and `salt` via destructuring (`const { password, salt, ...sanitized } = user`). If you add a new sensitive field (e.g. 2FA secret), you must strip it in **every route** that returns user data — there is no centralized serializer:
+- `GET /api/v1/users` and `GET /api/v1/users/:id`
+- `GET /api/v1/admin/users` and `POST /api/v1/admin/users`
+- `PUT /api/v1/admin/users/:id/role` and `PUT /api/v1/admin/users/:id/email`
+
+#### API latency
+DB read functions have no artificial delays. If you ever re-introduce delays in `src/db/`, be aware that API routes share the same DB functions and will inherit them.
+
+#### Cache invalidation
+API route mutations bust the cache via `revalidateTag()` (called inside `src/db/` functions). They do **not** call `revalidatePath()` — that only matters for server-rendered pages and is handled by server actions. This is intentional and correct.
+
+#### No rate limiting
+The REST API is a standard HTTP surface with no rate limiting. For now this is fine (internal team only), but add rate limiting at the reverse proxy (nginx) or middleware if the API is ever exposed more broadly.
+
+#### Token lifecycle
+- Bearer token = session ID. Same 3-month expiry, same version-invalidation for non-admins.
+- Bumping `APP_VERSION` returns 401 for all mobile users — mobile app must handle this (re-login flow).
+- No refresh tokens. Session expiry = user must re-enter credentials.
+- Login returns token in plaintext JSON — mobile should store in secure storage (Keychain / EncryptedSharedPreferences).
+
+#### Authorization checks are per-route
+There's no centralized authorization middleware beyond `requireAuth()` / `requireAdmin()`. Resource-level checks (e.g. "only comment author or admin can delete") are inline in each route handler. When adding new mutation endpoints, add authorization checks explicitly.
+
 ## Known Issues / Quirks
 - `docker-compose.yml` does not exist here — deployment config lives in a separate folder (`stack` for prod, `stg-stack` for staging)
-- The `wait(500)` calls in DB functions are intentional artificial delays for loading UX
+- `src/utils/wait.ts` has been deleted. DB read functions no longer have artificial delays (previously 500ms for loading skeleton UX)
 - Zod v4 is used — `required_error` param no longer exists; use `error:` instead (e.g. `z.number({ error: "Required" })`)
+- Zod v4 uses `.issues` not `.errors` on `ZodError` — the API routes use `parsed.error.issues`
 - `EnchantedText` component (`src/components/EnchantedText.tsx`) is a decorative Minecraft enchanting table-style terminal effect used on the changelog page — purely cosmetic, uses Unicode glyphs (SGA, Elder Futhark, Katakana)
 - Task archiving: tasks completed for more than 30 days are automatically archived
 - Milestones can be flagged as APFOs via the `apfo` field

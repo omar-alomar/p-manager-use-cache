@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client"
 import prisma from "./db"
 import { cacheTag } from "next/dist/server/use-cache/cache-tag"
 import { revalidateTag } from "next/cache"
-import { wait } from "@/utils/wait"
+
 
 export async function getClients({
   query,
@@ -12,7 +12,6 @@ export async function getClients({
   "use cache"
   cacheTag("clients:all")
 
-  await wait(500)
 
   const where: Prisma.ClientFindManyArgs["where"] = {}
   if (query) {
@@ -43,7 +42,6 @@ export async function getClient(clientId: string | number) {
   "use cache"
   cacheTag(`clients:id=${clientId}`)
 
-  await wait(500)
 
   return prisma.client.findUnique({
     where: { id: Number(clientId) },

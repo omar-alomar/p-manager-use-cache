@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client"
 import prisma from "./db"
 import { cacheTag } from "next/dist/server/use-cache/cache-tag"
 import { revalidateTag } from "next/cache"
-import { wait } from "@/utils/wait"
+
 
 export async function getProjects({
   query,
@@ -16,7 +16,6 @@ export async function getProjects({
   "use cache"
   cacheTag("projects:all")
 
-  await wait(500)
 
   const where: Prisma.ProjectFindManyArgs["where"] = {}
   if (query) {
@@ -53,7 +52,6 @@ export async function getProject(projectId: string | number) {
   "use cache"
   cacheTag(`projects:id=${projectId}`)
 
-  await wait(500)
   return prisma.project.findUnique({ 
     where: { id: Number(projectId) },
     include: {
@@ -74,7 +72,6 @@ export async function getUserProjects(
   "use cache"
   cacheTag(`projects:userId=${userId}`)
 
-  await wait(500)
   const where: Prisma.ProjectWhereInput = { userId: Number(userId) }
   if (options?.includeArchived !== true) {
     where.archived = false
@@ -96,8 +93,6 @@ export async function getProjectsWithUserTasks(userId: string | number) {
   "use cache"
   cacheTag(`projects:userTasks=${userId}`)
 
-  await wait(500)
-  
   // Get projects where the user is either the manager OR has tasks assigned
   return prisma.project.findMany({
     where: {

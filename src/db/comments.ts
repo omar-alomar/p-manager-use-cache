@@ -1,13 +1,12 @@
 import prisma from "./db"
 import { cacheTag } from "next/dist/server/use-cache/cache-tag"
 import { revalidateTag } from "next/cache"
-import { wait } from "@/utils/wait"
+
 
 export async function getProjectComments(projectId: string | number) {
   "use cache"
   cacheTag(`comments:projectId=${projectId}`)
 
-  await wait(500)
   return prisma.comment.findMany({ 
     where: { projectId: Number(projectId) },
     include: {
@@ -27,7 +26,6 @@ export async function getTaskComments(taskId: string | number) {
   "use cache"
   cacheTag(`comments:taskId=${taskId}`)
 
-  await wait(500)
   return prisma.comment.findMany({ 
     where: { taskId: Number(taskId) },
     include: {

@@ -52,7 +52,7 @@ const getAdminRedisKeyPrefix = () => {
   return `dev:session:admin`;
 };
 
-const COOKIE_SESSION_KEY = getCookieSessionKey();
+export const COOKIE_SESSION_KEY = getCookieSessionKey();
 const REDIS_KEY_PREFIX = getRedisKeyPrefix();
 const ADMIN_REDIS_KEY_PREFIX = getAdminRedisKeyPrefix();
 
@@ -108,6 +108,7 @@ export async function createUserSession(user: UserSession, cookies: Pick<Cookies
   }
 
   setCookie(sessionId, cookies);
+  return sessionId;
 }
 
 // Refresh the TTL on an existing session (called on active requests)
@@ -165,6 +166,9 @@ function setCookie(sessionId: string, cookies: Pick<Cookies, "set">) {
     expires: Date.now() + SESSION_EXPIRATION_SECONDS * 1000,
   });
 }
+
+// Look up a session by raw token string (used by REST API Bearer auth)
+export const getSessionByToken = getUserSessionById;
 
 // Look up a session by ID — checks admin prefix first, then versioned prefix
 async function getUserSessionById(sessionId: string) {
