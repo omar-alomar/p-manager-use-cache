@@ -1233,16 +1233,64 @@ Create a new user account. **This is the only way to create users** — there is
 { "error": { "message": "User with this email already exists" } }
 ```
 
+### GET /admin/users/:userId
+
+Preview the impact of deleting a user. Returns the projects they manage, tasks on those projects assigned to them, and standalone uncompleted tasks. Use this to populate a reassignment confirmation UI before calling DELETE. Do NOT implement user deletion without first calling this and reassigning their work via some flow.
+
+**Response (200):**
+```json
+{
+  "data": {
+    "user": { "id": 5, "name": "Jane Doe" },
+    "projects": [
+      { "id": 1, "title": "Office Renovation" }
+    ],
+    "projectTasks": [
+      { "id": 10, "title": "Review blueprints", "completed": false }
+    ],
+    "stragglerTasks": [
+      { "id": 20, "title": "Update timesheets" }
+    ]
+  }
+}
+```
+
+| Field | Description |
+|---|---|
+| `projects` | Projects where this user is the manager (`userId`). Will be reassigned. |
+| `projectTasks` | Tasks on those managed projects that are assigned to this user. Will be reassigned along with the projects. |
+| `stragglerTasks` | Uncompleted tasks assigned to this user that are **not** on their managed projects. Will be reassigned. |
+
 ### DELETE /admin/users/:userId
 
-Delete a user. Cannot delete yourself.
+Delete a user after reassigning their projects and uncompleted tasks. Cannot delete yourself.
+
+**Query params:**
+
+| Param | Type | Required | Description |
+|---|---|---|---|
+| `reassignTo` | int | **yes** | User ID to reassign projects and tasks to. Must be a different, existing user. |
+
+**Example:** `DELETE /admin/users/5?reassignTo=2`
+
+**What happens:**
+1. All projects managed by the user are transferred to the `reassignTo` user.
+2. All tasks on those projects assigned to the deleted user (completed or not) are reassigned.
+3. All standalone uncompleted tasks assigned to the deleted user are reassigned.
+4. The user is deleted. Cascade removes: completed standalone tasks, comments by the user, mentions of the user, and notifications for the user.
 
 **Response:** `204 No Content`
 
 **Errors:**
 ```json
+// 400 — missing reassignTo
+{ "error": { "message": "reassignTo query parameter is required. Provide the user ID to reassign projects and tasks to." } }
+
 // 400 — self-deletion
 { "error": { "message": "Cannot delete your own account" } }
+
+// 400 — same user
+{ "error": { "message": "Cannot reassign to the same user being deleted" } }
 
 // 400 — not found
 { "error": { "message": "User with id 99 not found" } }

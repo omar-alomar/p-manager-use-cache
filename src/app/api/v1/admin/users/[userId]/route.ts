@@ -1,8 +1,26 @@
 import { NextRequest } from "next/server"
-import { deleteUser } from "@/db/users"
+import { deleteUserWithReassignment, getUserDeletionImpact } from "@/db/users"
 import { requireAdmin, isErrorResponse } from "../../../_lib/auth"
 import { checkMaintenance } from "../../../_lib/maintenance"
-import { jsonNoContent, jsonError } from "../../../_lib/responses"
+import { jsonSuccess, jsonNoContent, jsonError } from "../../../_lib/responses"
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ userId: string }> }
+) {
+  const auth = await requireAdmin(request)
+  if (isErrorResponse(auth)) return auth
+
+  const { userId } = await params
+
+  try {
+    const impact = await getUserDeletionImpact(userId)
+    return jsonSuccess(impact)
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to get user info"
+    return jsonError(message, 400)
+  }
+}
 
 export async function DELETE(
   request: NextRequest,
@@ -21,8 +39,13 @@ export async function DELETE(
     return jsonError("Cannot delete your own account", 400)
   }
 
+  const reassignTo = request.nextUrl.searchParams.get("reassignTo")
+  if (!reassignTo) {
+    return jsonError("reassignTo query parameter is required. Provide the user ID to reassign projects and tasks to.", 400)
+  }
+
   try {
-    await deleteUser(userId)
+    await deleteUserWithReassignment(userId, reassignTo)
     return jsonNoContent()
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to delete user"

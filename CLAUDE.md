@@ -108,6 +108,14 @@ Styles are split into modular files imported via `styles.css`:
 - Microsoft OAuth also requires a pre-existing account — it matches the Microsoft email to an existing user, no auto-provisioning.
 - The first admin account must be seeded directly in the database or created via Prisma Studio.
 
+#### User Deletion & Reassignment
+- **Users cannot be deleted without reassigning their assets.** Admins must select a target user to receive the deleted user's projects and tasks.
+- Flow: Admin clicks delete → `UserDeleteDrawer` opens → shows impact (managed projects, project tasks, standalone uncompleted tasks) → admin selects reassignment target → confirm.
+- **What gets reassigned:** All managed projects (with their tasks assigned to the deleted user), and all standalone uncompleted tasks.
+- **What gets cascade-deleted:** Completed standalone tasks, comments by the user, mentions of the user, notifications for the user.
+- DB functions: `getUserDeletionImpact()` and `deleteUserWithReassignment()` in `src/db/users.ts`. The reassignment + delete runs in a Prisma `$transaction`.
+- REST API: `GET /api/v1/admin/users/:id` returns impact preview. `DELETE /api/v1/admin/users/:id?reassignTo=<userId>` performs the operation.
+
 #### Session Auth (`src/auth/session.ts`)
 - Sessions stored in Redis with 3-month expiry
 - Session payload: `{ id: number, role: "user" | "admin" }`

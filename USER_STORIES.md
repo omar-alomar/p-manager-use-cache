@@ -513,7 +513,7 @@ These are presented as bottom sheets, modals, or slide-overs — not full-screen
 | ADMIN-03 | P0 | As an admin, I want to view all users with their email, role, project/task counts, version seen, and created date. | Scrollable user list with all fields. |
 | ADMIN-04 | P0 | As an admin, I want to create a new user with name, email, password (min 8 chars), and optional role. | Form with validation. New user appears in list. |
 | ADMIN-05 | P1 | As an admin, I want to edit a user's email, reset their password, toggle their role (user/admin), and set their last-seen version. | Each field independently editable. |
-| ADMIN-06 | P1 | As an admin, I want to delete a user. | Confirmation required. |
+| ADMIN-06 | P1 | As an admin, I want to delete a user after reassigning their projects and uncompleted tasks to another team member. | Drawer shows deletion impact (managed projects, project tasks, standalone uncompleted tasks). Admin must select a reassignment target user. Projects transfer with all their tasks. Standalone uncompleted tasks are reassigned. Completed standalone tasks, comments, mentions, and notifications of the deleted user are removed. |
 
 ### 14.3 Entity Management
 
@@ -823,7 +823,8 @@ Mention 1──* Notification
 | System stats | GET | `/api/v1/admin/stats` | User/project/task/client counts |
 | List users | GET | `/api/v1/admin/users` | Same as /users but admin-gated |
 | Create user | POST | `/api/v1/admin/users` | Body: `{ name, email, password, role? }` |
-| Delete user | DELETE | `/api/v1/admin/users/{id}` | Cannot delete self |
+| Deletion impact | GET | `/api/v1/admin/users/{id}` | Projects, tasks that would be reassigned |
+| Delete user | DELETE | `/api/v1/admin/users/{id}?reassignTo={id}` | Reassigns assets, then deletes. Cannot delete self |
 | Update role | PUT | `/api/v1/admin/users/{id}/role` | Body: `{ role }` |
 | Update email | PUT | `/api/v1/admin/users/{id}/email` | Body: `{ email }` |
 | Reset password | PUT | `/api/v1/admin/users/{id}/password` | Body: `{ password }` — server hashes |

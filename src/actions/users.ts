@@ -1,6 +1,6 @@
 "use server"
 
-import { getUsers, deleteUser, updateUserRole, updateUserEmail, updateUserPassword, updateUserLastSeenVersion, createUser } from "@/db/users"
+import { getUsers, deleteUserWithReassignment, getUserDeletionImpact, updateUserRole, updateUserEmail, updateUserPassword, updateUserLastSeenVersion, createUser } from "@/db/users"
 import { Role } from "@prisma/client"
 import { z } from "zod"
 import { isBlocked } from "@/utils/maintenance"
@@ -18,9 +18,22 @@ export async function getUsersAction() {
   return await getUsers()
 }
 
-export async function deleteUserAction(userId: string | number) {
+export async function getUserDeletionImpactAction(userId: string | number) {
+  try {
+    return await getUserDeletionImpact(userId)
+  } catch (error: any) {
+    throw error
+  }
+}
+
+export async function deleteUserAction(userId: string | number, reassignToUserId: string | number) {
   if (await isBlocked()) return { success: false, message: MAINTENANCE_MSG }
-  return await deleteUser(userId)
+  try {
+    await deleteUserWithReassignment(userId, reassignToUserId)
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, message: error.message || "Failed to delete user" }
+  }
 }
 
 export async function updateUserRoleAction(userId: string | number, newRole: string) {
