@@ -165,7 +165,7 @@ Two login methods — both require a pre-existing account:
 
 ### REST API v1 (for mobile clients)
 
-Full REST API at `/api/v1/` for mobile app consumption. Accepts `Authorization: Bearer <token>` or session cookie.
+Full REST API at `/api/v1/` for mobile app consumption. Accepts `Authorization: Bearer <token>` or session cookie. List endpoints return paginated responses (`page` + `limit` query params, default 20 items per page).
 
 | Group | Endpoints | Description |
 |---|---|---|

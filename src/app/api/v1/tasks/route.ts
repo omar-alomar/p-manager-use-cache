@@ -6,6 +6,7 @@ import { notificationService } from "@/services/notificationService"
 import { requireAuth, isErrorResponse } from "../_lib/auth"
 import { checkMaintenance } from "../_lib/maintenance"
 import { jsonSuccess, jsonCreated, jsonError } from "../_lib/responses"
+import { getPaginationParams, paginate } from "../_lib/pagination"
 
 export async function GET(request: NextRequest) {
   const auth = await requireAuth(request)
@@ -14,6 +15,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const userId = searchParams.get("userId")
   const projectId = searchParams.get("projectId")
+  const { page, limit } = getPaginationParams(searchParams)
 
   let tasks
   if (userId) {
@@ -24,7 +26,7 @@ export async function GET(request: NextRequest) {
     tasks = await getTasks()
   }
 
-  return jsonSuccess(tasks)
+  return jsonSuccess(paginate(tasks, page, limit))
 }
 
 export async function POST(request: NextRequest) {

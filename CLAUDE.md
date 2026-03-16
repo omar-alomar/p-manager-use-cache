@@ -225,7 +225,7 @@ Full reference in `docs/API.md`. Summary of route groups:
 | `/api/v1/notifications/` | list, count, read, read-all | Notification management |
 | `/api/v1/admin/` | stats, user CRUD, entity deletes, maintenance | Admin-only operations |
 
-**Architecture:** Shared utilities in `src/app/api/v1/_lib/` — `auth.ts` (Bearer + cookie auth), `responses.ts` (consistent JSON format), `maintenance.ts` (503 guard). All routes call existing `src/db/` functions directly — no duplicated business logic.
+**Architecture:** Shared utilities in `src/app/api/v1/_lib/` — `auth.ts` (Bearer + cookie auth), `responses.ts` (consistent JSON format), `maintenance.ts` (503 guard), `pagination.ts` (API-level page slicing). All routes call existing `src/db/` functions directly — no duplicated business logic. List endpoints return paginated responses (`{ items, total, page, limit, hasMore }`) with default `page=1, limit=20` (max 100). Pagination is API-level only — DB functions and cache are untouched.
 
 ## App Pages
 | Route | Description |

@@ -8,6 +8,7 @@ import { notificationService } from "@/services/notificationService"
 import { requireAuth, isErrorResponse } from "../_lib/auth"
 import { checkMaintenance } from "../_lib/maintenance"
 import { jsonSuccess, jsonCreated, jsonError } from "../_lib/responses"
+import { getPaginationParams, paginate } from "../_lib/pagination"
 
 const commentSchema = z.object({
   body: z.string().min(1, "Comment body is required"),
@@ -22,6 +23,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const projectId = searchParams.get("projectId")
   const taskId = searchParams.get("taskId")
+  const { page, limit } = getPaginationParams(searchParams)
 
   if (!projectId && !taskId) {
     return jsonError("Either projectId or taskId query param is required", 400)
@@ -31,7 +33,7 @@ export async function GET(request: NextRequest) {
     ? await getProjectComments(projectId)
     : await getTaskComments(taskId!)
 
-  return jsonSuccess(comments)
+  return jsonSuccess(paginate(comments, page, limit))
 }
 
 export async function POST(request: NextRequest) {

@@ -742,6 +742,8 @@ Mention 1──* Notification
 
 **Response format:** `{ "data": <payload> }` on success, `{ "error": { "message": "...", "details": { ... } } }` on error.
 
+**Pagination:** List endpoints return results in pages (20 items per page by default) instead of everything at once. Use `?page=1&limit=20` query params. Response includes `items` (the page of results), `total` (total count across all pages), `page`, `limit`, and `hasMore` (boolean — `true` if more pages exist, use for infinite scroll). See `docs/API.md` for full details.
+
 **Status codes:** 200 (ok), 201 (created), 204 (no content), 400 (bad input), 401 (no auth), 403 (not admin), 404 (not found), 503 (maintenance).
 
 #### Auth

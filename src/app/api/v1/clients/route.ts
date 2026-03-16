@@ -4,6 +4,7 @@ import { getClients, createClient } from "@/db/clients"
 import { requireAuth, isErrorResponse } from "../_lib/auth"
 import { checkMaintenance } from "../_lib/maintenance"
 import { jsonSuccess, jsonCreated, jsonError } from "../_lib/responses"
+import { getPaginationParams, paginate } from "../_lib/pagination"
 
 export async function GET(request: NextRequest) {
   const auth = await requireAuth(request)
@@ -11,9 +12,10 @@ export async function GET(request: NextRequest) {
 
   const { searchParams } = new URL(request.url)
   const query = searchParams.get("query") ?? undefined
+  const { page, limit } = getPaginationParams(searchParams)
 
   const clients = await getClients({ query })
-  return jsonSuccess(clients)
+  return jsonSuccess(paginate(clients, page, limit))
 }
 
 export async function POST(request: NextRequest) {

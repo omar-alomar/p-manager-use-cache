@@ -4,6 +4,7 @@ import { getProjects, createProject } from "@/db/projects"
 import { requireAuth, isErrorResponse } from "../_lib/auth"
 import { checkMaintenance } from "../_lib/maintenance"
 import { jsonSuccess, jsonCreated, jsonError } from "../_lib/responses"
+import { getPaginationParams, paginate } from "../_lib/pagination"
 
 export async function GET(request: NextRequest) {
   const auth = await requireAuth(request)
@@ -13,9 +14,10 @@ export async function GET(request: NextRequest) {
   const query = searchParams.get("query") ?? undefined
   const userId = searchParams.get("userId") ?? undefined
   const includeArchived = searchParams.get("includeArchived") === "true"
+  const { page, limit } = getPaginationParams(searchParams)
 
   const projects = await getProjects({ query, userId, includeArchived })
-  return jsonSuccess(projects)
+  return jsonSuccess(paginate(projects, page, limit))
 }
 
 export async function POST(request: NextRequest) {

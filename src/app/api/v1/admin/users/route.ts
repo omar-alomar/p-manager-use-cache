@@ -4,6 +4,7 @@ import { getUsers, createUser } from "@/db/users"
 import { requireAdmin, isErrorResponse } from "../../_lib/auth"
 import { checkMaintenance } from "../../_lib/maintenance"
 import { jsonSuccess, jsonCreated, jsonError } from "../../_lib/responses"
+import { getPaginationParams, paginate } from "../../_lib/pagination"
 
 const createUserSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -16,9 +17,12 @@ export async function GET(request: NextRequest) {
   const auth = await requireAdmin(request)
   if (isErrorResponse(auth)) return auth
 
+  const { searchParams } = new URL(request.url)
+  const { page, limit } = getPaginationParams(searchParams)
+
   const users = await getUsers()
   const sanitized = users.map(({ password, salt, ...u }) => u)
-  return jsonSuccess(sanitized)
+  return jsonSuccess(paginate(sanitized, page, limit))
 }
 
 export async function POST(request: NextRequest) {

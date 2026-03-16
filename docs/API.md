@@ -51,11 +51,53 @@ The token is a 64-character hex string. On iOS, store it in Keychain. On Android
 
 ## Response Format
 
-### Success
+### Success (single item or action)
 
 ```json
 { "data": <payload> }
 ```
+
+### Success (paginated list)
+
+List endpoints return results in pages instead of returning everything at once. This keeps response payloads small — important for mobile clients on cellular connections.
+
+**How it works:** Send `page` and `limit` as query params to control which slice of results you get back. For example, `GET /tasks?page=1&limit=20` returns the first 20 tasks. `GET /tasks?page=2&limit=20` returns tasks 21–40. If you don't send these params, you get page 1 with 20 items by default.
+
+**Typical mobile flow:**
+1. Initial load: `GET /tasks?page=1&limit=20` → render first 20 tasks
+2. User scrolls to bottom → check `hasMore`, if `true` call `GET /tasks?page=2&limit=20`
+3. Append results, repeat until `hasMore` is `false`
+
+**Response shape:**
+
+```json
+{
+  "data": {
+    "items": [ ... ],
+    "total": 150,
+    "page": 1,
+    "limit": 20,
+    "hasMore": true
+  }
+}
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `items` | array | The results for this page |
+| `total` | int | Total matching records across all pages (use for "showing X of Y" UI) |
+| `page` | int | Which page this is (1-indexed) |
+| `limit` | int | How many items per page |
+| `hasMore` | boolean | `true` if there are more pages after this one — use to trigger "load more" / infinite scroll |
+
+**Query params** (available on all list endpoints):
+
+| Param | Type | Default | Max | Description |
+|---|---|---|---|---|
+| `page` | int | 1 | — | Which page to return (1 = first page) |
+| `limit` | int | 20 | 100 | How many items per page. Max 100 to prevent oversized responses |
+
+**Paginated endpoints:** `GET /projects`, `GET /tasks`, `GET /clients`, `GET /users`, `GET /comments`, `GET /admin/users`.
 
 Status `200` for reads/updates, `201` for creates, `204` (empty body) for deletes and logout.
 
@@ -398,53 +440,59 @@ List all projects.
 | `query` | string | — | Search title and body (substring match) |
 | `userId` | int | — | Filter by project manager ID |
 | `includeArchived` | `"true"` | `false` | Include archived projects |
+| `page` | int | 1 | Page number |
+| `limit` | int | 20 | Items per page (max 100) |
 
 **Sort order:** Default Prisma ordering (by ID ascending). No client-controlled sorting.
-
-**Pagination:** None. Returns all matching projects.
 
 **Response (200):**
 ```json
 {
-  "data": [
-    {
-      "id": 1,
-      "title": "Office Renovation",
-      "clientId": 3,
-      "body": "Full renovation of floor 2...",
-      "userId": 2,
-      "archived": false,
-      "milestone": "2026-06-01T00:00:00.000Z",
-      "mbaNumber": "MBA-2026-001",
-      "coFileNumbers": "",
-      "dldReviewer": "",
-      "createdAt": "2025-06-01T10:00:00.000Z",
-      "clientRef": {
-        "id": 3,
-        "name": "Acme Corp",
-        "companyName": "Acme Corp",
-        "email": "contact@acme.com",
-        "phone": null,
-        "address": null,
-        "createdAt": "2025-01-01T10:00:00.000Z",
-        "updatedAt": "2025-01-01T10:00:00.000Z"
-      },
-      "milestones": [
-        {
-          "id": 1,
-          "date": "2026-04-15T00:00:00.000Z",
-          "item": "Phase 1 review",
-          "completed": false,
-          "apfo": false,
-          "projectId": 1,
-          "createdAt": "2025-06-01T10:00:00.000Z"
-        }
-      ],
-      "tasks": [
-        { "id": 5, "title": "Review blueprints", "urgency": "HIGH" }
-      ]
-    }
-  ]
+  "data": {
+    "items": [
+      {
+        "id": 1,
+        "title": "Office Renovation",
+        "clientId": 3,
+        "body": "Full renovation of floor 2...",
+        "userId": 2,
+        "archived": false,
+        "milestone": "2026-06-01T00:00:00.000Z",
+        "mbaNumber": "MBA-2026-001",
+        "coFileNumbers": "",
+        "dldReviewer": "",
+        "createdAt": "2025-06-01T10:00:00.000Z",
+        "clientRef": {
+          "id": 3,
+          "name": "Acme Corp",
+          "companyName": "Acme Corp",
+          "email": "contact@acme.com",
+          "phone": null,
+          "address": null,
+          "createdAt": "2025-01-01T10:00:00.000Z",
+          "updatedAt": "2025-01-01T10:00:00.000Z"
+        },
+        "milestones": [
+          {
+            "id": 1,
+            "date": "2026-04-15T00:00:00.000Z",
+            "item": "Phase 1 review",
+            "completed": false,
+            "apfo": false,
+            "projectId": 1,
+            "createdAt": "2025-06-01T10:00:00.000Z"
+          }
+        ],
+        "tasks": [
+          { "id": 5, "title": "Review blueprints", "urgency": "HIGH" }
+        ]
+      }
+    ],
+    "total": 25,
+    "page": 1,
+    "limit": 20,
+    "hasMore": true
+  }
 }
 ```
 
@@ -622,59 +670,39 @@ List tasks. Returns all tasks by default, or filtered by user/project.
 |---|---|---|
 | `userId` | int | Tasks assigned to this user |
 | `projectId` | int | Tasks in this project |
+| `page` | int | Page number (default 1) |
+| `limit` | int | Items per page (default 20, max 100) |
 
-If both are provided, `userId` takes precedence. If neither, returns all tasks.
+If both `userId` and `projectId` are provided, `userId` takes precedence. If neither, returns all tasks.
 
 **Sort order:** `createdAt` descending (newest first).
-
-**Pagination:** None. Returns all matching tasks.
 
 **Response (200):**
 ```json
 {
-  "data": [
-    {
-      "id": 1,
-      "title": "Review blueprints",
-      "completed": false,
-      "completedAt": null,
-      "urgency": "HIGH",
-      "userId": 3,
-      "assignedById": 2,
-      "projectId": 1,
-      "createdAt": "2025-07-01T10:00:00.000Z",
-      "updatedAt": "2025-07-15T10:00:00.000Z",
-      "Project": {
+  "data": {
+    "items": [
+      {
         "id": 1,
-        "title": "Office Renovation",
-        "clientId": 3,
-        "body": "...",
-        "userId": 2,
-        "archived": false,
-        "milestone": "2026-06-01T00:00:00.000Z",
-        "mbaNumber": "MBA-2026-001",
-        "coFileNumbers": "",
-        "dldReviewer": "",
-        "createdAt": "2025-06-01T10:00:00.000Z"
-      },
-      "User": {
-        "id": 3,
-        "email": "bob@example.com",
-        "name": "Bob Wilson",
-        "role": "user",
-        "createdAt": "2025-01-01T10:00:00.000Z",
-        "lastSeenVersion": "1.1.1"
-      },
-      "AssignedBy": {
-        "id": 2,
-        "email": "jane@example.com",
-        "name": "Jane Doe",
-        "role": "user",
-        "createdAt": "2025-01-01T10:00:00.000Z",
-        "lastSeenVersion": "1.1.1"
+        "title": "Review blueprints",
+        "completed": false,
+        "completedAt": null,
+        "urgency": "HIGH",
+        "userId": 3,
+        "assignedById": 2,
+        "projectId": 1,
+        "createdAt": "2025-07-01T10:00:00.000Z",
+        "updatedAt": "2025-07-15T10:00:00.000Z",
+        "Project": { ... },
+        "User": { ... },
+        "AssignedBy": { ... }
       }
-    }
-  ]
+    ],
+    "total": 150,
+    "page": 1,
+    "limit": 20,
+    "hasMore": true
+  }
 }
 ```
 
@@ -773,49 +801,33 @@ Toggle task completion status. This is the preferred endpoint for marking tasks 
 | Param | Type | Description |
 |---|---|---|
 | `query` | string | Search name, email, phone, and address (substring match) |
+| `page` | int | Page number (default 1) |
+| `limit` | int | Items per page (default 20, max 100) |
 
 **Sort order:** `name` ascending (alphabetical).
-
-**Pagination:** None.
 
 **Response (200):**
 ```json
 {
-  "data": [
-    {
-      "id": 1,
-      "name": "Alice Johnson",
-      "companyName": "Acme Corp",
-      "email": "alice@acme.com",
-      "phone": "+1234567890",
-      "address": "123 Main St",
-      "createdAt": "2025-03-01T10:00:00.000Z",
-      "updatedAt": "2025-03-15T10:00:00.000Z",
-      "projects": [
-        {
-          "id": 1,
-          "title": "Office Renovation",
-          "clientId": 1,
-          "body": "...",
-          "userId": 2,
-          "archived": false,
-          "milestone": "2026-06-01T00:00:00.000Z",
-          "mbaNumber": "",
-          "coFileNumbers": "",
-          "dldReviewer": "",
-          "createdAt": "2025-06-01T10:00:00.000Z",
-          "user": {
-            "id": 2,
-            "email": "jane@example.com",
-            "name": "Jane Doe",
-            "role": "user",
-            "createdAt": "2025-01-01T10:00:00.000Z",
-            "lastSeenVersion": "1.1.1"
-          }
-        }
-      ]
-    }
-  ]
+  "data": {
+    "items": [
+      {
+        "id": 1,
+        "name": "Alice Johnson",
+        "companyName": "Acme Corp",
+        "email": "alice@acme.com",
+        "phone": "+1234567890",
+        "address": "123 Main St",
+        "createdAt": "2025-03-01T10:00:00.000Z",
+        "updatedAt": "2025-03-15T10:00:00.000Z",
+        "projects": [ ... ]
+      }
+    ],
+    "total": 8,
+    "page": 1,
+    "limit": 20,
+    "hasMore": false
+  }
 }
 ```
 
@@ -907,27 +919,36 @@ Users are read-only through the public API. User creation and management is admi
 
 List all users. Sensitive fields (`password`, `salt`) are stripped.
 
+**Query params:**
+
+| Param | Type | Description |
+|---|---|---|
+| `page` | int | Page number (default 1) |
+| `limit` | int | Items per page (default 20, max 100) |
+
 **Sort order:** `name` ascending (alphabetical).
 
 **Response (200):**
 ```json
 {
-  "data": [
-    {
-      "id": 1,
-      "email": "jane@example.com",
-      "name": "Jane Doe",
-      "role": "user",
-      "createdAt": "2025-01-15T10:00:00.000Z",
-      "lastSeenVersion": "1.1.1",
-      "projects": [
-        { "id": 1, "title": "Office Renovation", ... }
-      ],
-      "tasks": [
-        { "id": 5, "title": "Review blueprints", ... }
-      ]
-    }
-  ]
+  "data": {
+    "items": [
+      {
+        "id": 1,
+        "email": "jane@example.com",
+        "name": "Jane Doe",
+        "role": "user",
+        "createdAt": "2025-01-15T10:00:00.000Z",
+        "lastSeenVersion": "1.1.1",
+        "projects": [ ... ],
+        "tasks": [ ... ]
+      }
+    ],
+    "total": 10,
+    "page": 1,
+    "limit": 20,
+    "hasMore": false
+  }
 }
 ```
 
@@ -953,28 +974,36 @@ List comments for a project or task. **One query param is required.**
 |---|---|---|
 | `projectId` | int | Comments on this project |
 | `taskId` | int | Comments on this task |
+| `page` | int | Page number (default 1) |
+| `limit` | int | Items per page (default 20, max 100) |
 
 **Sort order:** `createdAt` descending (newest first).
 
 **Response (200):**
 ```json
 {
-  "data": [
-    {
-      "id": 1,
-      "email": "jane@example.com",
-      "body": "Looks good, @John Smith please review the timeline",
-      "projectId": 1,
-      "taskId": null,
-      "userId": 2,
-      "createdAt": "2025-08-01T10:00:00.000Z",
-      "user": {
-        "id": 2,
-        "name": "Jane Doe",
-        "role": "user"
+  "data": {
+    "items": [
+      {
+        "id": 1,
+        "email": "jane@example.com",
+        "body": "Looks good, @John Smith please review the timeline",
+        "projectId": 1,
+        "taskId": null,
+        "userId": 2,
+        "createdAt": "2025-08-01T10:00:00.000Z",
+        "user": {
+          "id": 2,
+          "name": "Jane Doe",
+          "role": "user"
+        }
       }
-    }
-  ]
+    ],
+    "total": 12,
+    "page": 1,
+    "limit": 20,
+    "hasMore": false
+  }
 }
 ```
 
@@ -1173,7 +1202,7 @@ System-wide statistics.
 
 ### GET /admin/users
 
-List all users (admin view). Same response shape as `GET /users` — no password/salt.
+List all users (admin view). Same response shape as `GET /users` — no password/salt. Supports `page` and `limit` query params.
 
 ### POST /admin/users
 
