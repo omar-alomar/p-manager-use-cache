@@ -93,6 +93,10 @@ export async function editTaskAction(
 
     const task = await updateTask(taskId, { ...data, completedAt })
 
+    // Revalidate old project page if the task was moved to a different project
+    if (originalTask?.projectId && originalTask.projectId !== data.projectId) {
+      revalidateTaskPaths({ projectId: originalTask.projectId })
+    }
     revalidateTaskPaths({ projectId: data.projectId, taskId })
 
     // Return success state instead of redirecting

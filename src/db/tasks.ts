@@ -208,6 +208,9 @@ export async function updateTask(
      projectId?: number
      completedAt?: Date | null
   }) {
+  // Fetch old task to know if projectId is changing
+  const oldTask = await prisma.task.findUnique({ where: { id: Number(taskId) }, select: { projectId: true, userId: true } })
+
   const task = await prisma.task.update({
     where: { id: Number(taskId) },
     data: {
@@ -224,7 +227,9 @@ export async function updateTask(
   revalidateTag("tasks:all")
   revalidateTag(`tasks:id=${taskId}`)
   revalidateTag(`tasks:userId=${userId}`)
+  if (oldTask?.userId && oldTask.userId !== userId) revalidateTag(`tasks:userId=${oldTask.userId}`)
   if (projectId) revalidateTag(`tasks:projectId=${projectId}`)
+  if (oldTask?.projectId && oldTask.projectId !== projectId) revalidateTag(`tasks:projectId=${oldTask.projectId}`)
 
   return task
 }
