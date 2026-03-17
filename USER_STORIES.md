@@ -1,7 +1,7 @@
 # Mildenberg Project Platform — Mobile App User Story Reference
 
 > **Purpose:** Comprehensive, platform-agnostic reference for a mobile development team building a native app based on the Mildenberg web platform.
-> **Source version:** α 1.1.1
+> **Source version:** α 1.1.2
 > **Date:** 2026-03-16
 > **Total user stories:** 140
 

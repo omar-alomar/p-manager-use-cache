@@ -1,7 +1,7 @@
 # Mildenberg Project Platform — Claude Instructions
 
 ## Project Overview
-Internal project management platform for the Mildenberg team. Tracks projects, tasks, clients, milestones, and team collaboration. Current version: **α 1.1.1** (tracked via `src/constants/version.ts`).
+Internal project management platform for the Mildenberg team. Tracks projects, tasks, clients, milestones, and team collaboration. Current version: **α 1.1.2** (tracked via `src/constants/version.ts`).
 
 ## Tech Stack
 - **Framework**: Next.js 15 (canary `15.2.0-canary.56`), React 19, TypeScript
@@ -126,7 +126,7 @@ Styles are split into modular files imported via `styles.css`:
   - Production: `prod-session-id` cookie
   - Staging: `staging-session-id` cookie
   - Development: `dev-session-id` cookie
-- **Regular users**: Redis key prefix includes `APP_VERSION` (e.g. `prod:session:v1.1.1:<id>`) — version bump invalidates their sessions, forcing re-login
+- **Regular users**: Redis key prefix includes `APP_VERSION` (e.g. `prod:session:v1.1.2:<id>`) — version bump invalidates their sessions, forcing re-login
 - **Admins**: Redis key prefix is version-less (e.g. `prod:session:admin:<id>`) — sessions survive version bumps so admins aren't locked out during deploys
 - Session lookup checks the admin prefix first, then the versioned prefix
 - Logout deletes from both prefixes
@@ -148,8 +148,8 @@ Styles are split into modular files imported via `styles.css`:
 - Azure client secret expires (max 24 months) — set a reminder to rotate
 
 ### Version Tracking
-- `APP_VERSION` exported from `src/constants/version.ts` (currently `"1.1.1"`)
-- `DISPLAY_VERSION` strips the patch number for display (e.g. `"1.1.1"` → `"1.1"`) — used in navbar and changelog badges
+- `APP_VERSION` exported from `src/constants/version.ts` (currently `"1.1.2"`)
+- `DISPLAY_VERSION` strips the patch number for display (e.g. `"1.1.2"` → `"1.1"`) — used in navbar and changelog badges
 - `User.lastSeenVersion` field tracks which version each user has seen
 - On login, `getPostLoginRedirect()` checks if user has seen the current version; if not, redirects to `/changelog`
 - `markVersionSeen()` updates the user's `lastSeenVersion` after viewing changelog

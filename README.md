@@ -2,7 +2,7 @@
 
 Internal project management platform for the Mildenberg team. Tracks projects, tasks, clients, milestones, and team collaboration.
 
-**Current version:** α 1.1.1
+**Current version:** α 1.1.2
 
 ## Tech Stack
 

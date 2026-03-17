@@ -29,6 +29,20 @@ export default async function ChangelogPage() {
             <span className="changelog-version">α {DISPLAY_VERSION}</span>
           </div>
 
+          <h3 className="changelog-subheading">1.1.2</h3>
+          <time className="changelog-date">2026-03-17</time>
+          <p className="changelog-summary">
+            Property data lookup on project pages.
+          </p>
+          <ul className="changelog-changes">
+            <li>
+              New <strong>Property Lookup</strong> section on every project page — enter a Howard County address to pull owner, zoning, building, assessment, sales history, floodplain, soils, scanned drawings, and more.
+              <div className="changelog-media">
+                <img src="/changelog/propLookup.png" alt="Property Lookup on project page" />
+              </div>
+            </li>
+          </ul>
+
           <h3 className="changelog-subheading">1.1.1</h3>
           <time className="changelog-date">2026-03-14</time>
           <p className="changelog-summary">
