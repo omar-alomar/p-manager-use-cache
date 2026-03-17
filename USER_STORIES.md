@@ -3,7 +3,7 @@
 > **Purpose:** Comprehensive, platform-agnostic reference for a mobile development team building a native app based on the Mildenberg web platform.
 > **Source version:** α 1.1.1
 > **Date:** 2026-03-16
-> **Total user stories:** 130
+> **Total user stories:** 140
 
 ---
 
@@ -36,8 +36,9 @@
 14. [Admin Panel](#14-admin-panel)
 15. [Navigation & General UX](#15-navigation--general-ux)
 16. [Mobile-Specific Requirements](#16-mobile-specific-requirements)
-17. [Data Model Reference](#17-data-model-reference)
-18. [API Contract Reference](#18-api-contract-reference)
+17. [Property Lookup](#17-property-lookup)
+18. [Data Model Reference](#18-data-model-reference)
+19. [API Contract Reference](#19-api-contract-reference)
 
 ---
 
@@ -67,7 +68,7 @@ These are the top-level destinations accessible from the main navigation.
 
 | Screen | Purpose | Stories | Navigates To |
 |---|---|---|---|
-| **Project Detail** | Full project view: info, milestones, tasks, comments | PROJ-17 – PROJ-21, MILE-01 – MILE-05, COMMENT-01 – COMMENT-03 | Project Edit, Task Detail, User Profile, Milestone Edit |
+| **Project Detail** | Full project view: info, milestones, tasks, comments, property lookup | PROJ-17 – PROJ-21, MILE-01 – MILE-05, COMMENT-01 – COMMENT-03, PROP-01 – PROP-10 | Project Edit, Task Detail, User Profile, Milestone Edit |
 | **Task Detail** | Full task view: info, metadata, comments | TASK-06 – TASK-09, COMMENT-01 – COMMENT-03 | Task Edit, Project Detail, User Profile |
 | **Client Detail** | Client info, projects, stats | CLIENT-09 | Client Edit, Project Detail |
 | **User Profile** | Team member info, their projects and tasks | USER-02 | Project Detail, Task Detail |
@@ -602,7 +603,116 @@ These are presented as bottom sheets, modals, or slide-overs — not full-screen
 
 ---
 
-## 17. Data Model Reference
+## 17. Property Lookup
+
+> Howard County property data lookup embedded on each project detail page. Aggregates data from public APIs (MD Open Data SDAT, HC DataExplorer, HC GeoServer WFS) and SDAT detail page scrape. Last searched address persists per project.
+
+### Data Sources & What They Provide
+
+| Source | Auth | What It Provides |
+|---|---|---|
+| **MD Open Data (SDAT API)** | None (1,000 req/hr) | Property classification, building/CAMA data, deed refs, sales history (3 segments), assessment values, utilities, zoning, legal description, lat/long, links |
+| **SDAT Detail Page (scrape)** | None | **Authoritative** owner name(s), mailing address, principal residence, quality code, renovation year, assessment values (can differ from API) |
+| **HC DataExplorer** | None | State Plane coordinates (for WFS queries), plat number (for drawing search) |
+| **HC GeoServer WFS** | None | Floodplain zone, soils/hydrology, forest conservation easements, scanned drawings (spatial intersection) |
+
+### User Stories
+
+| ID | Priority | User Story | Acceptance Criteria |
+|---|---|---|---|
+| PROP-1 | P1 | As an engineer, I want to enter a property address on a project page and see comprehensive property data. | Collapsible "Property Lookup" section on project detail page. Address input with search. Results show: owner, property info, building, deed/legal, utilities, assessment, sales history, links, scanned drawings, floodplain, soils, forest easements. |
+| PROP-2 | P1 | As an engineer, I want the last searched address to be saved so my team sees the same data when they open the project. | Address saved to `Project.propertyAddress` after successful search. Auto-expands and auto-searches on page load if saved address exists. |
+| PROP-3 | P1 | As an engineer, I want to see the **current** property owner, not stale data. | Owner name scraped from SDAT detail page (authoritative). Not from Open Data API (no owner field) or HC DataExplorer (can lag behind recent transfers by months). |
+| PROP-4 | P1 | As an engineer, I want accurate assessment values even for recently re-assessed properties. | Assessment values (land, improvement, total, phase-in) scraped from SDAT detail page. API values used as fallback only. Validated: found $18K discrepancy on 1 of 8 properties tested. |
+| PROP-5 | P1 | As an engineer, I want to see scanned drawings (plats, SDPs, prelim plans) for the property. | Drawings found via WFS `Scanned_Drawings_Public` spatial query + HC DataExplorer plat number search. Each drawing shows name, folder, description, and a PDF download link. |
+| PROP-6 | P1 | As an engineer, I want to know if the property is in a floodplain. | WFS `Floodplain` spatial query. Shows flood zone, subtype, and Special Flood Hazard Area status (yes/no badge). |
+| PROP-7 | P1 | As an engineer, I want to see soil type and hydrology data. | WFS `Soils` spatial query. Shows soil symbol, hydrologic group, class, description. |
+| PROP-8 | P1 | As an engineer, I want to see forest conservation easements. | WFS `Forest_Conservation_Easements` spatial query. Shows subdivision, acres, BMP type, file number. |
+| PROP-9 | P1 | As an engineer, I want direct links to external property resources. | Links section with: SDAT Detail page, HC Interactive Map (zoomed to property), Google Maps (satellite), MD FinderOnline. |
+| PROP-10 | P1 | As an engineer, I want to see sales history with seller, date, price, and deed refs. | Up to 3 most recent sales from SDAT API. Each shows: grantor (seller), transfer date, consideration (price), conveyance type, deed liber/folio. |
+
+### Data Pipeline Detail
+
+The property lookup route (`src/app/api/property-lookup/route.ts`) runs 3 sequential phases with parallelism within each phase. All external calls have a 12-second timeout and fail gracefully — if any single source is down, the rest still return.
+
+**Phase 1 — Address search (parallel):**
+
+| Call | Source | Purpose | What We Extract |
+|---|---|---|---|
+| SDAT Open Data API | `opendata.maryland.gov/resource/ed4q-f8tm.json` | Property records by address | Zoning, land use, building/CAMA data, deed refs, legal description, sales history (3 segments), utilities (water/sewer), lat/long, assessment values (fallback), links (SDAT, FinderOnline, Google Maps) |
+| HC DataExplorer `SearchAddresses` | `data.howardcountymd.gov/.../SearchAddresses` | Get State Plane coordinates | `MyX`, `MyY` — EPSG:2248 coordinates needed for all WFS spatial queries in Phase 3 |
+
+**Phase 2 — Authoritative owner & plat (parallel, depends on Phase 1):**
+
+| Call | Source | Purpose | What We Extract |
+|---|---|---|---|
+| SDAT Detail Page scrape | `sdat.dat.maryland.gov/RealProperty/Pages/viewdetails.aspx` | Authoritative live data | Owner name(s) (`lblOwnerName_0`, `lblOwnerName2_0`), mailing address (`lblMailingAddress_0`), use (`lblUse_0`), principal residence (`lblPrinResidence_0`), quality code (`lblQuality_0`), renovation year (`lblRenovation_0`), assessment values (`lblBaseLandNow_0`, `lblBaseImproveNow_0`, `lblAssesTotal_0`, `lblPhaseInTotal_0`) |
+| HC DataExplorer `QueryPropertyByTaxID` | `data.howardcountymd.gov/.../QueryPropertyByTaxID` | Get plat number for drawing search | `PLAT` field only — owner name (`OWNNAME1`) from this source is **not used** (can be stale or truncated) |
+
+The SDAT detail page URL is constructed from the `real_property_search_link` field in the Phase 1 API response (it's an object with a `.url` property, not a plain string).
+
+**Phase 3 — Environmental & drawings (parallel, depends on Phase 1 coordinates + Phase 2 plat):**
+
+| Call | Source | Purpose | What We Extract |
+|---|---|---|---|
+| WFS `Floodplain` | HC GeoServer, spatial `INTERSECTS` query | Flood zone status | `FLD_ZONE`, `ZONE_SUBTY`, `SFHA_TF` (Special Flood Hazard Area yes/no) |
+| WFS `Soils` | HC GeoServer, spatial `INTERSECTS` query | Soil data | `MUSYM` (symbol), `HSG` (hydrologic group), `CLASS`, `Description` |
+| WFS `Forest_Conservation_Easements` | HC GeoServer, spatial `INTERSECTS` query | Easement data | `Subdivision`, `Acres`, `BMP_Type`, `File_Number` |
+| WFS `Scanned_Drawings_Public` | HC GeoServer, spatial `INTERSECTS` query | Drawings covering the property location | `Name`, `Folder`, `Description` → PDF URL constructed as `http://data.howardcountymd.gov/scannedpdf/{Folder}/{Name}.PDF` |
+| HC DataExplorer `QueryScannedDrawingsByNumber` | `data.howardcountymd.gov/.../QueryScannedDrawingsByNumber` | Drawings matching the plat number | Same fields. PDF field is an HTML-encoded anchor tag — URL extracted via regex. Results deduplicated with WFS drawings by name. |
+
+All WFS queries use EPSG:2248 (Maryland State Plane) coordinates from HC DataExplorer `SearchAddresses`. If coordinates are not found, all WFS queries and spatial drawing search are skipped.
+
+### Field-by-Field Source Map
+
+Indicates where each displayed field comes from and why.
+
+| Displayed Field | Primary Source | Fallback | Why Not the Other Source |
+|---|---|---|---|
+| **Owner name(s)** | SDAT page scrape | *(none)* | SDAT API has no owner field. HC DataExplorer `OWNNAME1` can be stale after recent transfers (validated: wrong on 4/14 properties tested), truncates long names, and never returns Owner 2. |
+| **Mailing address** | SDAT page scrape | *(none)* | Not available in any API. |
+| **Principal residence** | SDAT page scrape (`YES`/`NO`) | *(none)* | SDAT API returns single-letter codes (`H`=homeowner, `N`=non-owner, `D`=homeowner/estate) — unclear to end users. We display the page's plain YES/NO instead. The raw API code is **not shown**. |
+| **Use** | SDAT page scrape (e.g., `COMMERCIAL`, `RESIDENTIAL`) | *(none)* | SDAT API has `land_use_code` (e.g., "Commercial (C)") which is similar but the page value is the authoritative classification. Both are shown — page value in Owner section, API value in Property Info. |
+| **Quality** | SDAT page scrape + SDAT API combined | SDAT API `dwelling_grade` alone | The API always uses a residential grading scale ("Average (4)") even for commercial properties. The SDAT page returns the actual quality code with a `C` prefix for commercial (e.g., "C4"). Display combines both: `C4 — Average (4)`. If SDAT page scrape fails, API grade shown alone. |
+| **Renovation year** | SDAT page scrape | *(none)* | Not available in any API. Only populated for properties that have been renovated. |
+| **Assessment values** (land, improvement, total, phase-in) | SDAT page scrape | SDAT API | The API is updated periodically (portal update date is in the record). The SDAT page is the live database. Validated: found an $18K discrepancy ($241,533 API vs $259,867 page) on 1 of 8 properties tested. Page values used when available; API values shown only if scrape fails. |
+| **Zoning, land use, map/grid/parcel/lot, subdivision** | SDAT API | *(none)* | Stable fields — validated to match SDAT page across 14 properties. |
+| **Year built, sq ft, land area, stories, construction, building style, dwelling type** | SDAT API | *(none)* | Stable CAMA fields — validated to match SDAT page. |
+| **Deed liber/folio, plat liber/folio** | SDAT API | *(none)* | Validated to match SDAT page (minor formatting differences only — API: `22788/0368`, page: `/22788/ 00368`). |
+| **Legal description** | SDAT API (3 lines) | *(none)* | Validated to match. |
+| **Water, sewer** | SDAT API | *(none)* | Stable utility data. |
+| **Sales history** (up to 3 sales) | SDAT API | *(none)* | Grantor (seller) name, transfer date, consideration (price), conveyance type, deed liber/folio. Note: SDAT only stores the **grantor (seller)** name — the buyer/grantee name is not available via API. The current owner comes from the SDAT page scrape (see above). Sales segment 2 and 3 use different API field name patterns than segment 1 (no `mdp_field_` prefix). |
+| **Links** (SDAT, HC Map, Google Maps, FinderOnline) | SDAT API | *(none)* | API returns link fields as objects `{url: "..."}`, not plain strings — the `.url` property is extracted. HC Interactive Map link is constructed from lat/long with `Lat` and `Long` params **swapped** (their JS code has the variable names reversed internally). |
+| **Plat number** | HC DataExplorer `QueryPropertyByTaxID` | *(none)* | Used to search for scanned drawings. Not all properties have a plat. |
+| **Scanned drawings** | WFS `Scanned_Drawings_Public` spatial query + HC DataExplorer `QueryScannedDrawingsByNumber` (plat) | *(none)* | WFS finds drawings whose polygon covers the property location. HC DataExplorer finds drawings matching the plat number. Results merged and deduplicated by drawing name. HC DataExplorer returns PDF URLs as HTML-encoded anchor tags (`&lt;a href="..."&gt;`) — decoded via regex. |
+| **Floodplain** | WFS `Floodplain` spatial query | *(none)* | Requires EPSG:2248 coordinates from HC DataExplorer `SearchAddresses`. If coordinates unavailable, floodplain data is skipped. |
+| **Soils** | WFS `Soils` spatial query | *(none)* | Same coordinate dependency as floodplain. |
+| **Forest conservation easements** | WFS `Forest_Conservation_Easements` spatial query | *(none)* | Same coordinate dependency. |
+
+### Address Parsing
+
+The user's input is cleaned before querying:
+1. Everything after the first comma is stripped (`"8000 Main St, Ellicott City, MD 21043"` → `"8000 Main St"`)
+2. Suite/unit suffixes removed (`"STE"`, `"SUITE"`, `"UNIT"`, `"APT"`, `"#"`)
+3. Leading street number extracted (`"8000"`)
+4. Street type suffix stripped for SDAT query (`"ST"`, `"STREET"`, `"DR"`, `"DRIVE"`, etc. — 28 types)
+5. Street number zero-padded to 5 digits for SDAT (`"8000"` → `"08000"`)
+6. Street name uppercased (`"Main"` → `"MAIN"`)
+
+The SDAT API is queried by address components (`premsnum` + `premsnam`) with `jurisdiction_code=HOWA` (Howard County). HC DataExplorer `SearchAddresses` is queried with the raw number + street name (it supports partial matching).
+
+### Known Quirks
+
+- **HC Interactive Map link**: HC's JavaScript has `Lat`/`Long` variable names internally swapped (`mylat` holds longitude, `mylong` holds latitude). We pass longitude as `?Lat=` and latitude as `?Long=` to compensate. See `CustomCodeV6.js` on their server.
+- **SDAT link objects**: The SDAT API returns `real_property_search_link`, `finder_online_link`, and `search_google_maps_for_this_location` as JSON objects (`{url: "..."}`) not plain strings.
+- **Sales segment field names**: Segment 1 fields include `mdp_field_` in their names (e.g., `sales_segment_1_grantor_name_mdp_field_grntnam1_sdat_field_80`). Segments 2 and 3 do **not** include `mdp_field_` (e.g., `sales_segment_2_grantor_name_sdat_field_100`). This is an inconsistency in the SDAT Open Data API.
+- **HC DataExplorer XML**: Responses use `<Table diffgr:id="Table1" ...>` elements (not `<Table1>`). The PDF field in drawing responses contains HTML-encoded anchor tags, not plain URLs.
+- **SDAT page scrape fragility**: Owner, assessment, and other fields are extracted by matching `<span>` element IDs (e.g., `lblOwnerName_0`, `lblAssesTotal_0`). If SDAT redesigns their detail page, these regexes will break. The API data serves as fallback for assessment values; owner/mailing/quality/renovation have no fallback.
+- **External API reference**: `docs/PROPERTY-DATA-APIS.md` — comprehensive field-level reference for all three public APIs (MD Open Data SDAT, HC DataExplorer, HC GeoServer WFS).
+
+---
+
+## 18. Data Model Reference
 
 > All entities and their fields. Use this to design your local models and API contracts.
 
@@ -631,6 +741,7 @@ These are presented as bottom sheets, modals, or slide-overs — not full-screen
 | mbaNumber | String | Yes | Default: "" |
 | coFileNumbers | String | Yes | Comma-separated. Default: "" |
 | dldReviewer | String | Yes | Default: "" |
+| propertyAddress | String | Yes | Default: "". Last address searched in Property Lookup — auto-loads on page visit |
 | createdAt | DateTime | Auto | |
 
 ### Task
@@ -720,7 +831,7 @@ Mention 1──* Notification
 
 ---
 
-## 18. API Contract Reference
+## 19. API Contract Reference
 
 > **Status: IMPLEMENTED.** All REST endpoints are live under `/api/v1/`. Full reference with request/response examples: [`docs/API.md`](docs/API.md).
 

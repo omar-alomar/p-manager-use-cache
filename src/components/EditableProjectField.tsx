@@ -5,7 +5,7 @@ import { updateProjectFieldAction } from "@/actions/projects"
 
 interface EditableProjectFieldProps {
   projectId: number
-  field: 'body' | 'mbaNumber' | 'coFileNumbers' | 'dldReviewer'
+  field: 'body' | 'mbaNumber' | 'coFileNumbers' | 'dldReviewer' | 'propertyAddress'
   initialValue: string
   placeholder?: string
   multiline?: boolean

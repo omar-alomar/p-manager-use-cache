@@ -108,7 +108,7 @@ export async function deleteProjectAction(projectId: number | string) {
 
 export async function updateProjectFieldAction(
   projectId: number,
-  field: 'body' | 'mbaNumber' | 'coFileNumbers' | 'dldReviewer',
+  field: 'body' | 'mbaNumber' | 'coFileNumbers' | 'dldReviewer' | 'propertyAddress',
   value: string
 ): Promise<ActionResult> {
   if (await isBlocked()) return { success: false, message: MAINTENANCE_MSG }

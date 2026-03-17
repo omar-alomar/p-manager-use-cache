@@ -19,6 +19,7 @@ import { CommentItem } from "@/components/CommentItem"
 import { ProjectHeroActions } from "@/components/ProjectHeroActions"
 import { MilestoneItem } from "@/components/MilestoneItem"
 import { AddMilestoneButton } from "@/components/AddMilestoneButton"
+import { PropertyLookup } from "@/components/PropertyLookup"
 
 export default async function ProjectPage({
   params,
@@ -142,6 +143,11 @@ export default async function ProjectPage({
             </Suspense>
           </div>
         </div>
+
+        {/* Property Lookup */}
+        <Suspense fallback={null}>
+          <PropertyLookupSection projectId={projectId} />
+        </Suspense>
 
         {/* Comments */}
         <div className="comment-thread">
@@ -519,4 +525,13 @@ async function Comments({ projectId }: { projectId: string }) {
   }
 }
 
-
+async function PropertyLookupSection({ projectId }: { projectId: string }) {
+  const project = await getProject(projectId)
+  if (!project) return null
+  return (
+    <PropertyLookup
+      projectId={project.id}
+      initialAddress={project.propertyAddress || ""}
+    />
+  )
+}

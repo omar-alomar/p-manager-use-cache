@@ -76,7 +76,8 @@ Two login methods — both require a pre-existing account:
 - Milestone tracking with urgency color-coding (red ≤14d, amber ≤30d, green >30d)
 - APFO flag on milestones
 - Swipe-to-archive gesture on project rows
-- Project detail with milestones, tasks, task progress ring, comments
+- Project detail with milestones, tasks, task progress ring, comments, property lookup
+- **Property Lookup** — enter a Howard County address on any project page to pull owner, zoning, building data, deed refs, assessment, sales history, scanned drawings, floodplain, soils, and forest conservation easements from public APIs (SDAT, HC DataExplorer, HC GeoServer WFS). Last searched address is saved per project.
 
 ### Tasks
 - CRUD with urgency levels (Low/Medium/High/Critical)
@@ -135,7 +136,7 @@ Two login methods — both require a pre-existing account:
 | Route | Description |
 |---|---|
 | `/projects` | Project list — search, sort, filter, inline editing |
-| `/projects/[id]` | Project detail — milestones, tasks, comments, inline fields |
+| `/projects/[id]` | Project detail — milestones, tasks, comments, inline fields, property lookup |
 | `/projects/new` | Create project |
 | `/projects/[id]/edit` | Edit project |
 | `/dashboard` | Team workload — KPIs, task board, milestones, activity |
@@ -162,6 +163,7 @@ Two login methods — both require a pre-existing account:
 | `/api/notifications/user/[userId]` | GET/DELETE | Fetch or delete stored notifications |
 | `/api/notifications/demo` | POST | Demo notification trigger |
 | `/api/users/by-name` | GET | Resolve username to user ID |
+| `/api/property-lookup` | GET | Aggregate Howard County property data (`?address=<address>`) |
 
 ### REST API v1 (for mobile clients)
 

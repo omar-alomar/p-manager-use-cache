@@ -301,7 +301,7 @@ export function getNearestMilestoneDate(milestones: { date: Date; completed?: bo
   ).date
 }
 
-type UpdatableProjectField = 'body' | 'mbaNumber' | 'coFileNumbers' | 'dldReviewer'
+type UpdatableProjectField = 'body' | 'mbaNumber' | 'coFileNumbers' | 'dldReviewer' | 'propertyAddress'
 
 export async function updateProjectField(
   projectId: number,

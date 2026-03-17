@@ -63,6 +63,7 @@ Styles are split into modular files imported via `styles.css`:
 | `milestones.css` | Milestone chips and detail cards |
 | `comments.css` | Comment list, comment form, mention autocomplete |
 | `notifications.css` | Notification bell, center, toasts |
+| `property.css` | Property lookup — search, result cards, drawings, environmental |
 | `fab.css` | Floating action button |
 | `admin.css` | Admin panel |
 | `auth.css` | Login page, OAuth button |
@@ -83,6 +84,7 @@ Styles are split into modular files imported via `styles.css`:
 - **Team Dashboard**: KPI cards (active tasks, critical/high count, completion rate), filterable task list, upcoming milestones, and recent activity. Server component (`DashboardContent`) fetches data, client component (`DashboardClient`) handles interactivity.
 - **Version Banner**: `VersionBanner` displays on first login after a version bump. Users are redirected to `/changelog` if they haven't seen the current version (`getPostLoginRedirect()`). Version is tracked per user via `lastSeenVersion` field.
 - **Avatar Colors**: Hash-based consistent color assignment per user via `src/utils/avatarColor.ts` (8 color classes `avatar-color-0`–`avatar-color-7`).
+- **Property Lookup**: Collapsible section on project detail pages. Searches Howard County property data by address, aggregating from three public APIs (MD Open Data SDAT, HC DataExplorer, HC GeoServer WFS) plus SDAT detail page scrape for authoritative owner/assessment data. Last searched address is saved to the project's `propertyAddress` field and auto-loaded on next visit. See `docs/PROPERTY-DATA-APIS.md` for API reference.
 
 ## Key Conventions
 
@@ -188,7 +190,7 @@ SKIP_REDIS=1          # Set to skip Redis (e.g. in CI)
 | Model | Notable fields |
 |---|---|
 | `User` | id, email, name, password?, salt?, role (user\|admin), lastSeenVersion |
-| `Project` | title, clientId, body, userId (manager), archived, milestone, mbaNumber, coFileNumbers, dldReviewer |
+| `Project` | title, clientId, body, userId (manager), archived, milestone, mbaNumber, coFileNumbers, dldReviewer, propertyAddress |
 | `Task` | title, completed, urgency (LOW\|MEDIUM\|HIGH\|CRITICAL), userId, assignedById, projectId, archived |
 | `Client` | name, companyName, email, phone, address |
 | `Milestone` | date, item, completed, projectId, apfo |
@@ -218,6 +220,7 @@ npx prisma generate      # Regenerate Prisma client
 | `/api/notifications/user/[userId]` | GET | Fetch stored notifications for a user |
 | `/api/notifications/demo` | POST | Demo notification trigger |
 | `/api/users/by-name` | GET | Resolve username to user ID (used by `MentionedUser` component) |
+| `/api/property-lookup` | GET | Property data aggregator — queries SDAT, HC DataExplorer, HC GeoServer WFS, and scrapes SDAT detail page (`?address=<address>`) |
 
 ### REST API v1 (for mobile clients) — `src/app/api/v1/`
 Full reference in `docs/API.md`. Summary of route groups:
@@ -281,7 +284,7 @@ The REST API (`src/app/api/v1/`) is a **third consumer** of the DB layer alongsi
 4. **`src/app/api/v1/`** — update the relevant route to accept/return the new field
 5. `src/schemas/schemas.ts` — update Zod schema if the field needs validation (shared by web + API)
 6. `docs/API.md` — document the new field
-7. `USER_STORIES.md` section 18 — update the endpoint table if the contract changes
+7. `USER_STORIES.md` section 19 — update the endpoint table if the contract changes
 
 **The risk is forgetting step 4.** The web app and API can drift silently since there's no compile-time guarantee they stay in sync.
 
@@ -308,6 +311,30 @@ The REST API is a standard HTTP surface with no rate limiting. For now this is f
 
 #### Authorization checks are per-route
 There's no centralized authorization middleware beyond `requireAuth()` / `requireAdmin()`. Resource-level checks (e.g. "only comment author or admin can delete") are inline in each route handler. When adding new mutation endpoints, add authorization checks explicitly.
+
+### Property Lookup (`src/app/api/property-lookup/route.ts` + `src/components/PropertyLookup.tsx`)
+Embedded in each project detail page. Searches Howard County property records by address.
+
+**Data pipeline (3 phases, parallelized):**
+1. **Phase 1** (parallel): MD Open Data SDAT API (property data) + HC DataExplorer `SearchAddresses` (State Plane coordinates)
+2. **Phase 2** (parallel): SDAT detail page scrape (authoritative owner, mailing address, assessment, quality, renovation) + HC DataExplorer `QueryPropertyByTaxID` (plat number)
+3. **Phase 3** (parallel): HC GeoServer WFS spatial queries (floodplain, soils, forest conservation easements, scanned drawings) + HC DataExplorer `QueryScannedDrawingsByNumber` (plat-based drawing search)
+
+**Data accuracy strategy:**
+- **Owner name & assessment values**: Scraped from the SDAT detail page HTML (`sdat.dat.maryland.gov`), NOT from the Open Data API or HC DataExplorer. The API can lag behind recent transfers by months; the SDAT page is authoritative.
+- **Stable fields** (year built, sq ft, zoning, deed refs, sales history, etc.): From the SDAT Open Data API — validated to match the detail page across 14 properties.
+- **Owner Occupancy**: The API returns single-letter codes (`H`=homeowner, `N`=non-owner, `D`=homeowner/estate). We display the SDAT page's "Principal Residence: YES/NO" instead — clearer and authoritative. The raw API code is not shown.
+- **Quality/Grade**: The API returns a residential grading scale (e.g., "Average (4)") even for commercial properties. The SDAT page returns the actual quality code with a `C` prefix for commercial (e.g., "C4"). We combine both: `C4 — Average (4)` so the commercial distinction is visible.
+- **Environmental data**: From HC GeoServer WFS spatial intersection queries using coordinates from HC DataExplorer.
+- **Scanned drawings**: WFS `Scanned_Drawings_Public` spatial query + HC DataExplorer plat number search. PDF URLs from HC DataExplorer are HTML-encoded anchor tags that require decoding.
+
+**Address parsing:** Strips city/state/zip after commas, removes suite/unit suffixes, strips street type suffixes (ST, DR, etc.), zero-pads street numbers to 5 digits for SDAT.
+
+**Persistence:** Last searched address saved to `Project.propertyAddress` field. Auto-loads and auto-searches on page visit if saved address exists.
+
+**HC Interactive Map link quirk:** The HC Interactive Map has a bug where `Lat` and `Long` URL params are internally swapped (`mylat` variable holds longitude). We pass longitude as `Lat` and latitude as `Long` to compensate.
+
+**External API reference:** `docs/PROPERTY-DATA-APIS.md` — comprehensive field reference for all three APIs.
 
 ## Known Issues / Quirks
 - `docker-compose.yml` does not exist here — deployment config lives in a separate folder (`stack` for prod, `stg-stack` for staging)
