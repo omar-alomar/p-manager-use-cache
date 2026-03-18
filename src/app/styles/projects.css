@@ -730,6 +730,30 @@
   box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3);
 }
 
+/* ── Project page archive toggle (task list) ── */
+.project-archive-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: var(--space-3);
+  padding: 4px 10px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  font-family: inherit;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color var(--transition), border-color var(--transition), background var(--transition);
+}
+
+.project-archive-toggle:hover {
+  color: var(--text-secondary);
+  border-color: var(--neutral-300);
+  background: var(--neutral-50);
+}
+
 .project-manager { font-weight: var(--font-weight-medium); }
 .project-item-meta {
   display: flex;

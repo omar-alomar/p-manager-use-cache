@@ -10,7 +10,6 @@ import { getCurrentUser } from "@/auth/currentUser"
 import { DeleteButton } from "./_DeleteButton"
 import { avatarColorClass } from "@/utils/avatarColor"
 import { getProjectTasks } from "@/db/tasks"
-import { TaskItem } from "@/components/TaskItem"
 import { EditableProjectField } from "@/components/EditableProjectField"
 import { AddTaskToProjectButton } from "@/components/AddTaskToProjectButton"
 import { ProjectEmptyStateActions } from "@/components/ProjectEmptyStateActions"
@@ -20,6 +19,7 @@ import { ProjectHeroActions } from "@/components/ProjectHeroActions"
 import { MilestoneItem } from "@/components/MilestoneItem"
 import { AddMilestoneButton } from "@/components/AddMilestoneButton"
 import { PropertyLookup } from "@/components/PropertyLookup"
+import { ProjectTaskList } from "@/components/ProjectTaskList"
 
 export default async function ProjectPage({
   params,
@@ -451,27 +451,22 @@ async function Tasks({ projectId }: { projectId: string }) {
     }
 
     return (
-      <div className="tasks-list">
-        {tasks.map(task => (
-          <TaskItem 
-            key={task.id}
-            id={task.id}
-            initialCompleted={task.completed}
-            title={task.title}
-            urgency={task.urgency}
-            projectId={task.projectId}
-            projectTitle={project?.title || ""}
-            userId={task.userId}
-            userName={task.User?.name}
-            createdAt={task.createdAt}
-            displayProject={false}
-            displayUser={true}
-            displayCreatedAt={true}
-            users={users}
-            projects={projects}
-          />
-        ))}
-      </div>
+      <ProjectTaskList
+        tasks={tasks.map(t => ({
+          id: t.id,
+          completed: t.completed,
+          completedAt: t.completedAt,
+          title: t.title,
+          urgency: t.urgency,
+          projectId: t.projectId,
+          userId: t.userId,
+          userName: t.User?.name,
+          createdAt: t.createdAt,
+        }))}
+        projectTitle={project?.title || ""}
+        users={users}
+        projects={projects}
+      />
     )
   } catch (error) {
     console.error('Error in Tasks:', error)
