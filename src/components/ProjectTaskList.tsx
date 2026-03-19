@@ -46,7 +46,7 @@ export function ProjectTaskList({
   return (
     <>
       {displayTasks.length > 0 ? (
-        <div className="tasks-list">
+        <div className={`tasks-list${showArchived ? " task-archive-list" : ""}`}>
           {displayTasks.map((task) => (
             <TaskItem
               key={task.id}
