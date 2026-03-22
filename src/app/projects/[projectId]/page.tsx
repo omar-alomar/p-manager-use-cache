@@ -20,6 +20,8 @@ import { MilestoneItem } from "@/components/MilestoneItem"
 import { AddMilestoneButton } from "@/components/AddMilestoneButton"
 import { PropertyLookup } from "@/components/PropertyLookup"
 import { ProjectTaskList } from "@/components/ProjectTaskList"
+import { AccFileBrowser } from "@/components/AccFileBrowser"
+import { getAccProjectLinks } from "@/db/autodesk"
 
 export default async function ProjectPage({
   params,
@@ -143,6 +145,11 @@ export default async function ProjectPage({
             </Suspense>
           </div>
         </div>
+
+        {/* Autodesk Files */}
+        <Suspense fallback={null}>
+          <AccFileBrowserSection projectId={projectId} />
+        </Suspense>
 
         {/* Property Lookup */}
         <Suspense fallback={null}>
@@ -527,6 +534,25 @@ async function PropertyLookupSection({ projectId }: { projectId: string }) {
     <PropertyLookup
       projectId={project.id}
       initialAddress={project.propertyAddress || ""}
+    />
+  )
+}
+
+async function AccFileBrowserSection({ projectId }: { projectId: string }) {
+  const project = await getProject(projectId)
+  if (!project) return null
+  const accLinks = await getAccProjectLinks(project.id)
+  return (
+    <AccFileBrowser
+      projectId={project.id}
+      projectTitle={project.title}
+      accLinks={accLinks.map((link) => ({
+        id: link.id,
+        accHubId: link.accHubId,
+        accHubName: link.accHubName,
+        accProjectId: link.accProjectId,
+        accProjectName: link.accProjectName,
+      }))}
     />
   )
 }

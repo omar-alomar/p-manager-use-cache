@@ -22,13 +22,9 @@ const BASE_URL = process.env.APP_URL || "http://localhost:3000"
 const APS_SCOPES = "data:read data:write data:create account:read viewables:read"
 
 export async function GET(request: NextRequest) {
-  console.log("Autodesk callback hit. URL:", request.nextUrl.toString())
-
   const code = request.nextUrl.searchParams.get("code")
   const state = request.nextUrl.searchParams.get("state")
   const errorParam = request.nextUrl.searchParams.get("error")
-
-  console.log("Autodesk callback params — code:", !!code, "state:", !!state, "error:", errorParam)
 
   // Handle Autodesk-side errors (user cancelled, consent denied, etc.)
   if (errorParam) {
