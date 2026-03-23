@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { AccProjectLinker } from "./AccProjectLinker"
+import { AccFileVersions } from "./AccFileVersions"
+import { AccViewer } from "./AccViewer"
 import { unlinkAccProjectAction } from "@/actions/autodesk"
 
 type AccLink = {
@@ -42,6 +44,9 @@ export function AccFileBrowser({ projectId, projectTitle, accLinks: initialLinks
   const [error, setError] = useState<string | null>(null)
   const [needsReauth, setNeedsReauth] = useState(false)
   const [unlinking, setUnlinking] = useState<number | null>(null)
+  const [versionsItem, setVersionsItem] = useState<{ itemId: string; name: string } | null>(null)
+  const [viewerState, setViewerState] = useState<{ itemId: string; name: string; urn?: string; version?: number } | null>(null)
+  const [unlockingItem, setUnlockingItem] = useState<string | null>(null)
 
   const activeLink = accLinks[activeTab] || null
 
@@ -110,6 +115,29 @@ export function AccFileBrowser({ projectId, projectTitle, accLinks: initialLinks
     }
     setUnlinking(null)
   }, [projectId, accLinks.length, activeTab])
+
+  const handleUnlockFile = useCallback(async (itemId: string) => {
+    if (!activeLink) return
+    setUnlockingItem(itemId)
+    try {
+      await fetch("/api/acc/unlock", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accProjectId: activeLink.accProjectId, itemId }),
+      })
+      // Refresh file list
+      const currentFolder = folderStack[folderStack.length - 1]
+      fetchFiles(activeLink.accProjectId, currentFolder.id, true)
+    } catch {
+      // Silently fail
+    } finally {
+      setUnlockingItem(null)
+    }
+  }, [activeLink, folderStack, fetchFiles])
+
+  const handleViewFile = useCallback((item: FolderItem) => {
+    setViewerState({ itemId: item.id, name: item.displayName })
+  }, [])
 
   const handleLinked = useCallback((newLink: AccLink) => {
     setAccLinks((prev) => [...prev, newLink])
@@ -306,14 +334,26 @@ export function AccFileBrowser({ projectId, projectTitle, accLinks: initialLinks
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className={`acc-file-item ${item.type === "folders" ? "acc-file-item-folder" : ""}`}
-                  onClick={item.type === "folders" ? () => handleFolderClick(item.id, item.displayName) : undefined}
+                  className={`acc-file-item ${item.type === "folders" ? "acc-file-item-folder" : "acc-file-item-file"}`}
+                  onClick={item.type === "folders" ? () => handleFolderClick(item.id, item.displayName) : () => handleViewFile(item)}
                 >
                   <span className="acc-file-icon">{getFileIcon(item)}</span>
                   <span className="acc-file-name">{item.displayName}</span>
                   <span className="acc-file-meta">
                     {item.size ? formatSize(item.size) : ""}
                   </span>
+                  {item.type === "items" && (
+                    <button
+                      className="acc-file-action-btn acc-versions-btn"
+                      onClick={(e) => { e.stopPropagation(); setVersionsItem({ itemId: item.id, name: item.displayName }) }}
+                      title="Version history"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12,6 12,12 16,14" />
+                      </svg>
+                    </button>
+                  )}
                   <span className="acc-file-date">{formatDate(item.lastModified)}</span>
                   {item.reserved && (
                     <span className="acc-lock-badge" title={`Locked by ${item.reservedBy}`}>
@@ -322,6 +362,19 @@ export function AccFileBrowser({ projectId, projectTitle, accLinks: initialLinks
                         <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                       </svg>
                     </span>
+                  )}
+                  {item.type === "items" && item.reserved && (
+                    <button
+                      className="acc-file-action-btn acc-unlock-btn"
+                      onClick={(e) => { e.stopPropagation(); handleUnlockFile(item.id) }}
+                      disabled={unlockingItem === item.id}
+                      title="Unlock file"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                        <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+                      </svg>
+                    </button>
                   )}
                 </div>
               ))}
@@ -342,6 +395,32 @@ export function AccFileBrowser({ projectId, projectTitle, accLinks: initialLinks
         onClose={() => setLinkerOpen(false)}
         onLinked={handleLinked}
       />
+
+      {versionsItem && activeLink && (
+        <AccFileVersions
+          accProjectId={activeLink.accProjectId}
+          itemId={versionsItem.itemId}
+          fileName={versionsItem.name}
+          open={true}
+          onClose={() => setVersionsItem(null)}
+          onViewVersion={(urn, versionNumber) => {
+            setVersionsItem(null)
+            setViewerState({ itemId: versionsItem.itemId, urn, name: versionsItem.name, version: versionNumber })
+          }}
+        />
+      )}
+
+      {viewerState && activeLink && (
+        <AccViewer
+          accProjectId={activeLink.accProjectId}
+          itemId={viewerState.itemId}
+          urn={viewerState.urn}
+          fileName={viewerState.name}
+          versionNumber={viewerState.version}
+          open={true}
+          onClose={() => setViewerState(null)}
+        />
+      )}
     </div>
   )
 }

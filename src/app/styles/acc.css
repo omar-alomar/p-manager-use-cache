@@ -232,7 +232,8 @@
   transition: background var(--transition);
 }
 
-.acc-file-item-folder {
+.acc-file-item-folder,
+.acc-file-item-file {
   cursor: pointer;
 }
 
@@ -436,4 +437,192 @@
 
 .acc-back-btn:hover {
   text-decoration: underline;
+}
+
+/* ── File item actions ── */
+.acc-file-action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 6px;
+  color: var(--neutral-400);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity var(--transition), background var(--transition), color var(--transition);
+}
+
+.acc-file-item:hover .acc-file-action-btn {
+  opacity: 1;
+}
+
+.acc-file-action-btn:hover {
+  background: var(--neutral-100);
+  color: var(--neutral-700);
+}
+
+.acc-unlock-btn {
+  color: var(--warning-500);
+}
+
+.acc-unlock-btn:hover {
+  background: var(--warning-50, #fffbeb);
+  color: var(--warning-700);
+}
+
+/* ── Version history drawer ── */
+.acc-versions-filename {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  margin: 0 0 var(--space-4);
+}
+
+.acc-version-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.acc-version-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: border-color var(--transition);
+}
+
+.acc-version-item:hover {
+  border-color: var(--neutral-300);
+}
+
+.acc-version-current {
+  border-color: var(--primary-200);
+  background: var(--primary-50, #eef2ff);
+}
+
+.acc-version-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 1;
+  min-width: 0;
+}
+
+.acc-version-number {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.acc-version-badge {
+  font-size: 10px;
+  color: var(--primary-600);
+  background: var(--primary-100, #e0e7ff);
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-weight: var(--font-weight-medium);
+}
+
+.acc-version-date {
+  font-size: var(--font-size-xs, 12px);
+  color: var(--text-muted);
+}
+
+.acc-version-meta {
+  display: flex;
+  gap: var(--space-3);
+  font-size: var(--font-size-xs, 12px);
+  color: var(--text-muted);
+}
+
+/* ── Full-screen viewer overlay ── */
+.acc-viewer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #0C0A1D;
+  display: flex;
+  flex-direction: column;
+}
+
+.acc-viewer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  background: rgba(12, 10, 29, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.acc-viewer-filename {
+  font-size: var(--font-size-sm);
+  color: #FFFFFF;
+  font-weight: var(--font-weight-medium);
+}
+
+.acc-viewer-version {
+  color: var(--neutral-400);
+  font-weight: normal;
+}
+
+.acc-viewer-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  color: var(--neutral-400);
+  display: flex;
+  transition: background 0.15s, color 0.15s;
+}
+
+.acc-viewer-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+}
+
+.acc-viewer-body {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.acc-viewer-canvas {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
+
+.acc-viewer-status-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  background: #0C0A1D;
+  color: var(--neutral-400);
+  font-size: var(--font-size-sm);
+  z-index: 1;
+}
+
+.acc-viewer-status p {
+  margin: 0;
+}
+
+.acc-viewer-progress {
+  font-size: var(--font-size-xs, 12px);
+  color: var(--neutral-500);
+}
+
+.acc-viewer-error {
+  color: var(--error-400, #f87171);
 }
