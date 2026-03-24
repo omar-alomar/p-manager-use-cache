@@ -5,6 +5,7 @@ import { AccProjectLinker } from "./AccProjectLinker"
 import { AccFileVersions } from "./AccFileVersions"
 import { AccViewer } from "./AccViewer"
 import { unlinkAccProjectAction } from "@/actions/autodesk"
+import { preloadViewerScripts } from "./AccViewer"
 
 type AccLink = {
   id: number
@@ -79,6 +80,11 @@ export function AccFileBrowser({ projectId, projectTitle, accLinks: initialLinks
       setLoading(false)
     }
   }, [])
+
+  // Preload viewer scripts in background when file browser has links
+  useEffect(() => {
+    if (initialLinks.length > 0) preloadViewerScripts()
+  }, [initialLinks.length])
 
   // Load files when active link or folder changes
   useEffect(() => {
@@ -339,6 +345,20 @@ export function AccFileBrowser({ projectId, projectTitle, accLinks: initialLinks
                 >
                   <span className="acc-file-icon">{getFileIcon(item)}</span>
                   <span className="acc-file-name">{item.displayName}</span>
+                  {item.reserved && (
+                    <button
+                      className="acc-lock-btn"
+                      onClick={(e) => { e.stopPropagation(); handleUnlockFile(item.id) }}
+                      disabled={unlockingItem === item.id}
+                      title={`Locked by ${item.reservedBy} — click to unlock`}
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                      </svg>
+                    </button>
+                  )}
+                  <span className="acc-file-spacer" />
                   <span className="acc-file-meta">
                     {item.size ? formatSize(item.size) : ""}
                   </span>
@@ -355,27 +375,6 @@ export function AccFileBrowser({ projectId, projectTitle, accLinks: initialLinks
                     </button>
                   )}
                   <span className="acc-file-date">{formatDate(item.lastModified)}</span>
-                  {item.reserved && (
-                    <span className="acc-lock-badge" title={`Locked by ${item.reservedBy}`}>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                      </svg>
-                    </span>
-                  )}
-                  {item.type === "items" && item.reserved && (
-                    <button
-                      className="acc-file-action-btn acc-unlock-btn"
-                      onClick={(e) => { e.stopPropagation(); handleUnlockFile(item.id) }}
-                      disabled={unlockingItem === item.id}
-                      title="Unlock file"
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                        <path d="M7 11V7a5 5 0 0 1 9.9-1" />
-                      </svg>
-                    </button>
-                  )}
                 </div>
               ))}
             </div>

@@ -90,7 +90,9 @@ export function AccViewer({ accProjectId, itemId, urn: preResolvedUrn, fileName,
         }
 
         // Poll for translation status
+        let pollCount = 0
         pollingRef.current = setInterval(async () => {
+          pollCount++
           try {
             const statusRes = await fetch(`/api/acc/translate/status?urn=${resolvedUrnRef.current}`)
             const statusData = await statusRes.json()
@@ -108,6 +110,11 @@ export function AccViewer({ accProjectId, itemId, urn: preResolvedUrn, fileName,
               setErrorMsg("File could not be prepared for viewing")
             } else {
               setProgress(statusData.progress || "0%")
+              // After 30s of polling, try loading anyway — 99% stuck is common
+              if (pollCount >= 10) {
+                if (pollingRef.current) clearInterval(pollingRef.current)
+                setPhase("loading-viewer")
+              }
             }
           } catch {
             // Keep polling on transient errors
@@ -136,12 +143,14 @@ export function AccViewer({ accProjectId, itemId, urn: preResolvedUrn, fileName,
     hasInitializedRef.current = true
 
     async function loadViewer() {
-      console.log("ACC Viewer: loading scripts...")
-      // Load Autodesk Viewer CSS/JS from CDN if not already loaded
+      // Load Autodesk Viewer scripts (may already be preloaded)
       if (!window.Autodesk) {
         try {
-          await loadScript("https://developer.api.autodesk.com/modelderivative/v2/viewers/7.100/viewer3D.min.js")
-          loadStylesheet("https://developer.api.autodesk.com/modelderivative/v2/viewers/7.100/style.min.css")
+          if (preloadPromise) await preloadPromise
+          else {
+            await loadScript(VIEWER_JS)
+            loadStylesheet(VIEWER_CSS)
+          }
         } catch (e) {
           console.error("ACC Viewer: failed to load viewer scripts", e)
           setPhase("error")
@@ -299,7 +308,25 @@ export function AccViewer({ accProjectId, itemId, urn: preResolvedUrn, fileName,
 
 // --- Helpers ---
 
+const VIEWER_JS = "https://developer.api.autodesk.com/modelderivative/v2/viewers/7.100/viewer3D.min.js"
+const VIEWER_CSS = "https://developer.api.autodesk.com/modelderivative/v2/viewers/7.100/style.min.css"
+
+let preloadPromise: Promise<void> | null = null
+
+/** Preload viewer scripts in background — call early so they're cached when user clicks View */
+export function preloadViewerScripts() {
+  if (typeof window === "undefined" || window.Autodesk) return
+  if (preloadPromise) return
+  preloadPromise = loadScript(VIEWER_JS).then(() => {
+    loadStylesheet(VIEWER_CSS)
+  }).catch(() => {
+    preloadPromise = null // Allow retry
+  })
+}
+
 function loadScript(src: string): Promise<void> {
+  // Don't double-load
+  if (document.querySelector(`script[src="${src}"]`)) return Promise.resolve()
   return new Promise((resolve, reject) => {
     const script = document.createElement("script")
     script.src = src
