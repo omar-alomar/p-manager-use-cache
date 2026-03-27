@@ -313,6 +313,8 @@ const VIEWER_CSS = "https://developer.api.autodesk.com/modelderivative/v2/viewer
 
 let preloadPromise: Promise<void> | null = null
 
+export function getPreloadPromise() { return preloadPromise }
+
 /** Preload viewer scripts in background — call early so they're cached when user clicks View */
 export function preloadViewerScripts() {
   if (typeof window === "undefined" || window.Autodesk) return

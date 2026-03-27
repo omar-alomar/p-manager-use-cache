@@ -1,5 +1,8 @@
 // List version history for an ACC file item
 // Query params: accProjectId (required), itemId (required)
+//
+// Returns the derivative URN for each version — this is what the viewer needs.
+// For ACC files, derivatives are auto-created on upload, so no translation step is needed.
 
 import { NextRequest, NextResponse } from "next/server"
 import { getUserFromSession } from "@/auth/session"
@@ -7,6 +10,13 @@ import { cookies } from "next/headers"
 import { getValidAccessToken } from "@/auth/autodeskTokenManager"
 
 const DM_BASE = "https://developer.api.autodesk.com"
+
+function toBase64Url(str: string): string {
+  return Buffer.from(str).toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "")
+}
 
 export async function GET(request: NextRequest) {
   const cookieStore = await cookies()
@@ -42,6 +52,9 @@ export async function GET(request: NextRequest) {
     const raw = await res.json()
     const versions = (raw.data || []).map((v: {
       id: string
+      relationships?: {
+        derivatives?: { data?: { id: string } }
+      }
       attributes: {
         versionNumber?: number
         name?: string
@@ -50,18 +63,24 @@ export async function GET(request: NextRequest) {
         lastModifiedUserName?: string
         storageSize?: number
         fileType?: string
-        extension?: { type: string; version: string }
       }
-    }) => ({
-      id: v.id,
-      versionNumber: v.attributes.versionNumber,
-      name: v.attributes.displayName || v.attributes.name,
-      lastModified: v.attributes.lastModifiedTime,
-      lastModifiedBy: v.attributes.lastModifiedUserName,
-      size: v.attributes.storageSize,
-      fileType: v.attributes.fileType,
-      urn: Buffer.from(v.id).toString("base64url"),
-    }))
+    }) => {
+      // The derivative ID is already base64-encoded — use it as-is.
+      // Only encode the version ID if no derivative relationship exists.
+      const derivativeId = v.relationships?.derivatives?.data?.id
+      const urn = derivativeId || toBase64Url(v.id)
+
+      return {
+        id: v.id,
+        versionNumber: v.attributes.versionNumber,
+        name: v.attributes.displayName || v.attributes.name,
+        lastModified: v.attributes.lastModifiedTime,
+        lastModifiedBy: v.attributes.lastModifiedUserName,
+        size: v.attributes.storageSize,
+        fileType: v.attributes.fileType,
+        urn,
+      }
+    })
 
     return NextResponse.json({ versions })
   } catch (error) {

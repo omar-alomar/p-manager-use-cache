@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { AccProjectLinker } from "./AccProjectLinker"
 import { AccFileVersions } from "./AccFileVersions"
 import { AccViewer } from "./AccViewer"
+import { AccVersionCompare } from "./AccVersionCompare"
 import { unlinkAccProjectAction } from "@/actions/autodesk"
 import { preloadViewerScripts } from "./AccViewer"
 
@@ -47,7 +48,10 @@ export function AccFileBrowser({ projectId, projectTitle, accLinks: initialLinks
   const [unlinking, setUnlinking] = useState<number | null>(null)
   const [versionsItem, setVersionsItem] = useState<{ itemId: string; name: string } | null>(null)
   const [viewerState, setViewerState] = useState<{ itemId: string; name: string; urn?: string; version?: number } | null>(null)
+  const [compareState, setCompareState] = useState<{ urnA: string; versionA: number; urnB: string; versionB: number; name: string } | null>(null)
   const [unlockingItem, setUnlockingItem] = useState<string | null>(null)
+  const [unlockingAll, setUnlockingAll] = useState(false)
+  const [lockedCount, setLockedCount] = useState(0)
 
   const activeLink = accLinks[activeTab] || null
 
@@ -81,10 +85,18 @@ export function AccFileBrowser({ projectId, projectTitle, accLinks: initialLinks
     }
   }, [])
 
-  // Preload viewer scripts in background when file browser has links
+  // Preload viewer scripts + scan for locked files in background
   useEffect(() => {
-    if (initialLinks.length > 0) preloadViewerScripts()
-  }, [initialLinks.length])
+    if (initialLinks.length > 0) {
+      preloadViewerScripts()
+      // Background scan for locked file count
+      const link = initialLinks[0]
+      fetch(`/api/acc/locked-count?accProjectId=${link.accProjectId}&accHubId=${link.accHubId}`)
+        .then((r) => r.json())
+        .then((data) => setLockedCount(data.count || 0))
+        .catch(() => {})
+    }
+  }, [initialLinks])
 
   // Load files when active link or folder changes
   useEffect(() => {
@@ -138,6 +150,39 @@ export function AccFileBrowser({ projectId, projectTitle, accLinks: initialLinks
       // Silently fail
     } finally {
       setUnlockingItem(null)
+    }
+  }, [activeLink, folderStack, fetchFiles])
+
+  const [unlockResult, setUnlockResult] = useState<string | null>(null)
+
+  const handleUnlockAll = useCallback(async () => {
+    if (!activeLink) return
+    setUnlockingAll(true)
+    setUnlockResult(null)
+    try {
+      const res = await fetch("/api/acc/unlock-all", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          accProjectId: activeLink.accProjectId,
+          accHubId: activeLink.accHubId,
+        }),
+      })
+      const data = await res.json()
+      if (data.found === 0) {
+        setUnlockResult("No locked files found")
+      } else {
+        setUnlockResult(`Unlocked ${data.unlocked} of ${data.found} locked files`)
+      }
+      setLockedCount(0)
+      // Refresh current folder to reflect changes
+      const currentFolder = folderStack[folderStack.length - 1]
+      fetchFiles(activeLink.accProjectId, currentFolder.id, true)
+    } catch {
+      setUnlockResult("Failed to unlock files")
+    } finally {
+      setUnlockingAll(false)
+      setTimeout(() => setUnlockResult(null), 4000)
     }
   }, [activeLink, folderStack, fetchFiles])
 
@@ -201,6 +246,20 @@ export function AccFileBrowser({ projectId, projectTitle, accLinks: initialLinks
         <div className="acc-browser-actions">
           {accLinks.length > 0 && expanded && (
             <>
+              {lockedCount > 0 && (
+                <button
+                  className="acc-unlock-all-btn"
+                  onClick={(e) => { e.stopPropagation(); handleUnlockAll() }}
+                  disabled={unlockingAll}
+                  title="Unlock all locked files across all folders"
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+                  </svg>
+                  {unlockingAll ? "Scanning..." : `Unlock all (${lockedCount})`}
+                </button>
+              )}
               <button
                 className="acc-icon-btn"
                 onClick={(e) => { e.stopPropagation(); handleRefresh() }}
@@ -232,6 +291,10 @@ export function AccFileBrowser({ projectId, projectTitle, accLinks: initialLinks
           </svg>
         </div>
       </div>
+
+      {unlockResult && (
+        <div className="acc-unlock-result">{unlockResult}</div>
+      )}
 
       {expanded && <div className="acc-browser-body">
           {/* No links — empty state */}
@@ -406,6 +469,10 @@ export function AccFileBrowser({ projectId, projectTitle, accLinks: initialLinks
             setVersionsItem(null)
             setViewerState({ itemId: versionsItem.itemId, urn, name: versionsItem.name, version: versionNumber })
           }}
+          onCompareVersions={(urnA, vA, urnB, vB) => {
+            setVersionsItem(null)
+            setCompareState({ urnA, versionA: vA, urnB, versionB: vB, name: versionsItem.name })
+          }}
         />
       )}
 
@@ -418,6 +485,20 @@ export function AccFileBrowser({ projectId, projectTitle, accLinks: initialLinks
           versionNumber={viewerState.version}
           open={true}
           onClose={() => setViewerState(null)}
+        />
+      )}
+
+      {compareState && activeLink && (
+        <AccVersionCompare
+          accProjectId={activeLink.accProjectId}
+          itemId=""
+          fileName={compareState.name}
+          urnA={compareState.urnA}
+          versionA={compareState.versionA}
+          urnB={compareState.urnB}
+          versionB={compareState.versionB}
+          open={true}
+          onClose={() => setCompareState(null)}
         />
       )}
     </div>

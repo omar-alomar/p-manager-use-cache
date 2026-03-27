@@ -312,11 +312,34 @@
 .comment-text .mention,
 .mention {
   color: var(--primary-700);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
   background: var(--primary-50);
-  padding: 0 4px;
-  border-radius: 3px;
+  padding: 1px 6px;
+  border-radius: 4px;
   border: 1px solid var(--primary-100);
+  font-size: 0.92em;
+  text-decoration: none;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.mention.mention-link {
+  cursor: pointer;
+}
+
+.mention.mention-link:hover {
+  background: var(--primary-100);
+  border-color: var(--primary-200);
+  color: var(--primary-800);
+}
+
+.mention.mention-loading {
+  opacity: 0.6;
+}
+
+.mention.mention-not-found {
+  color: var(--text-muted);
+  background: var(--neutral-50);
+  border-color: var(--neutral-200);
 }
 
 /* ── Divider (kept for any remaining usage) ── */
@@ -342,38 +365,69 @@
   white-space: nowrap;
 }
 
-/* ── Mention autocomplete — clean white card ── */
-.mention-autocomplete {
+/* ── Mention autocomplete ── */
+.mention-autocomplete-container {
   position: relative;
 }
 
-.mention-dropdown {
+.mention-suggestions {
   position: absolute;
-  top: calc(100% + 4px);
+  bottom: calc(100% + 4px);
   left: 0;
   right: 0;
   background: #FFFFFF;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  box-shadow: var(--shadow-md);
+  border: 1px solid var(--neutral-200);
+  border-radius: 10px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.06);
   z-index: 50;
   overflow: hidden;
-  max-height: 200px;
+  max-height: 240px;
   overflow-y: auto;
+  padding: var(--space-1) 0;
 }
 
-.mention-option {
+.mention-suggestion {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
+  gap: var(--space-3);
+  padding: 8px 12px;
   cursor: pointer;
-  font-size: 13px;
-  color: var(--text-primary);
   transition: background var(--transition);
 }
 
-.mention-option:hover,
-.mention-option.selected {
+.mention-suggestion:hover,
+.mention-suggestion.selected {
   background: var(--primary-50);
+}
+
+.mention-suggestion .suggestion-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
+  color: var(--primary-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid var(--primary-100);
+}
+
+.mention-suggestion .suggestion-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.mention-suggestion .suggestion-name {
+  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.mention-suggestion .suggestion-email {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.3;
 }
