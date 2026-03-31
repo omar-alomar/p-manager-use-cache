@@ -12,3 +12,8 @@ export function revalidateTaskPaths(opts?: { projectId?: number | null; taskId?:
   }
   revalidatePath('/')
 }
+
+export function revalidateTimesheetPaths() {
+  revalidatePath('/timesheets')
+  revalidatePath('/timesheets/admin')
+}

@@ -103,3 +103,20 @@ export const milestoneSchema = z.object({
   item: z.string().min(1, "Milestone description is required").transform(s => s.trim()),
   apfo: z.boolean().default(false),
 })
+
+// --- Timesheet schemas ---
+
+export const timeEntrySchema = z.object({
+  weekStart: z.string().min(1),
+  projectId: z.number({ error: "Required" }).int().positive(),
+  taskId: z.number().int().positive().nullable().optional(),
+  date: z.string().min(1),
+  hours: z.number().min(0).max(24).multipleOf(0.25).nullable(),
+  billable: z.boolean().optional(),
+  note: z.string().max(200).nullable().optional(),
+})
+
+export const timesheetRejectSchema = z.object({
+  timesheetId: z.number({ error: "Required" }).int().positive(),
+  note: z.string().min(1, "Rejection reason is required").max(500),
+})

@@ -47,6 +47,9 @@ export function Navigation() {
         <Link href="/dashboard" className={isActive("/dashboard") ? "active" : ""}>Dashboard</Link>
       </li>
       <li>
+        <Link href="/timesheets" className={isActive("/timesheets") ? "active" : ""}>Timesheets</Link>
+      </li>
+      <li>
         <Link href="/users" className={isActive("/users") ? "active" : ""}>Team</Link>
       </li>
       {user.role === Role.admin && (

@@ -110,6 +110,9 @@ export function MobileNavigation() {
                     <Link href="/dashboard" onClick={closeMenu}>Dashboard</Link>
                   </li>
                   <li>
+                    <Link href="/timesheets" onClick={closeMenu}>Timesheets</Link>
+                  </li>
+                  <li>
                     <Link href="/users" onClick={closeMenu}>Team</Link>
                   </li>
                   {user.role === Role.admin && (

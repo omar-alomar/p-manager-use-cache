@@ -21,6 +21,13 @@ enum Urgency {
   CRITICAL
 }
 
+enum TimesheetStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+}
+
 model Task {
   id          Int      @id @default(autoincrement())
   title       String
@@ -37,6 +44,7 @@ model Task {
   AssignedBy User? @relation("TaskAssignedBy", fields: [assignedById], references: [id], onDelete: SetNull)
   Project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
   comments Comment[]
+  timeEntries TimeEntry[]
 }
 
 model User {
@@ -57,6 +65,8 @@ model User {
   notifications Notification[]
   autodeskToken     AutodeskToken?
   accLinkedProjects AccProjectLink[] @relation("AccLinkedBy")
+  timesheets          TimesheetWeek[]
+  reviewedTimesheets  TimesheetWeek[] @relation("TimesheetReviewer")
 }
 
 model Project {
@@ -79,6 +89,7 @@ model Project {
   tasks Task[]
   milestones Milestone[]
   accLinks AccProjectLink[]
+  timeEntries TimeEntry[]
 }
 
 model Milestone {
@@ -177,4 +188,48 @@ model AccProjectLink {
   @@unique([projectId, accProjectId])
   @@index([projectId])
   @@index([accProjectId])
+}
+
+model TimesheetWeek {
+  id            Int             @id @default(autoincrement())
+  userId        Int
+  weekStart     DateTime        // Always a Monday, UTC midnight
+  status        TimesheetStatus @default(DRAFT)
+  submittedAt   DateTime?
+  reviewedAt    DateTime?
+  reviewedById  Int?
+  rejectionNote String?
+  totalHours    Float           @default(0)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reviewedBy User?         @relation("TimesheetReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  entries    TimeEntry[]
+
+  @@unique([userId, weekStart])
+  @@index([userId])
+  @@index([status])
+  @@index([weekStart])
+}
+
+model TimeEntry {
+  id              Int      @id @default(autoincrement())
+  timesheetWeekId Int
+  projectId       Int
+  taskId          Int?
+  date            DateTime
+  hours           Float
+  billable        Boolean  @default(true)
+  note            String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  timesheetWeek TimesheetWeek @relation(fields: [timesheetWeekId], references: [id], onDelete: Cascade)
+  project       Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  task          Task?         @relation(fields: [taskId], references: [id], onDelete: SetNull)
+
+  @@index([timesheetWeekId])
+  @@index([projectId])
+  @@index([date])
 }
